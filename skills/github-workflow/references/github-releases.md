@@ -1,5 +1,9 @@
 # GitHub Releases
 
+When a user says "release this" without naming the mechanism, treat this reference as the orchestrator if the release likely involves GitHub: CI checks, merged PR review, release templates, publishing, latest flags, or `gh release`. Use `git-workflow` only for Git-owned sub-steps such as tag safety, release branch safety, and local changelog edits.
+
+If the target tag already exists and the user only asked to create, edit, publish, or annotate a GitHub Release, stay in this reference. Do not load `git-workflow` unless deciding tag/version policy, creating or moving a tag, changing local release files, or resolving Git history questions.
+
 Before GitHub release work, search the repository for release guidance rather than assuming a generic process. Look for release docs, changelog conventions, package/version metadata, `.github/` release workflows, and GitHub release configuration. Follow repository-specific rules over this reference.
 
 Example quick search:

@@ -1,11 +1,17 @@
 ---
 name: github-workflow
-description: "Use when working with GitHub collaboration and release workflows: pull requests, PR reviews, review threads, GitHub Actions checks, CI annotations, branch protection, GitHub Releases, or gh CLI commands."
+description: "Use when working with GitHub collaboration and release workflows: pull requests, PR reviews, review threads, PR merges, GitHub auto-merge, GitHub PR squash/rebase merges, GitHub Actions checks, CI annotations, branch protection, GitHub Releases, gh CLI commands, or ambiguous release requests that may involve GitHub publishing. Use git-workflow for Git-only staging, commits, rebases, tags, local merges/squashes, and history safety."
 ---
 
 # GitHub Workflow
 
 Use this skill for GitHub-specific collaboration, checks, and release workflows. Use `git-workflow` for staging, commits, rebases, conflicts, branch cleanup, and Git tag safety.
+
+For ambiguous requests like "release this" or "cut a release", orchestrate here when the likely target is a GitHub Release or a GitHub-mediated release flow: checking CI, reviewing merged PRs, using release templates, publishing, marking latest, or running `gh release`. Delegate only the Git history and tag-safety sub-steps to `git-workflow`.
+
+If the tag already exists and the task is only to create, edit, or publish the GitHub Release object or notes, `github-workflow` can proceed without loading `git-workflow`.
+
+For ambiguous requests like "merge this", orchestrate here when the likely target is a pull request or GitHub-mediated merge flow: merge button, PR squash merge, PR rebase merge, GitHub auto-merge, branch protection, required checks, or review-thread readiness. Use `git-workflow` only for local history cleanup, local squash/rebase decisions, conflict resolution, or deciding whether the branch history is safe.
 
 ## Core Rules
 

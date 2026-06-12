@@ -1,6 +1,8 @@
 # Conflicts And Recovery
 
-## Merge Or Rebase Conflicts
+Conflicts can happen while pulling remote changes, merging another branch, rebasing, cherry-picking, or applying a stash. Diagnose the active Git operation first, then resolve, continue, or abort with that operation's command. A `git pull` conflict follows either the merge path or the rebase path depending on the repository or command configuration.
+
+## Active Operation Conflicts
 
 Start by inspecting state:
 

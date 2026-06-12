@@ -1,5 +1,7 @@
 # Linear History
 
+Use this reference for local Git integration: fast-forward merges, merge commits, local squash merges, rebases, conflict preflight, and history shape. If "merge this" refers to a pull request, GitHub merge button, GitHub auto-merge, PR squash merge, PR rebase merge, branch protection, or required checks, use `github-workflow` as the orchestrator and return here only for local Git sub-steps.
+
 Use this reference when the user wants to keep Git history linear, asks whether to fast-forward or rebase, or needs to integrate one branch into another without a merge commit.
 
 ## Vocabulary

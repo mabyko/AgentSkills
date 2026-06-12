@@ -1,11 +1,15 @@
 ---
 name: git-workflow
-description: "Use when choosing or executing Git version-control workflows: branching strategy, staging, commit messages, signed commits with DCO sign-off, merge/rebase decisions, conflict resolution, tags, stashes, reflog recovery, branch cleanup, or Git safety checks."
+description: "Use when choosing or executing Git version-control workflows: branching strategy, staging, commit messages, signed commits with DCO sign-off, local merge/rebase/squash decisions, conflict resolution, tags, stashes, reflog recovery, branch cleanup, Git safety checks, or release preparation that stops at Git history/tag/changelog work. Use github-workflow for PR merges, GitHub Releases, or release requests that involve PRs, CI, publishing, latest flags, or gh commands."
 ---
 
 # Git Workflow
 
 Use this skill for Git workflow decisions and Git operations that affect repository history, local or remote branches, tags, commits, and conflict recovery. Use `github-workflow` for GitHub pull requests, reviews, GitHub Actions, GitHub Releases, and `gh` CLI workflows.
+
+For ambiguous requests like "release this" or "cut a release", use this skill only for the Git portions: version policy, release branch safety, changelog or release-note drafting, and tag safety. If the request involves GitHub Releases, CI status, merged PRs, publishing, latest flags, or `gh release`, route the overall workflow through `github-workflow` and apply this skill only to Git sub-steps.
+
+For ambiguous requests like "merge this", use this skill for local Git integration: fast-forward, merge commits, local squash merges, rebases, conflicts, and history shape. If the request involves a pull request, GitHub auto-merge, PR squash merge, PR rebase merge, review threads, branch protection, or GitHub checks, route the overall workflow through `github-workflow`.
 
 ## Core Rules
 
@@ -34,7 +38,7 @@ Load relevant reference:
 | `references/branching.md` | Choosing feature branch flow, trunk-based, GitFlow, release branches, branch naming |
 | `references/linear-history.md` | Fast-forward vs rebase decisions, linear integration, conflict preflight |
 | `references/commits.md` | Conventional Commits, atomic commits, signed commits, DCO sign-off, staging |
-| `references/conflicts-recovery.md` | Merge conflicts, rebase conflicts, stash, revert, reset, reflog recovery |
+| `references/conflicts-recovery.md` | Pull/merge/rebase/cherry-pick/stash conflicts, abort/continue flows, revert/reset/reflog recovery |
 | `references/releases.md` | Git tags, forge-neutral release notes, release branch safety |
 | `references/anti-patterns.md` | Common Git mistakes to avoid before staging, committing, pushing, or merging |
 | `references/branch-cleanup.md` | Explicit branch cleanup requests, merged/stale branch checks, safe local or remote branch deletion |

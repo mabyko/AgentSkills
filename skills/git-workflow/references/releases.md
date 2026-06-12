@@ -1,5 +1,7 @@
 # Git Tags And Release Notes
 
+When a user says "release this" without naming the release mechanism, keep this reference scoped to Git-owned work: version/tag policy, release branch safety, changelog or note drafting, and tag creation safety. If the work includes GitHub CI, merged PR discovery, release templates, publishing, latest flags, or `gh release`, `github-workflow` owns the overall release workflow and calls back to this reference only for Git sub-steps.
+
 Use this reference for Git tag safety and forge-neutral release note drafting. Use `github-workflow` for GitHub Releases, release publishing, latest flags, and `gh release` commands.
 
 Before release work, search the repository for release guidance rather than assuming a generic process. Look for obvious release docs, changelog conventions, package/version metadata, and release configuration. Follow repository-specific rules over this reference.
