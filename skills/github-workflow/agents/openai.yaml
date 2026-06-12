@@ -1,0 +1,7 @@
+interface:
+  display_name: "GitHub Workflow"
+  short_description: "GitHub PRs, checks, reviews, and releases."
+  brand_color: "#24292F"
+  default_prompt: "Use $github-workflow to help me handle GitHub pull requests, checks, reviews, or releases safely."
+policy:
+  allow_implicit_invocation: true

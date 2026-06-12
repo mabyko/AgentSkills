@@ -1,0 +1,37 @@
+# GitHub Releases
+
+Before GitHub release work, search the repository for release guidance rather than assuming a generic process. Look for release docs, changelog conventions, package/version metadata, `.github/` release workflows, and GitHub release configuration. Follow repository-specific rules over this reference.
+
+Example quick search:
+
+```bash
+rg --files | rg -i 'release|releasing|changelog|version|contributing|pull_request_template|release\.yml'
+```
+
+If no repository-specific release guidance is found after a quick search, say so and use this reference as a fallback.
+
+## Release Notes Drafting
+
+When drafting release notes, prefer repository-specific changelog rules. If none exist:
+
+1. Identify the previous release tag and target version.
+2. Review the commit range, excluding merge-only noise when appropriate.
+3. Group user-facing changes into `Added`, `Changed`, `Fixed`, and `Breaking` when the project has no other convention.
+4. Call out migrations, configuration changes, compatibility notes, and follow-up work.
+5. Treat generated notes as a draft until the user or maintainer confirms them.
+
+Use `git-workflow` for Git tag safety and tag creation decisions.
+
+## Publishing Safety
+
+Use `gh release create` only after confirming the tag/version policy:
+
+```bash
+gh release create v1.2.0 --title "v1.2.0" --notes-file RELEASE_NOTES.md
+```
+
+For non-default branches, backports, maintenance releases, LTS lines, or hotfix releases, verify whether the release should be marked as latest.
+
+Do not update changelog files, create tags, publish GitHub releases, delete releases, or mark a release as latest unless the user explicitly asked for that action.
+
+Do not delete a published GitHub release as a first response to a release mistake. Some registries and release systems treat published versions as immutable or make version reuse unsafe. Prefer a follow-up patch release, corrected release notes, or repository-specific recovery process after confirming project policy.

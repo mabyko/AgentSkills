@@ -1,0 +1,7 @@
+interface:
+  display_name: "Git Workflow"
+  short_description: "Git branching, commits, PRs, and releases."
+  brand_color: "#2563EB"
+  default_prompt: "Use $git-workflow to help me choose or execute the right Git workflow safely."
+policy:
+  allow_implicit_invocation: true
