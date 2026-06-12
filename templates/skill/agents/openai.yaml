@@ -1,0 +1,7 @@
+interface:
+  display_name: "Replace Me"
+  short_description: "Short UI description for this skill"
+  brand_color: "#3B82F6"
+  default_prompt: "Use $replace-me to ..."
+policy:
+  allow_implicit_invocation: true
