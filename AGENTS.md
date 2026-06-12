@@ -10,6 +10,14 @@ Put distributable skills under:
 skills/<skill-name>/
 ```
 
+Start each new skill with:
+
+```bash
+scripts/new-skill.sh <skill-name>
+```
+
+Then edit the generated files.
+
 Every skill must include `SKILL.md` with YAML frontmatter containing only:
 
 ```yaml
