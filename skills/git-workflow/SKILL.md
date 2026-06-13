@@ -25,6 +25,23 @@ Use for Git operations that affect history, branches, tags, commits, or conflict
 - Check whether the branch is shared before rebasing or force-pushing.
 - Stage only intentional changes. Prefer `git add -p` or explicit file paths.
 
+## Hard Stop Before Commit
+
+Before running `git commit` or `git commit --amend`, construct the exact command and verify it includes both `-S` and `--signoff`.
+
+- Allowed patterns: `git commit -S --signoff ...`, `rtk git commit -S --signoff ...`
+- Forbidden patterns: `git commit -m ...`, `git commit --amend -m ...`, `rtk git commit -m ...`, `rtk git commit --amend -m ...`
+- If either `-S` or `--signoff` is missing, stop and correct the command before executing.
+
+## Hard Stop Before Destructive Git Commands
+
+Before running destructive or history-rewriting commands, construct the exact command and verify it keeps required safeguards.
+
+- Applies to force pushes, hard resets, branch or tag deletion, public-history rewrites, and hook/signing bypass flags.
+- Never use plain `--force`; use `--force-with-lease` only after confirming the branch is safe to rewrite.
+- Do not use `--no-verify`, `--no-gpg-sign`, or other hook/signing bypasses unless the user explicitly asks.
+- Stop and ask before any command may discard work, delete local or remote refs, or change public/shared history.
+
 ## Commit Safety Checklist
 
 Before any user-requested commit or amend:
@@ -32,7 +49,7 @@ Before any user-requested commit or amend:
 - Run `git status --short`.
 - Stage only intentional files. Prefer `git add -p` when scope is unclear.
 - Use Conventional Commits unless the repository documents another convention.
-- Use `git commit -S --signoff`.
+- Verify the exact commit command includes both `-S` and `--signoff`.
 - Never use plain `git commit -m ...` for user-requested commits unless the user explicitly overrides signing or DCO.
 
 ## Branch and History Safety Checklist

@@ -51,6 +51,28 @@ Use signed commits with DCO sign-off by default:
 git commit -S --signoff -m "docs: clarify git workflow"
 ```
 
+Before running any commit or amend command, write the exact command and verify it includes both `-S` and `--signoff`.
+
+Allowed:
+
+```bash
+git commit -S --signoff -m "feat: add menu bar shell"
+rtk git commit -S --signoff -m "feat: add menu bar shell"
+git commit -S --signoff --amend -m "feat: add menu bar shell"
+rtk git commit -S --signoff --amend -m "feat: add menu bar shell"
+```
+
+Forbidden:
+
+```bash
+git commit -m "feat: add menu bar shell"
+rtk git commit -m "feat: add menu bar shell"
+git commit --amend -m "feat: add menu bar shell"
+rtk git commit --amend -m "feat: add menu bar shell"
+```
+
+If the exact command is missing either `-S` or `--signoff`, stop and correct it before executing.
+
 Before the first commit in a worktree, verify identity:
 
 ```bash

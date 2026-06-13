@@ -26,7 +26,7 @@ git rebase --continue
 or:
 
 ```bash
-git commit
+git commit -S --signoff
 ```
 
 depending on whether the conflict happened during rebase or merge.

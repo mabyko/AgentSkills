@@ -22,3 +22,4 @@ Use this reference as a final safety check before staging, committing, pushing, 
 - Use `--force-with-lease` only after confirming no one else depends on the branch state.
 - Keep commits and review requests focused on one logical change.
 - Pause and ask when the requested Git operation could discard work, rewrite public history, or affect a protected/shared branch.
+- Before destructive or history-rewriting commands, write the exact command and verify it preserves required safeguards: no plain `--force`, no hook/signing bypass, and explicit user approval when work may be discarded or public/shared history may change.
