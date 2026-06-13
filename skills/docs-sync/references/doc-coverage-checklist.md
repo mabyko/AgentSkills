@@ -66,3 +66,28 @@ Use this checklist after loading the main `docs-sync` skill.
 - Update navigation files when adding, moving, or renaming pages.
 - Leave excluded docs untouched.
 - Verify with the repository's docs build, link checker, formatter, or tests when available.
+
+## Docs Sync Report Format
+
+```text
+Docs Sync Report
+
+Scope
+- Base/current branch or selected files:
+- Docs roots checked:
+- Exclusions:
+
+Findings
+- Stale docs:
+- Code missing for docs-led spec:
+- Mixed-change mismatch:
+- Missing coverage:
+- Incorrect examples or signatures:
+- Structural suggestions:
+
+Proposed Edits
+- File -> change summary:
+
+Questions
+- Items needing user/product decision:
+```
