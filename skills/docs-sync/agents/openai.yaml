@@ -1,0 +1,7 @@
+interface:
+  display_name: "Docs Sync"
+  short_description: "Sync docs after user-facing code changes."
+  brand_color: "#3B82F6"
+  default_prompt: "Use $docs-sync to audit documentation after user-facing code changes, classify whether docs or code should change based on declared intent, and report proposed updates with evidence."
+policy:
+  allow_implicit_invocation: true

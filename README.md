@@ -1,42 +1,28 @@
 # AgentSkills
 
+[한국어](README.ko.md)
+
 Reusable agent skills for Codex, Claude Code, OpenCode, and other agents that support the open agent skills format.
 
-The canonical skill source is the top-level `skills/` directory. Plugin manifests and marketplace files point at that same source so the repository can be installed through multiple agent ecosystems.
+The canonical skill source is the top-level `skills/` directory. Plugin manifests and marketplace files point at the same source so the repository can be installed through multiple agent ecosystems.
 
-## Repository Layout
+## Skills
 
-```text
-.
-├── skills/
-│   └── <skill-name>/
-│       ├── SKILL.md
-│       ├── agents/openai.yaml
-│       ├── references/
-│       ├── scripts/
-│       └── assets/
-├── .codex-plugin/
-│   └── plugin.json
-├── .claude-plugin/
-│   └── plugin.json
-├── .agents/
-│   └── plugins/marketplace.json
-├── templates/
-│   └── skill/
-├── scripts/
-│   ├── new-skill.sh
-│   └── validate-skills.sh
-├── AGENTS.md
-└── CLAUDE.md
-```
+- `docs-sync`: Sync documentation with user-facing code changes, or check whether docs define intended code behavior.
+- `git-workflow`: Guide safe local Git workflows such as staging, commits, branches, merges, rebases, tags, and recovery.
+- `github-workflow`: Guide GitHub collaboration workflows such as pull requests, review threads, Actions checks, releases, and `gh` CLI usage.
 
-## Install with `npx skills`
+## Quick Install
 
-Use this path when you want broad agent support, including Claude Code, Codex, OpenCode, Cursor, and other agents supported by the `skills` CLI.
+Run this from the project folder where you want the skills installed:
 
 ```bash
 npx skills@latest add mabyko/AgentSkills
 ```
+
+By default, `npx skills add` installs per project. Use `--global` only when you want a user-level install.
+
+## Install Options
 
 List available skills without installing:
 
@@ -47,7 +33,7 @@ npx skills@latest add mabyko/AgentSkills --list
 Install a specific skill:
 
 ```bash
-npx skills@latest add mabyko/AgentSkills --skill my-skill
+npx skills@latest add mabyko/AgentSkills --skill docs-sync
 ```
 
 Install for specific agents:
@@ -64,7 +50,7 @@ npx skills@latest add mabyko/AgentSkills --global
 
 The `skills` CLI discovers this repository's top-level `skills/` directory and installs each selected skill into the target agent's expected location.
 
-## Install as a Codex Plugin
+## Codex Plugin
 
 Use this path when you want Codex to install the repository as a plugin from a marketplace.
 
@@ -74,7 +60,7 @@ codex plugin marketplace add mabyko/AgentSkills
 
 Then open Codex, go to `/plugins`, search for `agent-skills`, and install it.
 
-How Codex resolves this repository:
+Codex resolves this repository through:
 
 ```text
 .agents/plugins/marketplace.json
@@ -83,9 +69,9 @@ How Codex resolves this repository:
           └── skills: "./skills/"
 ```
 
-The marketplace file is the catalog entry. The `.codex-plugin/plugin.json` file is the plugin manifest. The actual skills remain in `skills/`.
+The marketplace file is the catalog entry. `.codex-plugin/plugin.json` is the plugin manifest. Skills remain in `skills/`.
 
-## Install as a Claude Code Plugin
+## Claude Code Plugin
 
 Use this path when you want Claude Code to install the repository as a plugin.
 
@@ -102,7 +88,32 @@ Claude Code reads `.claude-plugin/plugin.json` as the plugin manifest and uses t
 @AGENTS.md
 ```
 
-This keeps Claude Code's repository guidance aligned with the canonical instructions in `AGENTS.md`.
+This keeps Claude Code's repository guidance aligned with canonical instructions in `AGENTS.md`.
+
+## Repository Layout
+
+```text
+skills/
+└── <skill-name>/
+    ├── SKILL.md
+    ├── agents/openai.yaml
+    ├── references/
+    ├── scripts/
+    └── assets/
+.codex-plugin/
+└── plugin.json
+.claude-plugin/
+└── plugin.json
+.agents/
+└── plugins/marketplace.json
+templates/
+└── skill/
+scripts/
+├── new-skill.sh
+└── validate-skills.sh
+AGENTS.md
+CLAUDE.md
+```
 
 ## Contributing
 
@@ -135,14 +146,14 @@ Before opening a pull request:
 scripts/validate-skills.sh
 ```
 
-Skill names must use kebab-case, for example `release-notes`, `frontend-review`, or `python-debugging`.
+Skill names must use kebab-case, such as `release-notes`, `frontend-review`, or `python-debugging`.
 
 ## Skill Format
 
 Each skill is a folder containing:
 
-- `SKILL.md`, required
-- `agents/openai.yaml`, optional OpenAI/Codex UI metadata and dependencies
-- `scripts/`, optional deterministic helpers
-- `references/`, optional docs loaded only when needed
-- `assets/`, optional templates, images, or other files used by the skill
+- `SKILL.md`: required
+- `agents/openai.yaml`: optional OpenAI/Codex UI metadata and dependencies
+- `scripts/`: optional deterministic helpers
+- `references/`: optional docs loaded only when needed
+- `assets/`: optional templates, images, or other files used by the skill
