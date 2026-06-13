@@ -157,3 +157,7 @@ scripts/validate-skills.sh
 - `scripts/`: 선택, 결정적인 helper command
 - `references/`: 선택, 필요할 때만 불러오는 상세 문서
 - `assets/`: 선택, 스킬이 사용하는 template, image, 기타 파일
+
+## 라이선스
+
+MIT

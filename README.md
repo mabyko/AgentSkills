@@ -157,3 +157,7 @@ Each skill is a folder containing:
 - `scripts/`: optional deterministic helpers
 - `references/`: optional docs loaded only when needed
 - `assets/`: optional templates, images, or other files used by the skill
+
+## License
+
+MIT
