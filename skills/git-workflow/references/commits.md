@@ -43,6 +43,48 @@ git add .
 git commit -m "updates"
 ```
 
+## Dirty Working Tree Classification
+
+Before staging a commit, classify the working tree:
+
+1. Run `git status --short`.
+2. If more context is needed, inspect `git diff --stat` and `git diff --name-status`.
+3. For any ambiguous file, inspect the actual diff before deciding its group.
+4. Group changes by logical intent, not by path alone.
+
+Common logical groups include:
+
+- Docs or source-of-truth cleanup.
+- Native or platform setup.
+- App theme or UI changes.
+- Tests.
+- Agent, tooling, or skill sync.
+
+Do not assume files belong together only because they live near each other. A docs file can be part of a feature change, a test file can be unrelated cleanup, and generated files can be stale or unrelated. Verify intent from the diff when the grouping is not obvious.
+
+## Default Commit Scope
+
+When the user says only "commit this" or "commit it" and the current request has a specific scope, stage and commit only the logical group directly related to that request.
+
+Leave unrelated, unverified, or separately motivated changes dirty. After committing, summarize those remaining groups and suggest them as follow-up commit candidates.
+
+Do not automatically turn every dirty logical group into a separate commit. Multiple commits are appropriate only when:
+
+- The user explicitly asks to commit the remaining changes and split them logically.
+- The current user request clearly includes all changed groups as commit targets.
+
+When creating multiple commits, repeat the classification and staged-diff check for each group. Each commit must still be atomic.
+
+## Staging Safety
+
+Stage intentionally:
+
+- Prefer explicit file paths or `git add -p` when scope is unclear.
+- Use `git add -A` only after verifying that the whole dirty tree is the intended commit scope.
+- Never stage the entire dirty tree by default.
+- Check for `.DS_Store`, temporary files, unrelated generated files, and unrelated local config before committing.
+- Before committing, inspect `git diff --cached --name-status` or the staged diff.
+
 ## Signed Commits And DCO
 
 Use signed commits with DCO sign-off by default:
@@ -99,3 +141,12 @@ EOF
 ## Hook Failures
 
 If a hook fails, the commit usually did not happen. Fix the hook failure, restage if needed, and commit again. Do not run `git commit --amend` unless you have confirmed a commit was actually created.
+
+## After Commit Report
+
+After creating a commit, report:
+
+- The commit hash and message.
+- Which files or logical group were included.
+- Any dirty changes intentionally left out, grouped by likely follow-up commit.
+- The recommended order for remaining follow-up commits when more than one group remains.

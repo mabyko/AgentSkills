@@ -47,7 +47,13 @@ Before running destructive or history-rewriting commands, construct the exact co
 Before any user-requested commit or amend:
 
 - Run `git status --short`.
-- Stage only intentional files. Prefer `git add -p` when scope is unclear.
+- If the tree has multiple changed files or unclear scope, inspect `git diff --stat`, `git diff --name-status`, and targeted diffs as needed.
+- Group changes by logical intent before staging; do not infer intent from paths alone when the diff suggests otherwise.
+- Stage only the logical group directly covered by the user's current request unless the user explicitly asks to commit all remaining groups.
+- Leave unrelated or unverified groups dirty and report them as follow-up commit candidates.
+- Prefer explicit file paths or `git add -p` when scope is unclear.
+- Use `git add -A` only when the intended commit scope is the whole tree and that scope has been verified.
+- Check staged files or staged diff before committing.
 - Use Conventional Commits unless the repository documents another convention.
 - Verify the exact commit command includes both `-S` and `--signoff`.
 - Never use plain `git commit -m ...` for user-requested commits unless the user explicitly overrides signing or DCO.
