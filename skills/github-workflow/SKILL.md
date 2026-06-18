@@ -20,6 +20,7 @@ Use for GitHub-hosted collaboration and publishing. Use `git-workflow` for local
 | Reference | Use For |
 | --- | --- |
 | `references/pull-requests.md` | Creating PRs, PR descriptions, review responses, merge readiness |
+| `references/stacked-prs.md` | Stacked PR chains, sequential squash merges, base retargeting |
 | `references/github-releases.md` | GitHub Releases, release publishing, latest flag, published release recovery |
 
 ## GitHub Action Safety Checklist
