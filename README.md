@@ -22,6 +22,22 @@ npx skills@latest add mabyko/AgentSkills
 
 By default, `npx skills add` installs per project. Use `--global` only when you want a user-level install.
 
+## Updating Installed Skills
+
+For projects that already installed these skills with the `skills` CLI, use the update command:
+
+```bash
+npx skills@latest update
+```
+
+`skills update` reads the installed skill lock files, fetches the latest source, removes the old installed skill, and reinstalls the updated version. This keeps installed skills aligned with upstream changes, including files removed from `references/` or other bundled resource folders.
+
+Use `add` for first-time installation:
+
+```bash
+npx skills@latest add mabyko/AgentSkills
+```
+
 ## Install Options
 
 List available skills without installing:
@@ -81,6 +97,8 @@ Use this path when you want Claude Code to install the repository as a plugin.
 ```
 
 Claude Code reads `.claude-plugin/plugin.json` as the plugin manifest and uses the repository's top-level `skills/` directory as the skill source.
+
+Note: Plugin installs may be cached by the host tool. If you need the latest skills, refresh, update, or reinstall the plugin through that tool's plugin manager.
 
 `CLAUDE.md` contains:
 

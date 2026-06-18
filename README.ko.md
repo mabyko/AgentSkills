@@ -22,6 +22,22 @@ npx skills@latest add mabyko/AgentSkills
 
 기본적으로 `npx skills add`는 프로젝트 단위로 설치합니다. 사용자 전역 설치가 필요할 때만 `--global`을 사용하세요.
 
+## 설치된 스킬 업데이트
+
+이미 `skills` CLI로 이 스킬들을 설치한 프로젝트에서는 update 명령을 사용하세요.
+
+```bash
+npx skills@latest update
+```
+
+`skills update`는 설치된 스킬 lock file을 읽고, 최신 source를 가져온 뒤, 기존 설치본을 제거하고 업데이트된 버전을 다시 설치합니다. 따라서 upstream에서 삭제된 `references/` 파일이나 다른 bundled resource 파일도 설치본에서 함께 정리되는 방향으로 동작합니다.
+
+처음 설치할 때는 `add`를 사용하세요.
+
+```bash
+npx skills@latest add mabyko/AgentSkills
+```
+
 ## 설치 옵션
 
 설치하지 않고 사용 가능한 스킬 목록만 확인:
@@ -81,6 +97,8 @@ Claude Code에서 이 저장소를 플러그인으로 설치하려면 이 방법
 ```
 
 Claude Code는 `.claude-plugin/plugin.json`을 플러그인 manifest로 읽고, 저장소의 최상위 `skills/` 디렉터리를 skill source로 사용합니다.
+
+참고: 플러그인 설치본은 사용하는 도구에서 cache될 수 있습니다. 최신 스킬이 필요하면 해당 도구의 플러그인 manager에서 refresh, update, reinstall을 실행하세요.
 
 `CLAUDE.md`에는 다음 내용이 있습니다.
 
