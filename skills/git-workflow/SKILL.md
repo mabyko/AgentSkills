@@ -21,12 +21,26 @@ Use for Git operations that affect history, branches, tags, commits, or conflict
 ## Before Acting
 
 - Run `git status --short` before staging, committing, rebasing, merging, or deleting anything.
-- When inspecting diffs, use raw unified diffs. Do not use aliases such as `git difft`; bypass pagers, colors, and external diff tools:
+- Keep shell examples portable. When executing commands, follow local repository guidance; if RTK is available or required, add the `rtk` prefix at execution time.
+- When inspecting diffs, use raw unified diffs. Do not use aliases such as `git difft` or `rtk proxy git diff`; bypass pagers, colors, and external diff tools:
 
 ```bash
-rtk git --no-pager diff --no-color --no-ext-diff
-rtk git --no-pager diff --cached --no-color --no-ext-diff
-rtk git --no-pager show --no-color --no-ext-diff
+git --no-pager diff --no-color --no-ext-diff
+git --no-pager diff --cached --no-color --no-ext-diff
+git --no-pager show --no-color --no-ext-diff
+```
+
+- If RTK hides needed diff output, rerun the same safe command through proxy: `rtk proxy git --no-pager diff --no-color --no-ext-diff`.
+- BeforeAction guards should first normalize wrapped and direct Git forms with a shared prefix, then apply command-specific checks:
+
+```regex
+\b(?:rtk\s+(?:proxy\s+)?)?git\s+
+```
+
+Diff-producing guards should match both `diff` and `show`:
+
+```regex
+\b(?:rtk\s+(?:proxy\s+)?)?git\s+(?:--no-pager\s+)?(?:diff|show)\b
 ```
 
 - Identify the actual base branch from repo docs or remote metadata. Do not assume `main`.
@@ -55,7 +69,7 @@ Before running destructive or history-rewriting commands, construct the exact co
 Before any user-requested commit or amend:
 
 - Run `git status --short`.
-- If the tree has multiple changed files or unclear scope, inspect `git diff --stat`, `git diff --name-status`, and targeted diffs as needed.
+- If the tree has multiple changed files or unclear scope, inspect `rtk git --no-pager diff --no-color --no-ext-diff --stat`, `rtk git --no-pager diff --no-color --no-ext-diff --name-status`, and targeted diffs as needed.
 - Group changes by logical intent before staging; do not infer intent from paths alone when the diff suggests otherwise.
 - Stage only the logical group directly covered by the user's current request unless the user explicitly asks to commit all remaining groups.
 - Leave unrelated or unverified groups dirty and report them as follow-up commit candidates.

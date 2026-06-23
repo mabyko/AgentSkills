@@ -8,7 +8,7 @@ Start by inspecting state:
 
 ```bash
 git status --short
-git diff --name-only --diff-filter=U
+git --no-pager diff --no-color --no-ext-diff --name-only --diff-filter=U
 ```
 
 Resolve conflict markers manually unless the user asks to prefer one side. After editing:
@@ -83,7 +83,7 @@ Use reflog to recover lost local commits or branch positions:
 
 ```bash
 git reflog
-git show <reflog-sha>
+git --no-pager show --no-color --no-ext-diff <reflog-sha>
 git branch recovered-work <reflog-sha>
 ```
 
