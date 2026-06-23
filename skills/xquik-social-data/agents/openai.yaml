@@ -1,0 +1,7 @@
+interface:
+  display_name: "Xquik Social Data"
+  short_description: "Use Xquik for source-backed X/Twitter data tasks."
+  brand_color: "#111827"
+  default_prompt: "Use $xquik-social-data when a task needs source-backed X/Twitter posts, profiles, followers, timelines, engagement, exports, or social evidence from Xquik."
+policy:
+  allow_implicit_invocation: true

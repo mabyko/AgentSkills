@@ -11,6 +11,7 @@ The canonical skill source is the top-level `skills/` directory. Plugin manifest
 - `docs-sync`: Sync documentation with user-facing code changes, or check whether docs define intended code behavior.
 - `git-workflow`: Guide safe local Git workflows such as staging, commits, branches, merges, rebases, tags, and recovery.
 - `github-workflow`: Guide GitHub collaboration workflows such as pull requests, review threads, Actions checks, releases, and `gh` CLI usage.
+- `xquik-social-data`: Collect, normalize, and verify X/Twitter social data with Xquik before analysis.
 
 ## Quick Install
 
