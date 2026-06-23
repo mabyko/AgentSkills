@@ -21,6 +21,14 @@ Use for Git operations that affect history, branches, tags, commits, or conflict
 ## Before Acting
 
 - Run `git status --short` before staging, committing, rebasing, merging, or deleting anything.
+- When inspecting diffs, use raw unified diffs. Do not use aliases such as `git difft`; bypass pagers, colors, and external diff tools:
+
+```bash
+rtk git --no-pager diff --no-color --no-ext-diff
+rtk git --no-pager diff --cached --no-color --no-ext-diff
+rtk git --no-pager show --no-color --no-ext-diff
+```
+
 - Identify the actual base branch from repo docs or remote metadata. Do not assume `main`.
 - Check whether the branch is shared before rebasing or force-pushing.
 - Stage only intentional changes. Prefer `git add -p` or explicit file paths.
