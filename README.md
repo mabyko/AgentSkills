@@ -11,6 +11,14 @@ The canonical skill source is the top-level `skills/` directory. Plugin manifest
 - `docs-sync`: Sync documentation with user-facing code changes, or check whether docs define intended code behavior.
 - `git-workflow`: Guide safe local Git workflows such as staging, commits, branches, merges, rebases, tags, and recovery.
 - `github-workflow`: Guide GitHub collaboration workflows such as pull requests, review threads, Actions checks, releases, and `gh` CLI usage.
+- `github-upstream-sync`: Create or review GitHub Actions workflows that sync fork repositories from upstream.
+
+## Usage Examples
+
+- `$docs-sync Check whether the docs need updates for this diff.`
+- `$git-workflow Help me split these changes into safe commits.`
+- `$github-workflow Review this PR's checks and merge readiness.`
+- `$github-upstream-sync Create a workflow that syncs my repository's main branch from upstream main every day at 4:00.`
 
 ## Quick Install
 

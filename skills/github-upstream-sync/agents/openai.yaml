@@ -1,0 +1,7 @@
+interface:
+  display_name: "Github Upstream Sync"
+  short_description: "Create GitHub Actions workflows that sync forks from upstream"
+  brand_color: "#3B82F6"
+  default_prompt: "Use $github-upstream-sync to create a fork sync workflow."
+policy:
+  allow_implicit_invocation: false
