@@ -9,6 +9,7 @@ Codex, Claude Code, OpenCode, 그리고 open agent skills 형식을 지원하는
 ## 스킬
 
 - `docs-sync`: 사용자에게 보이는 코드 변경에 맞춰 문서를 동기화하거나, 문서가 의도된 코드 동작을 정의하는지 확인합니다.
+- `flutter-flavors`: Flutter flavor, `flutter_flavorizr` / `flavorizr.yaml`, 플랫폼 앱 identity, launch config, build mode 경계를 설정하거나 점검합니다.
 - `git-workflow`: staging, commit, branch, merge, rebase, tag, recovery 같은 안전한 로컬 Git workflow를 안내합니다.
 - `github-workflow`: pull request, review thread, Actions check, release, `gh` CLI 사용 같은 GitHub 협업 workflow를 안내합니다.
 - `github-upstream-sync`: fork 저장소를 upstream과 동기화하는 GitHub Actions workflow를 만들거나 검토합니다.
@@ -16,6 +17,7 @@ Codex, Claude Code, OpenCode, 그리고 open agent skills 형식을 지원하는
 ## 사용 예시
 
 - `$docs-sync 이 diff에 맞춰 문서 업데이트가 필요한지 확인해줘.`
+- `$flutter-flavors Android/iOS flavor를 점검하고 flavorizr.yaml이 native 파일과 맞는지 확인해줘.`
 - `$git-workflow 지금 변경사항을 안전한 commit 단위로 나누는 걸 도와줘.`
 - `$github-workflow 이 PR의 check와 merge 가능 상태를 검토해줘.`
 - `$github-upstream-sync 내 저장소의 main 브랜치를 upstream main과 매일 4시에 동기화하는 workflow 만들어줘.`

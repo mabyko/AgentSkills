@@ -1,0 +1,7 @@
+interface:
+  display_name: "Flutter Flavors"
+  short_description: "Set up and audit Flutter flavors and app identities."
+  brand_color: "#3B82F6"
+  default_prompt: "Use $flutter-flavors to set up, audit, or switch Flutter flavors, flutter_flavorizr/flavorizr.yaml config, and platform-specific app identities while keeping build modes, app IDs, display names, launch configs, and signing boundaries clear."
+policy:
+  allow_implicit_invocation: true

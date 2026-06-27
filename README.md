@@ -9,6 +9,7 @@ The canonical skill source is the top-level `skills/` directory. Plugin manifest
 ## Skills
 
 - `docs-sync`: Sync documentation with user-facing code changes, or check whether docs define intended code behavior.
+- `flutter-flavors`: Set up audit Flutter flavors, `flutter_flavorizr` / `flavorizr.yaml`, platform app identities, launch configs, and build-mode boundaries.
 - `git-workflow`: Guide safe local Git workflows such as staging, commits, branches, merges, rebases, tags, and recovery.
 - `github-workflow`: Guide GitHub collaboration workflows such as pull requests, review threads, Actions checks, releases, and `gh` CLI usage.
 - `github-upstream-sync`: Create or review GitHub Actions workflows that sync fork repositories from upstream.
@@ -16,6 +17,7 @@ The canonical skill source is the top-level `skills/` directory. Plugin manifest
 ## Usage Examples
 
 - `$docs-sync Check whether the docs need updates for this diff.`
+- `$flutter-flavors Audit Android/iOS flavors and check whether flavorizr.yaml matches native files.`
 - `$git-workflow Help me split these changes into safe commits.`
 - `$github-workflow Review this PR's checks and merge readiness.`
 - `$github-upstream-sync Create a workflow that syncs my repository's main branch from upstream main every day at 4:00.`
