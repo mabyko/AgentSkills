@@ -78,7 +78,7 @@ If a rebase hits conflicts, resolve them and continue, or abort to reconsider; s
 Before staging a commit, classify the working tree:
 
 1. Run `git status --short`.
-2. If more context is needed, inspect `rtk git --no-pager diff --no-color --no-ext-diff --stat` and `rtk git --no-pager diff --no-color --no-ext-diff --name-status`.
+2. If more context is needed, inspect `git --no-pager diff --no-color --no-ext-diff --stat` and `git --no-pager diff --no-color --no-ext-diff --name-status`.
 3. For any ambiguous file, inspect the actual diff before deciding its group.
 4. Group changes by logical intent, not by path alone.
 
@@ -113,7 +113,7 @@ Stage intentionally:
 - Use `git add -A` only after verifying that the whole dirty tree is the intended commit scope.
 - Never stage the entire dirty tree by default.
 - Check for `.DS_Store`, temporary files, unrelated generated files, and unrelated local config before committing.
-- Before committing, inspect `rtk git --no-pager diff --cached --no-color --no-ext-diff --name-status` or the staged diff.
+- Before committing, inspect `git --no-pager diff --cached --no-color --no-ext-diff --name-status` or the staged diff.
 
 ## Signed Commits And DCO
 
@@ -129,18 +129,14 @@ Allowed:
 
 ```text
 git commit -S --signoff -m "feat: add menu bar shell"
-rtk git commit -S --signoff -m "feat: add menu bar shell"
 git commit -S --signoff --amend -m "feat: add menu bar shell"
-rtk git commit -S --signoff --amend -m "feat: add menu bar shell"
 ```
 
 Forbidden:
 
 ```text
 git commit -m "feat: add menu bar shell"
-rtk git commit -m "feat: add menu bar shell"
 git commit --amend -m "feat: add menu bar shell"
-rtk git commit --amend -m "feat: add menu bar shell"
 ```
 
 If the exact command is missing either `-S` or `--signoff`, stop and correct it before executing.

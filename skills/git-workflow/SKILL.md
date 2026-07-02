@@ -53,8 +53,9 @@ Diff-producing guards should match both `diff` and `show`:
 
 Before running `git commit` or `git commit --amend`, construct the exact command and verify it includes both `-S` and `--signoff`.
 
-- Allowed patterns: `git commit -S --signoff ...`, `rtk git commit -S --signoff ...`
-- Forbidden patterns: `git commit -m ...`, `git commit --amend -m ...`, `rtk git commit -m ...`, `rtk git commit --amend -m ...`
+- Allowed patterns: `git commit -S --signoff ...`
+- Forbidden patterns: `git commit -m ...`, `git commit --amend -m ...`
+- These match whether or not a command wrapper prefix is present at execution time.
 - If either `-S` or `--signoff` is missing, stop and correct the command before executing.
 
 ## Hard Stop Before Destructive Git Commands
@@ -71,7 +72,7 @@ Before running destructive or history-rewriting commands, construct the exact co
 Before any user-requested commit or amend:
 
 - Run `git status --short`.
-- If the tree has multiple changed files or unclear scope, inspect `rtk git --no-pager diff --no-color --no-ext-diff --stat`, `rtk git --no-pager diff --no-color --no-ext-diff --name-status`, and targeted diffs as needed.
+- If the tree has multiple changed files or unclear scope, inspect `git --no-pager diff --no-color --no-ext-diff --stat`, `git --no-pager diff --no-color --no-ext-diff --name-status`, and targeted diffs as needed.
 - Group changes by logical intent before staging; do not infer intent from paths alone when the diff suggests otherwise.
 - Stage only the logical group directly covered by the user's current request unless the user explicitly asks to commit all remaining groups.
 - Leave unrelated or unverified groups dirty and report them as follow-up commit candidates.
