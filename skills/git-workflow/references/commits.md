@@ -43,6 +43,36 @@ git add .
 git commit -m "updates"
 ```
 
+## Cleaning Up Local Commits Before Sharing
+
+The atomic-commit and no-`WIP`/`fixup` rules apply to the history you share, not to
+every intermediate commit. Use interactive rebase to reshape messy local commits
+into clean atomic ones before pushing.
+
+Only rewrite commits that have not been pushed or shared. If the commits were already
+pushed to your own branch, rewriting requires `git push --force-with-lease` (never
+plain `--force`); do this only after confirming the branch is not shared. Never
+rewrite public or shared history without explicit user approval.
+
+Reword, reorder, squash, or drop commits:
+
+```bash
+git rebase -i <base>
+```
+
+Fold fix-up work into an earlier commit automatically:
+
+```bash
+git commit --fixup=<sha>
+git rebase -i --autosquash <base>
+```
+
+`--fixup` records a commit that `--autosquash` moves next to its target and marks for
+squashing, so the final history keeps one clean commit instead of a `fixup` trail.
+
+If a rebase hits conflicts, resolve them and continue, or abort to reconsider; see
+`conflicts-recovery.md` and `linear-history.md`.
+
 ## Dirty Working Tree Classification
 
 Before staging a commit, classify the working tree:

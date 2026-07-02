@@ -88,3 +88,31 @@ git branch recovered-work <reflog-sha>
 ```
 
 Create a recovery branch before experimenting with reset or rebase repair.
+
+## Removing Accidentally Committed Files
+
+When a file that should never have been tracked (secret, `.env`, credential, build
+output, dependency directory, local config) was committed, stop tracking it while
+keeping the local copy:
+
+```bash
+git rm --cached <file>
+echo "<file>" >> .gitignore
+git commit -S --signoff -m "chore: stop tracking <file>"
+```
+
+This removes the file from future commits but leaves it on disk. Add the path to
+`.gitignore` in the same commit so it is not re-added.
+
+If the file was only committed locally and not yet pushed, the commit above is enough.
+If it was already pushed, the file remains in history and cloneable from earlier
+commits.
+
+For a leaked secret that was already pushed:
+
+- Stop and tell the user; do not silently rewrite shared history.
+- Treat the secret as compromised and advise rotating/revoking the credential
+  immediately, regardless of any history cleanup.
+- History rewriting to purge the file (e.g. `git filter-repo`) is a destructive,
+  public-history rewrite; get explicit user approval and follow the "Hard Stop Before
+  Destructive Git Commands" rules before attempting it.

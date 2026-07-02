@@ -97,11 +97,13 @@ Before creating, switching, rebasing, merging, force-pushing, or deleting branch
 | --- | --- |
 | `references/branching.md` | Branch flow, trunk-based, GitFlow, release branches, branch naming |
 | `references/linear-history.md` | Fast-forward vs rebase decisions, linear integration, conflict preflight |
-| `references/commits.md` | Conventional Commits, atomic commits, signed commits, DCO sign-off, staging |
-| `references/conflicts-recovery.md` | Pull/merge/rebase/cherry-pick/stash conflicts, abort/continue flows, revert/reset/reflog recovery |
+| `references/commits.md` | Conventional Commits, atomic commits, signed commits, DCO sign-off, staging, interactive rebase/autosquash cleanup |
+| `references/conflicts-recovery.md` | Pull/merge/rebase/cherry-pick/stash conflicts, abort/continue flows, revert/reset/reflog recovery, untracking accidentally committed files |
 | `references/releases.md` | Git tags, forge-neutral release notes, release branch safety |
 | `references/anti-patterns.md` | Common Git mistakes before staging, committing, pushing, or merging |
 | `references/branch-cleanup.md` | Explicit branch cleanup requests, merged/stale branch checks, safe branch deletion |
+| `references/bisect.md` | Finding the commit that introduced a regression via manual or automated `git bisect` |
+| `references/submodules.md` | Cloning, adding, updating, or removing Git submodules |
 
 ## Default Workflow
 
