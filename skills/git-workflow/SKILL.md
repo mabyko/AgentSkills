@@ -44,6 +44,7 @@ Diff-producing guards should match both `diff` and `show`:
 ```
 
 - Identify the actual base branch from repo docs or remote metadata. Do not assume `main`.
+- Refresh remote-tracking refs before operations whose correctness depends on remote state: merging into a base branch, rebasing onto it, release range review, or branch cleanup.
 - Check whether the branch is shared before rebasing or force-pushing.
 - Stage only intentional changes. Prefer `git add -p` or explicit file paths.
 - When creating or renaming local task branches, default to `feature/`, `fix/`, `hotfix/`, `docs/`, `test/`, `refactor/`, `release/`, or `chore/` based on the work type unless the user supplies an exact branch name.
@@ -86,6 +87,7 @@ Before any user-requested commit or amend:
 Before creating, switching, rebasing, merging, force-pushing, or deleting branches:
 
 - Confirm current branch, intended target branch, and actual base branch.
+- Fetch and compare the base branch with its upstream before integrating or judging merged state.
 - Check for uncommitted or staged changes that could be carried across branches.
 - Confirm whether the branch is shared or protected before rewriting or deleting it.
 - Use `--force-with-lease` for approved history rewrites; never use plain `--force`.

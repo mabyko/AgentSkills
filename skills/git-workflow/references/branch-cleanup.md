@@ -8,17 +8,19 @@ Before suggesting or deleting branch cleanup candidates:
 
 1. Check the current branch and worktree state.
 2. Confirm the base branch from repository guidance or remote metadata.
-3. Check whether each candidate is currently checked out in this or another worktree.
-4. Check whether each candidate is merged into the correct base branch.
-5. Check whether a matching remote branch exists.
-6. Treat protected, shared, release, hotfix, and long-lived integration branches as unsafe unless repository guidance says otherwise.
-7. Show the candidate list and the reason each branch appears safe or unsafe.
-8. Delete only after explicit user approval.
+3. Fetch remote state before checking merged or remote existence status.
+4. Check whether each candidate is currently checked out in this or another worktree.
+5. Check whether each candidate is merged into the correct base branch.
+6. Check whether a matching remote branch exists.
+7. Treat protected, shared, release, hotfix, and long-lived integration branches as unsafe unless repository guidance says otherwise.
+8. Show the candidate list and the reason each branch appears safe or unsafe.
+9. Delete only after explicit user approval.
 
 ## Useful Checks
 
 ```bash
 git status --short
+git fetch origin
 git branch --show-current
 git branch --merged <base-branch>
 git branch --no-merged <base-branch>

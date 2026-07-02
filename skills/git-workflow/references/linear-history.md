@@ -12,6 +12,24 @@ In this reference:
 - `C1` is the current or topic branch being integrated.
 - `C2` is another topic branch that may already have been integrated into `B`.
 
+## Sync The Target First
+
+Before merging or rebasing with a remote-tracked target branch, refresh and compare it with upstream:
+
+```bash
+git fetch origin
+git rev-list --left-right --count B...origin/B
+```
+
+If `B` is behind `origin/B`, fast-forward `B` before using it as the target:
+
+```bash
+git switch B
+git merge --ff-only origin/B
+```
+
+If `B` and `origin/B` diverged, stop and inspect before integrating other work into `B`.
+
 ## Prefer Fast-Forward When Possible
 
 If `B` is an ancestor of `C1`, update `B` with a fast-forward merge:
