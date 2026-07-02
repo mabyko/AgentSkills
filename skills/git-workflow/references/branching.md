@@ -10,12 +10,18 @@ Use when the base branch should stay deployable and changes should be reviewed b
 - Open a review request on the repository hosting platform when ready.
 - Merge only after review and required checks pass.
 
-Branch names:
+Branch names use one of these prefixes unless the user supplies an exact branch name:
 
-- `feature/short-description`
-- `fix/short-description`
-- `docs/short-description`
-- `chore/short-description`
+- `feature/`: new user-facing or developer-facing capability
+- `fix/`: ordinary bug fix
+- `hotfix/`: urgent fix to already-released or production-impacting code, especially incidents, security issues, data loss, payment/auth breakage, or emergency release patches
+- `docs/`: documentation-only change
+- `test/`: test-only change
+- `refactor/`: behavior-preserving code restructuring
+- `release/`: versioning, changelog, tagging, or release prep
+- `chore/`: maintenance that does not fit the above
+
+When unsure between `fix/` and `hotfix/`, use `fix/`.
 
 ## Trunk-Based Development
 

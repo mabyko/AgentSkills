@@ -46,6 +46,7 @@ Diff-producing guards should match both `diff` and `show`:
 - Identify the actual base branch from repo docs or remote metadata. Do not assume `main`.
 - Check whether the branch is shared before rebasing or force-pushing.
 - Stage only intentional changes. Prefer `git add -p` or explicit file paths.
+- When creating or renaming local task branches, default to `feature/`, `fix/`, `hotfix/`, `docs/`, `test/`, `refactor/`, `release/`, or `chore/` based on the work type unless the user supplies an exact branch name.
 
 ## Hard Stop Before Commit
 
