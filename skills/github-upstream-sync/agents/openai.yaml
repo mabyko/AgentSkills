@@ -1,5 +1,5 @@
 interface:
-  display_name: "Github Upstream Sync"
+  display_name: "GitHub Upstream Sync"
   short_description: "Create GitHub Actions workflows that sync forks from upstream"
   brand_color: "#24292F"
   default_prompt: "Use $github-upstream-sync to create a fork sync workflow."

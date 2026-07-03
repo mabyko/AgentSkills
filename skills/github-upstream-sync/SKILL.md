@@ -21,7 +21,7 @@ Use this skill when the user wants a GitHub Actions workflow that keeps a fork b
 1. Convert the requested schedule to GitHub Actions cron in UTC. If the user writes `4:00` or `4시 25분` without a timezone, use the session/environment timezone. If no timezone is available, ask for it.
 2. If target branch and upstream branch are the same, prefer `gh repo sync "${{ github.repository }}" --branch <branch>`.
 3. Add `--source OWNER/REPO` to `gh repo sync` only when the user specifies the upstream repo or the fork parent should not be trusted.
-4. If target branch and upstream branch differ, use `aormsby/Fork-Sync-With-Upstream-action` with separate `target_sync_branch` and `upstream_sync_branch`.
+4. If target branch and upstream branch differ, use `aormsby/Fork-Sync-With-Upstream-action` with separate `target_sync_branch` and `upstream_sync_branch`. Check the action's latest release tag before pinning; the template's pinned version may be stale.
 5. Use `GH_TOKEN: ${{ secrets.GH_TOKEN }}` by default. The secret must be a PAT that can write contents and workflow files in the target fork. This avoids failures when upstream adds or modifies `.github/workflows/*`.
 6. Use `permissions: contents: read` because the write authority comes from the PAT secret, not from `github.token`.
 7. Do not use `permissions.actions: write` to solve workflow-file sync failures; that permission controls Actions API operations, not writing workflow YAML files.
