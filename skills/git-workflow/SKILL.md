@@ -13,16 +13,17 @@ Use for Git operations that affect history, branches, tags, commits, or conflict
 2. Never claim a check passed unless you ran it and can report the command.
 3. Avoid direct pushes to protected or shared base branches unless repo guidance and the user explicitly allow it.
 4. Keep commits atomic: one logical change per commit, no final `WIP`, `fixup`, or mixed-change commits.
-5. Use signed commits with DCO sign-off by default: `git commit -S --signoff`.
-6. Never bypass hooks, signing, or DCO checks unless the user explicitly asks.
+5. Use signed commits with DCO sign-off by default: `git commit -S --signoff`. Plain `git commit -m ...` or `git commit --amend -m ...` is forbidden unless the user explicitly overrides signing or DCO.
+6. Never bypass hooks, signing, or DCO checks (`--no-verify`, `--no-gpg-sign`) unless the user explicitly asks.
 7. Use `--force-with-lease`, never plain `--force`, and only after confirming the branch is safe to rewrite.
-8. Ask before destructive Git operations: `git reset --hard`, branch deletion, tag deletion, public-history rewrite, or discarding local changes.
+8. Ask before any command that may discard work, delete local or remote refs, or rewrite public/shared history: `git reset --hard`, branch or tag deletion, force pushes, or discarding local changes.
+9. Before running a commit, amend, or destructive command, construct the exact command and verify it keeps the safeguards above.
 
 ## Before Acting
 
 - Run `git status --short` before staging, committing, rebasing, merging, or deleting anything.
-- Keep shell examples portable. When executing commands, follow local repository guidance; if RTK is available or required, add the `rtk` prefix at execution time.
-- When inspecting diffs, use raw unified diffs. Do not use aliases such as `git difft` or `rtk proxy git diff`; bypass pagers, colors, and external diff tools:
+- Document and reason about plain `git` commands only. Command wrappers (token-filtering proxies such as `rtk`) are an execution-time concern: apply a wrapper prefix only when the user's global or repository guidance says so. All rules in this skill apply to the underlying Git command whether or not a wrapper prefix is present.
+- When inspecting diffs, use raw unified diffs. Do not use aliases or wrapped diff shortcuts such as `git difft`; bypass pagers, colors, and external diff tools:
 
 ```bash
 git --no-pager diff --no-color --no-ext-diff
@@ -30,58 +31,25 @@ git --no-pager diff --cached --no-color --no-ext-diff
 git --no-pager show --no-color --no-ext-diff
 ```
 
-- If RTK hides needed diff output, rerun the same safe command through proxy: `rtk proxy git --no-pager diff --no-color --no-ext-diff`.
-- BeforeAction guards should first normalize wrapped and direct Git forms with a shared prefix, then apply command-specific checks:
-
-```regex
-\b(?:rtk\s+(?:proxy\s+)?)?git\s+
-```
-
-Diff-producing guards should match both `diff` and `show`:
-
-```regex
-\b(?:rtk\s+(?:proxy\s+)?)?git\s+(?:--no-pager\s+)?(?:diff|show)\b
-```
-
+- If a wrapper filters or hides diff output you need, rerun the same safe command through the wrapper's raw passthrough mode (for example `rtk proxy git --no-pager diff --no-color --no-ext-diff`) or without the wrapper.
 - Identify the actual base branch from repo docs or remote metadata. Do not assume `main`.
 - Refresh remote-tracking refs before operations whose correctness depends on remote state: merging into a base branch, rebasing onto it, release range review, or branch cleanup.
 - Check whether the branch is shared before rebasing or force-pushing.
 - Stage only intentional changes. Prefer `git add -p` or explicit file paths.
 - When creating or renaming local task branches, default to `feature/`, `fix/`, `hotfix/`, `docs/`, `test/`, `refactor/`, `release/`, or `chore/` based on the work type unless the user supplies an exact branch name.
 
-## Hard Stop Before Commit
-
-Before running `git commit` or `git commit --amend`, construct the exact command and verify it includes both `-S` and `--signoff`.
-
-- Allowed patterns: `git commit -S --signoff ...`
-- Forbidden patterns: `git commit -m ...`, `git commit --amend -m ...`
-- These match whether or not a command wrapper prefix is present at execution time.
-- If either `-S` or `--signoff` is missing, stop and correct the command before executing.
-
-## Hard Stop Before Destructive Git Commands
-
-Before running destructive or history-rewriting commands, construct the exact command and verify it keeps required safeguards.
-
-- Applies to force pushes, hard resets, branch or tag deletion, public-history rewrites, and hook/signing bypass flags.
-- Never use plain `--force`; use `--force-with-lease` only after confirming the branch is safe to rewrite.
-- Do not use `--no-verify`, `--no-gpg-sign`, or other hook/signing bypasses unless the user explicitly asks.
-- Stop and ask before any command may discard work, delete local or remote refs, or change public/shared history.
-
 ## Commit Safety Checklist
 
 Before any user-requested commit or amend:
 
-- Run `git status --short`.
 - If the tree has multiple changed files or unclear scope, inspect `git --no-pager diff --no-color --no-ext-diff --stat`, `git --no-pager diff --no-color --no-ext-diff --name-status`, and targeted diffs as needed.
 - Group changes by logical intent before staging; do not infer intent from paths alone when the diff suggests otherwise.
 - Stage only the logical group directly covered by the user's current request unless the user explicitly asks to commit all remaining groups.
 - Leave unrelated or unverified groups dirty and report them as follow-up commit candidates.
-- Prefer explicit file paths or `git add -p` when scope is unclear.
 - Use `git add -A` only when the intended commit scope is the whole tree and that scope has been verified.
 - Check staged files or staged diff before committing.
 - Use Conventional Commits unless the repository documents another convention.
-- Verify the exact commit command includes both `-S` and `--signoff`.
-- Never use plain `git commit -m ...` for user-requested commits unless the user explicitly overrides signing or DCO.
+- Verify the exact commit command against Core Rule 5 (`-S --signoff`) before executing.
 
 ## Branch and History Safety Checklist
 
@@ -90,9 +58,7 @@ Before creating, switching, rebasing, merging, force-pushing, or deleting branch
 - Confirm current branch, intended target branch, and actual base branch.
 - Fetch and compare the base branch with its upstream before integrating or judging merged state.
 - Check for uncommitted or staged changes that could be carried across branches.
-- Confirm whether the branch is shared or protected before rewriting or deleting it.
-- Use `--force-with-lease` for approved history rewrites; never use plain `--force`.
-- Ask before deleting branches, discarding local changes, or rewriting public history.
+- Confirm whether the branch is shared or protected before rewriting or deleting it, then apply Core Rules 7-8.
 
 ## Reference Routing
 
@@ -115,6 +81,6 @@ Before creating, switching, rebasing, merging, force-pushing, or deleting branch
 3. Load the relevant reference file.
 4. Inspect branch, base, remote, and staged changes as needed.
 5. Choose the least surprising safe Git operation.
-6. If the user asked you to commit, use `git commit -S --signoff`.
+6. If the user asked you to commit, follow the Commit Safety Checklist.
 7. If the user asked you to push, push with upstream tracking on first push.
 8. If the user asked for GitHub PRs, checks, releases, or `gh` CLI workflows, use `github-workflow`.
