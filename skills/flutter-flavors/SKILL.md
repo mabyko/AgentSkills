@@ -1,6 +1,6 @@
 ---
 name: flutter-flavors
-description: "Use when setting up, auditing, or switching Flutter flavors, flutter_flavorizr, flavorizr.yaml, and platform-specific environment identities across Android, iOS, macOS, web, Windows, and Linux, including dev/test/beta/prod app IDs, display names, launch configs, build modes, signing boundaries, and distribution safety."
+description: "Use when setting up, auditing, or switching Flutter flavors, flutter_flavorizr, flavorizr.yaml, or platform-specific app identities (app IDs, display names, launch configs) across Android, iOS, macOS, web, Windows, and Linux."
 ---
 
 # Flutter Flavors
@@ -28,8 +28,7 @@ Flutter flavor/environment and Flutter build mode are separate axes.
 
 Current bundled references cover generic Android/iOS mobile setup:
 
-- Read `references/mobile-canonical.md` for canonical team identities.
-- Read `references/mobile-personal.md` for personal Apple Developer/local device testing identities.
+- Read `references/mobile-identities.md` for canonical team identities and personal Apple Developer/local device testing identities.
 - Read `references/flutter-flavorizr.md` when a project already uses `flutter_flavorizr`, has `flavorizr.yaml`, or the user asks to generate/manage Flutter Flavorizr configuration.
 - Read `references/example-prompts.md` only when the user asks for example prompts or usage examples.
 

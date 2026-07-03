@@ -1,14 +1,15 @@
-# Mobile Canonical Team Identities
+# Mobile Flavor Identities (Canonical and Personal)
 
-Use this reference for canonical Android/iOS team identities. Replace example values with project-specific IDs and names from the user's docs or native project files.
+Use this reference for Android/iOS flavor identities. Replace example values with project-specific IDs and names from the user's docs or native project files. Identifier validation and slug-derivation rules live in `SKILL.md`; do not restate or override them here.
 
-Do not use personal/local-testing IDs in this mode.
+Two identity sets share the same structure:
 
-Validate Android and Apple identifiers separately. If a project uses characters that are valid on one platform but invalid on another, keep platform-specific IDs instead of forcing one shared string. If deriving an identifier slug from a display name, propose the normalized lowercase result and ask before editing unless the user already approved that exact ID. Replace only explicit separators such as spaces, hyphens, and underscores; for example, `Test APP` can become Android segment `test_app` and Apple segment `test-app`, while `TestAPP` should be proposed as `testapp`.
-
-Preserve existing explicit Apple bundle identifier casing. If an Apple bundle ID contains uppercase characters while Android IDs are lowercase, ask whether to preserve Apple casing or convert it for cross-platform consistency before editing.
+- **Canonical**: team identities for shared development and release paths.
+- **Personal**: Apple Developer/local device testing identities. Never use personal IDs for TestFlight, App Store, Google Play, or CI/CD release unless a human explicitly decides that release path.
 
 ## Example Flavor Matrix
+
+Canonical:
 
 | Flavor | Purpose | iOS Bundle ID | Android Application ID | Display Name |
 | --- | --- | --- | --- | --- |
@@ -16,6 +17,8 @@ Preserve existing explicit Apple bundle identifier casing. If an Apple bundle ID
 | `test` | Release-mode device testing outside local debug assumptions | `com.company.appname.test` | `com.company.appname.test` | `Example App (TEST)` |
 | `beta` | TestFlight / Google Play testing candidate | `com.company.appname.beta` | `com.company.appname.beta` | `Example App (BETA)` |
 | `prod` | App Store / Google Play production | `com.company.appname` | `com.company.appname` | `Example App` |
+
+Personal: use the same matrix with base ID `com.company.appname.personal` (so `dev` becomes `com.company.appname.personal.dev`, personal `prod` is `com.company.appname.personal`) and append `Personal` to display names, e.g. `Example App (DEV Personal)`, `Example App (Personal)`. Personal `prod` is production-like local testing only, never the canonical production identity.
 
 ## Command Matrix
 
@@ -37,7 +40,7 @@ Use Kotlin DSL in `android/app/build.gradle.kts`. Configure an `environment` fla
 
 Android `applicationId` policy: at least two dot-separated segments, each segment starts with a lowercase letter, and segment characters are lowercase letters, digits, or `_`. Do not use `-` or uppercase in Android IDs. This is stricter than the raw Android build syntax on purpose; Java/Kotlin package naming, Play operations, and practical team consistency are cleaner with lowercase-only IDs.
 
-Example base values:
+Example base values (canonical; for personal, append `.personal` to the IDs and `(Personal)` to the label):
 
 - `namespace = "com.company.appname"`
 - `defaultConfig.applicationId = "com.company.appname"`
@@ -80,16 +83,18 @@ Apple bundle identifiers allow letters, digits, `-`, and `.` and are case-insens
 
 ## VS Code
 
-If `.vscode/launch.json` exists, preserve existing configurations and append or merge only missing canonical entries. Use `toolArgs` for `--flavor`; use `flutterMode` only for `debug`, `profile`, or `release`.
+If `.vscode/launch.json` exists, preserve existing configurations and append or merge only missing entries for the requested identity set. Use `toolArgs` for `--flavor`; use `flutterMode` only for `debug`, `profile`, or `release`.
 
 ## Safety
 
 Signing, export, TestFlight, App Store, Google Play, and CI/CD release settings require separate human decisions. Stop and report if those settings need confirmation.
 
+Personal mode additionally: before running iOS personal flavors on physical devices, confirm Apple Developer account, Bundle IDs, signing team, required capabilities, and provisioning profiles for the selected personal identifier. If Xcode requires manual signing, capability, or provisioning profile confirmation, stop and ask for human confirmation in Xcode.
+
 ## Acceptance Checks
 
-- `dev`, `test`, `beta`, `prod` produce distinct app identities.
-- `prod` remains the canonical production ID and display name.
+- `dev`, `test`, `beta`, `prod` produce distinct app identities for the requested identity set.
+- Canonical `prod` remains the canonical production ID and display name; personal `prod` remains production-like only and is never treated as a canonical team release ID.
 - `beta + debug`, `beta + profile`, and `beta + release` keep distinct meanings.
 - Existing `.vscode/launch.json` entries are preserved.
 - Flutter/Dart app logic is not changed.
