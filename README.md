@@ -103,10 +103,10 @@ Use this path when you want Claude Code to install the repository as a plugin.
 
 ```bash
 /plugin marketplace add mabyko/AgentSkills
-/plugin install agent-skills@mabyko-skills
+/plugin install agent-skills@mabyko
 ```
 
-Claude Code resolves the repository through `.claude-plugin/marketplace.json` (marketplace name `mabyko-skills`), reads `.claude-plugin/plugin.json` as the plugin manifest, and uses the repository's top-level `skills/` directory as the skill source.
+Claude Code resolves the repository through `.claude-plugin/marketplace.json` (marketplace name `mabyko`), reads `.claude-plugin/plugin.json` as the plugin manifest, and uses the repository's top-level `skills/` directory as the skill source.
 
 Note: Plugin installs may be cached by the host tool. If you need the latest skills, refresh, update, or reinstall the plugin through that tool's plugin manager.
 
