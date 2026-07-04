@@ -43,6 +43,8 @@ Optional per-skill resources:
 - Do not add README, changelog, or installation docs inside individual skill folders.
 - Quote all string values in `agents/openai.yaml`.
 - Use kebab-case for skill folder names and plugin names.
+- List every skill in the `## Skills` section of both `README.md` and `README.ko.md`.
+- When skill content changes, bump `version` in `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json` so plugin hosts detect the update.
 
 ## Validation
 
