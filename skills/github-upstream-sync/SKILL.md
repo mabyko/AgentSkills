@@ -92,7 +92,7 @@ jobs:
           target_repo_token: ${{ secrets.GH_TOKEN }}
           upstream_sync_branch: <upstream-branch>
           upstream_sync_repo: <owner/repo>
-          test_mode: ${{ github.event.inputs.sync_test_mode }}
+          test_mode: ${{ inputs.sync_test_mode }}
 
       - name: Sync Success Check
         if: steps.sync.outputs.has_new_commits == 'true'

@@ -9,11 +9,11 @@ Use for Git operations that affect history, branches, tags, commits, or conflict
 
 ## Core Rules
 
-1. Inspect repository-specific Git guidance first: `AGENTS.md`, `docs/git-workflow.md`, `CONTRIBUTING.md`, release docs.
+1. Inspect repository-specific Git guidance first: `AGENTS.md`, `docs/git-workflow.md`, `CONTRIBUTING.md`, `README.md`, release docs.
 2. Never claim a check passed unless you ran it and can report the command.
 3. Avoid direct pushes to protected or shared base branches unless repo guidance and the user explicitly allow it.
 4. Keep commits atomic: one logical change per commit, no final `WIP`, `fixup`, or mixed-change commits.
-5. Use signed commits with DCO sign-off by default: `git commit -S --signoff`. Plain `git commit -m ...` or `git commit --amend -m ...` is forbidden unless the user explicitly overrides signing or DCO.
+5. Use signed commits with DCO sign-off by default: `git commit -S --signoff`. Plain `git commit -m ...` or `git commit --amend -m ...` is forbidden unless the user explicitly overrides signing or DCO. If signing is unavailable — a key probe finds no usable key, or a `-S` commit just failed with a signing error, regardless of `commit.gpgsign` — do not retry; follow the signing fallback table in `references/commits.md`.
 6. Never bypass hooks, signing, or DCO checks (`--no-verify`, `--no-gpg-sign`) unless the user explicitly asks.
 7. Use `--force-with-lease`, never plain `--force`, and only after confirming the branch is safe to rewrite.
 8. Ask before any command that may discard work, delete local or remote refs, or rewrite public/shared history: `git reset --hard`, branch or tag deletion, force pushes, or discarding local changes.

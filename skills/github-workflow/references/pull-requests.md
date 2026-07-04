@@ -27,10 +27,16 @@ git push -u origin HEAD
 
 Before creating a PR, confirm the intended base branch with the user when the request did not name it.
 
-Create the PR using the repository's template when present:
+`gh pr create --fill` builds the title and body from commit messages and ignores PR templates. Use it only when the repository has no PR template:
 
 ```bash
 gh pr create --fill
+```
+
+When a template exists (`.github/pull_request_template.md` or `.github/PULL_REQUEST_TEMPLATE/`), compose the body from the filled-in template instead:
+
+```bash
+gh pr create --title "<title>" --body-file <filled-template-file>
 ```
 
 If adding labels or a milestone, inspect the repository's actual labels and open milestones first. Suggest only values that exist, and do not create labels or milestones unless explicitly requested.

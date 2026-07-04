@@ -9,22 +9,14 @@ Before GitHub release work, search the repository for release guidance rather th
 Example quick search:
 
 ```bash
-rg --files | rg -i 'release|releasing|changelog|version|contributing|pull_request_template|release\.yml'
+rg --files | rg -i 'release|releasing|changelog|version|contributing|readme|pull_request_template|release\.yml'
 ```
 
 If no repository-specific release guidance is found after a quick search, say so and use this reference as a fallback.
 
 ## Release Notes Drafting
 
-When drafting release notes, prefer repository-specific changelog rules. If none exist:
-
-1. Identify the previous release tag and target version.
-2. Review the commit range, excluding merge-only noise when appropriate.
-3. Group user-facing changes into `Added`, `Changed`, `Fixed`, and `Breaking` when the project has no other convention.
-4. Call out migrations, configuration changes, compatibility notes, and follow-up work.
-5. Treat generated notes as a draft until the user or maintainer confirms them.
-
-Use `git-workflow` for Git tag safety and tag creation decisions.
+Follow the "Release Notes Drafting" steps in `git-workflow` `references/releases.md`; that reference owns the forge-neutral drafting rules, and reading it for drafting is an allowed exception to the guard above against loading `git-workflow`. Use `git-workflow` for Git tag safety and tag creation decisions.
 
 ## Publishing Safety
 

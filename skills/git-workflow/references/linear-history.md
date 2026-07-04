@@ -132,7 +132,14 @@ git switch tmp/rebase-check-c1
 git rebase B
 ```
 
-If the rebase succeeds, the real `C1` can probably be rebased onto `B`.
+If the rebase succeeds, the real `C1` can probably be rebased onto `B`. Delete the
+rehearsal branch before rebasing the real one (`-D` is required because the rebased
+rehearsal commits are not merged anywhere):
+
+```bash
+git switch C1
+git branch -D tmp/rebase-check-c1
+```
 
 If conflicts occur:
 

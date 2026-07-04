@@ -55,13 +55,13 @@ For native identity setup only, prefer a focused processor list instead of the f
 Typical Android/iOS-only processors:
 
 ```bash
-flutter pub run flutter_flavorizr -p android:androidManifest,android:flavorizrGradle,android:buildGradle,ios:podfile,ios:xcconfig,ios:buildTargets,ios:schema,ios:plist,ide:config
+dart run flutter_flavorizr -p android:androidManifest,android:flavorizrGradle,android:buildGradle,ios:podfile,ios:xcconfig,ios:buildTargets,ios:schema,ios:plist,ide:config
 ```
 
 Add macOS processors only when macOS identities are requested:
 
 ```bash
-flutter pub run flutter_flavorizr -p macos:podfile,macos:xcconfig,macos:configs,macos:buildTargets,macos:schema,macos:plist
+dart run flutter_flavorizr -p macos:podfile,macos:xcconfig,macos:configs,macos:buildTargets,macos:schema,macos:plist
 ```
 
 Avoid processors such as `flutter:app`, `flutter:pages`, `flutter:main`, icons, launch screens, Firebase, AGConnect, or dummy assets unless the user explicitly wants those generated.

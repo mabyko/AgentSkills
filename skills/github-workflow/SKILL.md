@@ -9,7 +9,7 @@ Use for GitHub-hosted collaboration and publishing. Use `git-workflow` for local
 
 ## Rules
 
-1. Read repository-specific GitHub guidance first: `.github/`, PR templates, release workflows, branch protection notes, and contribution docs.
+1. Read repository-specific GitHub guidance first: `.github/`, PR templates, release workflows, branch protection notes, `CONTRIBUTING.md`, and `README.md`.
 2. Never claim GitHub status, checks, reviews, or release state unless you inspected them.
 3. Do not merge, close, publish, mark latest, delete releases, or delete remote branches unless explicitly requested.
 4. Treat green status as necessary but not sufficient: also check annotations, warnings, bot comments, and review state.

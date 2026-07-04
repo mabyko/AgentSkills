@@ -9,7 +9,7 @@ Before release work, search the repository for release guidance rather than assu
 Example quick search:
 
 ```bash
-rg --files | rg -i 'release|releasing|changelog|version|contributing'
+rg --files | rg -i 'release|releasing|changelog|version|contributing|readme'
 ```
 
 If no repository-specific release guidance is found after a quick search, say so and use this reference as a fallback.
