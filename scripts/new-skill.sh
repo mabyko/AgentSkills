@@ -9,8 +9,8 @@ fi
 skill_name="$1"
 
 case "$skill_name" in
-  *[!a-z0-9-]* | "" | -* | *-)
-    echo "Skill name must be kebab-case: lowercase letters, numbers, and hyphens." >&2
+  *[!a-z0-9-]* | "" | -* | *- | *--*)
+    echo "Skill name must be kebab-case: lowercase letters, numbers, and single hyphens." >&2
     exit 2
     ;;
 esac
@@ -28,12 +28,10 @@ cp -R "$repo_root/templates/skill/." "$target/"
 
 display_name="$(printf '%s' "$skill_name" | awk -F- '{ for (i=1; i<=NF; i++) { $i=toupper(substr($i,1,1)) substr($i,2) } print }' OFS=' ')"
 
-tmp_file="$(mktemp)"
-sed "s/replace-me/$skill_name/g; s/Replace Me/$display_name/g" "$target/SKILL.md" > "$tmp_file"
-mv "$tmp_file" "$target/SKILL.md"
-
-tmp_file="$(mktemp)"
-sed "s/replace-me/$skill_name/g; s/Replace Me/$display_name/g" "$target/agents/openai.yaml" > "$tmp_file"
-mv "$tmp_file" "$target/agents/openai.yaml"
+for seeded_file in "$target/SKILL.md" "$target/agents/openai.yaml"; do
+  tmp_file="$(mktemp)"
+  sed "s/replace-me/$skill_name/g; s/Replace Me/$display_name/g" "$seeded_file" > "$tmp_file"
+  mv "$tmp_file" "$seeded_file"
+done
 
 echo "Created $target"

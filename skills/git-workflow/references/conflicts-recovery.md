@@ -114,5 +114,5 @@ For a leaked secret that was already pushed:
 - Treat the secret as compromised and advise rotating/revoking the credential
   immediately, regardless of any history cleanup.
 - History rewriting to purge the file (e.g. `git filter-repo`) is a destructive,
-  public-history rewrite; get explicit user approval and follow the "Hard Stop Before
-  Destructive Git Commands" rules before attempting it.
+  public-history rewrite; get explicit user approval and follow SKILL.md Core Rules
+  7-9 before attempting it.

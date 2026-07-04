@@ -38,7 +38,7 @@ When landing a stacked chain as separate squash commits on the final base:
 1. Merge the first PR that already targets the final base.
 
 ```bash
-gh pr merge <first-pr> --squash --title "<PR title> (#<first-pr>)"
+gh pr merge <first-pr> --squash --subject "<PR title> (#<first-pr>)"
 git fetch origin <final-base>
 ```
 
@@ -60,13 +60,13 @@ gh pr view <next-pr> --json mergeStateStatus,reviewDecision,statusCheckRollup
 4. Merge the PR only if it is still ready under `pull-requests.md`.
 
 ```bash
-gh pr merge <next-pr> --squash --title "<PR title> (#<next-pr>)"
+gh pr merge <next-pr> --squash --subject "<PR title> (#<next-pr>)"
 git fetch origin <final-base>
 ```
 
 5. Repeat until the full chain is merged.
 
-Use the PR title explicitly in `gh pr merge --title`; GitHub may otherwise choose a branch name or first commit message that does not match the reviewed PR.
+Pass the PR title explicitly as the squash commit subject via `gh pr merge --subject`; GitHub may otherwise choose a branch name or first commit message that does not match the reviewed PR.
 
 ## Conflict Policy
 
