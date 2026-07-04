@@ -1,6 +1,6 @@
 {
   "name": "agent-skills",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Reusable agent skills for Codex workflows.",
   "license": "MIT",
   "skills": "./skills/"

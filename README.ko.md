@@ -103,10 +103,10 @@ Claude Code에서 이 저장소를 플러그인으로 설치하려면 이 방법
 
 ```bash
 /plugin marketplace add mabyko/AgentSkills
-/plugin install agent-skills@agent-skills
+/plugin install agent-skills@mabyko-skills
 ```
 
-Claude Code는 `.claude-plugin/plugin.json`을 플러그인 manifest로 읽고, 저장소의 최상위 `skills/` 디렉터리를 skill source로 사용합니다.
+Claude Code는 `.claude-plugin/marketplace.json`(marketplace 이름 `mabyko-skills`)으로 저장소를 resolve하고, `.claude-plugin/plugin.json`을 플러그인 manifest로 읽고, 저장소의 최상위 `skills/` 디렉터리를 skill source로 사용합니다.
 
 참고: 플러그인 설치본은 사용하는 도구에서 cache될 수 있습니다. 최신 스킬이 필요하면 해당 도구의 플러그인 manager에서 refresh, update, reinstall을 실행하세요.
 
@@ -131,6 +131,7 @@ skills/
 .codex-plugin/
 └── plugin.json
 .claude-plugin/
+├── marketplace.json
 └── plugin.json
 .agents/
 └── plugins/marketplace.json

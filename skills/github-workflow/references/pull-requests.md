@@ -19,11 +19,13 @@ Good PRs include:
 
 Check branch and worktree state first using `git-workflow`.
 
-Push a new branch with upstream tracking only when the user asked to push:
+A PR needs a pushed head branch, so a request to create a PR includes pushing the current branch. Push with upstream tracking:
 
 ```bash
 git push -u origin HEAD
 ```
+
+Outside of PR creation, push only when the user asked to push.
 
 Before creating a PR, confirm the intended base branch with the user when the request did not name it.
 

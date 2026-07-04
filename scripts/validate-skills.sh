@@ -32,6 +32,12 @@ while IFS= read -r -d '' skill_dir; do
     continue
   fi
 
+  if grep -q $'\r' "$skill_md"; then
+    echo "CRLF line endings (convert to LF): $skill_md" >&2
+    failed=1
+    continue
+  fi
+
   if ! sed -n '1p' "$skill_md" | grep -qx -- '---'; then
     echo "Missing opening YAML frontmatter marker: $skill_md" >&2
     failed=1
@@ -44,13 +50,26 @@ while IFS= read -r -d '' skill_dir; do
   fi
   frontmatter="$(printf '%s\n' "$after_first_line" | sed -n '/^---$/q;p')"
 
-  if ! printf '%s\n' "$frontmatter" | grep -Eq "^name: \"?$skill_name\"?\$"; then
+  if ! printf '%s\n' "$frontmatter" | grep -Eq "^name: [\"']?$skill_name[\"']?\$"; then
     echo "name field must match folder name ($skill_name): $skill_md" >&2
     failed=1
   fi
 
-  if ! printf '%s\n' "$frontmatter" | grep -Eq '^description: .{20,}$'; then
+  # Single-line description, or a folded/literal block whose first line has 20+ chars.
+  if ! printf '%s\n' "$frontmatter" | grep -Eq '^description: .{20,}$' \
+    && ! printf '%s\n' "$frontmatter" | grep -A1 -E '^description: *[>|][+-]?$' | grep -Eq '^[[:space:]]+.{20,}'; then
     echo "Missing or too-short description field: $skill_md" >&2
+    failed=1
+  fi
+
+  if printf '%s\n' "$frontmatter" | grep -E "^(name|description): [\"']" | grep -Evq "^name: (\"[^\"]*\"|'[^']*')\$|^description: (\"[^\"]*\"|'[^']*')\$"; then
+    echo "Unbalanced quote in name or description: $skill_md" >&2
+    failed=1
+  fi
+
+  stray_lines="$(printf '%s\n' "$frontmatter" | grep -Ev '^[A-Za-z_-]+:([[:space:]]|$)|^[[:space:]]|^$' || true)"
+  if [ -n "$stray_lines" ]; then
+    echo "Frontmatter contains non-YAML lines: $skill_md ($(printf '%s' "$stray_lines" | head -1))" >&2
     failed=1
   fi
 
@@ -59,6 +78,13 @@ while IFS= read -r -d '' skill_dir; do
     echo "Frontmatter must contain only name and description: $skill_md ($(printf '%s' "$extra_keys" | tr '\n' ' '))" >&2
     failed=1
   fi
+
+  while IFS= read -r ref; do
+    if [ -n "$ref" ] && [ ! -f "$skill_dir/$ref" ]; then
+      echo "SKILL.md points at missing file: $skill_dir/$ref" >&2
+      failed=1
+    fi
+  done < <(grep -oE '(references|scripts|assets)/[A-Za-z0-9._/-]+\.[A-Za-z0-9]+' "$skill_md" | sort -u)
 
   # Placeholder scan covers only the files new-skill.sh seeds; references/ may
   # legitimately quote the templates.
