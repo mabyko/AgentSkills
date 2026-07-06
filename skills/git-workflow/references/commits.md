@@ -25,6 +25,31 @@ Common types:
 - `chore`: maintenance
 - `revert`: revert a prior commit
 
+## Commit Body
+
+The title says what changed; the body says why and what to know. Write a body when the
+change is non-trivial:
+
+- The reason is not obvious from the title (a fix, a workaround, a non-obvious tradeoff).
+- Behavior, an interface, or a default changed in a way a reader must know.
+- The approach needs justification, or an obvious alternative was rejected.
+- There is context a future reader (or `git blame`) will need: a bug being fixed, a
+  constraint, a follow-up left undone.
+
+A useful body covers the parts that apply - skip the rest, do not pad:
+
+- Why the change was needed (the problem or trigger).
+- What the change does at a high level, when the diff alone does not make it clear.
+- Consequences: behavior changes, migration steps, breaking changes, known limits.
+- References: issue/ticket IDs, related commits.
+
+Keep it to what the diff cannot show. Do not restate the title or narrate the diff
+line by line.
+
+Skip the body when the title is fully self-explanatory: typo fixes, formatting,
+dependency bumps, renames, and other small mechanical changes. A thin body is worse
+than none - omit it rather than restating the title.
+
 ## Atomic Commits
 
 One commit should contain one logical change. Split unrelated changes even if they were made together.
