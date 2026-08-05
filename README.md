@@ -122,7 +122,12 @@ This keeps Claude Code's repository guidance aligned with canonical instructions
 
 ## Hooks
 
-Installing this repository as a plugin also installs a `PreToolUse` hook. When a Bash call runs a history-affecting Git command (`commit`, `rebase`, `merge`, `reset`, `push`, `tag`, and similar), the hook surfaces the `git-workflow` skill's safety rules once per session: signed commits with DCO sign-off, atomic commits, no `--no-verify` / `--no-gpg-sign`, `--force-with-lease` only, and confirmation before destructive operations.
+Installing this repository as a plugin also installs a `PreToolUse` hook that surfaces the `git-workflow` skill's safety rules before risky Bash-invoked Git commands. It reminds once per session per category, so a `git checkout` early in a session does not consume the reminder a later `git commit` needs:
+
+| Category | Triggers on | Reminds about |
+| --- | --- | --- |
+| History | `commit`, `rebase`, `merge`, `cherry-pick`, `revert`, `tag`, `push`, `reflog`, `am` | Signed commits with DCO sign-off, atomic commits, writing a commit body, no `--no-verify` / `--no-gpg-sign`, `--force-with-lease` only |
+| Discard | `reset`, `clean`, `restore`, `checkout`, `switch`, `stash`, `worktree remove`, `branch -d/-D` | Checking `git status` first, asking before discarding uncommitted work or deleting refs, preferring `stash` and `revert` |
 
 Client behavior differs because the two hosts read different fields:
 

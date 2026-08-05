@@ -122,7 +122,12 @@ Claude Code는 `.claude-plugin/marketplace.json`(marketplace 이름 `mabyko`)으
 
 ## 훅
 
-이 저장소를 플러그인으로 설치하면 `PreToolUse` 훅도 함께 설치됩니다. Bash 호출이 히스토리에 영향을 주는 Git 명령(`commit`, `rebase`, `merge`, `reset`, `push`, `tag` 등)을 실행하면, 훅이 세션당 한 번 `git-workflow` 스킬의 안전 규칙을 알려줍니다. DCO sign-off를 포함한 서명 커밋, atomic commit, `--no-verify` / `--no-gpg-sign` 금지, `--force-with-lease`만 사용, 파괴적 작업 전 확인이 그 내용입니다.
+이 저장소를 플러그인으로 설치하면 `PreToolUse` 훅도 함께 설치됩니다. Bash로 실행되는 위험한 Git 명령 앞에서 `git-workflow` 스킬의 안전 규칙을 알려줍니다. 카테고리별로 세션당 한 번씩 알리므로, 세션 초반의 `git checkout`이 나중에 필요한 `git commit` 알림을 삼키지 않습니다.
+
+| 카테고리 | 트리거 | 알리는 내용 |
+| --- | --- | --- |
+| History | `commit`, `rebase`, `merge`, `cherry-pick`, `revert`, `tag`, `push`, `reflog`, `am` | DCO sign-off를 포함한 서명 커밋, atomic commit, 커밋 본문 작성, `--no-verify` / `--no-gpg-sign` 금지, `--force-with-lease`만 사용 |
+| Discard | `reset`, `clean`, `restore`, `checkout`, `switch`, `stash`, `worktree remove`, `branch -d/-D` | 먼저 `git status` 확인, 커밋 안 된 작업을 버리거나 ref를 지우기 전 확인, `stash`와 `revert` 우선 |
 
 두 호스트가 읽는 필드가 달라서 동작도 다릅니다.
 

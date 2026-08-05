@@ -35,18 +35,26 @@ esac
 
 input=$(cat)
 
+# Two classes, reminded independently. A single marker would let a harmless early
+# `git checkout` swallow the reminder that the later `git commit` needed.
 # ponytail: grep raw JSON instead of jq - false positives only cost a harmless reminder
-printf '%s' "$input" | grep -qE 'git[[:space:]]+(commit|rebase|merge|reset|cherry-pick|revert|tag|stash|push|reflog|branch[[:space:]]+-[dDMm])' || exit 0
+if printf '%s' "$input" | grep -qE 'git[[:space:]]+(commit|rebase|merge|cherry-pick|revert|tag|push|reflog|am)'; then
+  class=history
+  context="Git history-affecting command detected. Follow the git-workflow skill before proceeding: read its SKILL.md if you have not this session. Key rules: signed commits with DCO (git commit -S --signoff; fall back per references/commits.md if signing unavailable), atomic commits, a commit body whenever the reason is not obvious from the title (use git commit -S --signoff -F -), never --no-verify/--no-gpg-sign, --force-with-lease only, ask before rewriting shared history."
+elif printf '%s' "$input" | grep -qE 'git[[:space:]]+(reset|clean|restore|checkout|switch|stash|worktree[[:space:]]+remove|branch[[:space:]]+-[dDMm])'; then
+  class=discard
+  context="Git command that can discard work detected. Follow the git-workflow skill before proceeding: read its SKILL.md if you have not this session. Key rules: run git status --short first, ask before anything that discards uncommitted work or deletes refs (reset --hard, clean, restore, checkout -- <path>, branch/tag deletion), prefer git stash over discarding, and prefer git revert over reset for shared commits."
+else
+  exit 0
+fi
 
 sid=$(printf '%s' "$input" | grep -oE '"session_?[iI]d"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | grep -oE '[A-Za-z0-9-]+"$' | tr -d '"') || sid=""
 # ponytail: no session_id (unknown client) falls back to PPID, so the reminder repeats
 # instead of going silent - a safety hook should fail loud. Both supported clients send one.
-marker="${TMPDIR:-/tmp}/git-workflow-hook-${sid:-pid-$PPID}"
+marker="${TMPDIR:-/tmp}/git-workflow-hook-${class}-${sid:-pid-$PPID}"
 # Marker present = already handled this session (Claude: reminded / Codex: this is the allowed retry).
 [ -f "$marker" ] && exit 0
 touch "$marker"
-
-context="Git history-affecting command detected. Follow the git-workflow skill before proceeding: read its SKILL.md if you have not this session. Key rules: signed commits with DCO (git commit -S --signoff; fall back per references/commits.md if signing unavailable), atomic commits, never --no-verify/--no-gpg-sign, --force-with-lease only, ask before destructive ops (reset --hard, ref deletion, history rewrites)."
 
 if [ "$client" = "claude" ]; then
   # Claude Code: non-blocking context injection.
