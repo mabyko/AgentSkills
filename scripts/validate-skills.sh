@@ -125,6 +125,39 @@ for readme in README.md README.ko.md; do
   done < <(readme_skills_section "$repo_root/$readme" | grep -oE '^- `[a-z0-9-]+`:' | sed -E 's/^- `([a-z0-9-]+)`:$/\1/')
 done
 
+# Plugin manifests must stay in lockstep so both ecosystems see the same release.
+manifest_version() {
+  grep -oE '"version"[[:space:]]*:[[:space:]]*"[^"]*"' "$1" | head -1 | sed -E 's/.*"([^"]*)"$/\1/'
+}
+claude_version="$(manifest_version "$repo_root/.claude-plugin/plugin.json")"
+codex_version="$(manifest_version "$repo_root/.codex-plugin/plugin.json")"
+if [ -z "$claude_version" ] || [ "$claude_version" != "$codex_version" ]; then
+  echo "plugin.json versions must match and be non-empty (claude: '$claude_version', codex: '$codex_version')" >&2
+  failed=1
+fi
+
+# Hook commands run with the session's cwd, not the plugin root, so every command
+# must anchor itself to a plugin-root variable.
+for hooks_file in "$repo_root/hooks/hooks.json" "$repo_root/codex-hooks/hooks.json"; do
+  [ -f "$hooks_file" ] || continue
+  while IFS= read -r hook_command; do
+    case "$hook_command" in
+      *PLUGIN_ROOT*) ;;
+      *)
+        echo "Hook command must use \${CLAUDE_PLUGIN_ROOT}/\${CODEX_PLUGIN_ROOT}: $hooks_file ($hook_command)" >&2
+        failed=1
+        ;;
+    esac
+  done < <(grep -oE '"command"[[:space:]]*:[[:space:]]*"([^"\\]|\\.)*"' "$hooks_file" | sed -E 's/^"command"[[:space:]]*:[[:space:]]*//')
+done
+
+while IFS= read -r hook_script; do
+  if [ ! -x "$hook_script" ]; then
+    echo "Hook script is not executable: $hook_script" >&2
+    failed=1
+  fi
+done < <(find "$repo_root/scripts/hooks" -type f -name '*.sh' 2>/dev/null)
+
 if [ "$failed" -ne 0 ]; then
   exit 1
 fi
