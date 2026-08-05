@@ -58,7 +58,14 @@ Prefer:
 
 ```bash
 git add -p
-git commit -S --signoff -m "fix(activity): preserve route samples on save retry"
+git commit -S --signoff -F - <<'EOF'
+fix(activity): preserve route samples on save retry
+
+A failed save cleared the in-memory sample buffer before the retry ran, so a
+retry after a network error uploaded an activity with a truncated route.
+
+Keep the buffer until the server acknowledges the write.
+EOF
 ```
 
 Avoid:
@@ -67,6 +74,8 @@ Avoid:
 git add .
 git commit -m "updates"
 ```
+
+Reserve the `-m` form for commits whose title genuinely says everything.
 
 ## Cleaning Up Local Commits Before Sharing
 
@@ -219,9 +228,11 @@ git config user.signingkey ~/.ssh/<key>.pub
 
 Do not use `--no-gpg-sign`, `-c commit.gpgsign=false`, or omit `--signoff` unless the user explicitly asks.
 
-## Multi-Line Messages
+## Passing The Message
 
-For bodies with quotes, shell metacharacters, or detailed explanations, use a file or stdin rather than a fragile quoted `-m` body:
+Any commit that carries a body uses stdin or a file. This is the default form, not
+a special case; a repeated `-m` per paragraph is fragile with quotes and shell
+metacharacters, and encourages dropping the body to avoid the quoting.
 
 ```bash
 git commit -S --signoff -F - <<'EOF'
@@ -230,6 +241,9 @@ fix(activity): prevent stale draft resume
 Starting a new activity should not silently reuse stale samples.
 EOF
 ```
+
+Use `-m` only for a title-only commit, and only when the "Commit Body" rules above
+say no body is needed.
 
 ## Hook Failures
 

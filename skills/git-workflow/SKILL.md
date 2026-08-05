@@ -49,7 +49,8 @@ Before any user-requested commit or amend:
 - Use `git add -A` only when the intended commit scope is the whole tree and that scope has been verified.
 - Check staged files or staged diff before committing.
 - Use Conventional Commits unless the repository documents another convention.
-- Verify the exact commit command against Core Rule 5 (`-S --signoff`) before executing.
+- Write a commit body unless the title is fully self-explanatory. Decide this explicitly rather than defaulting to a title-only commit: a fix, a workaround, a rejected alternative, a behavior or interface change, or anything a future `git blame` reader would ask "why" about needs a body. See `references/commits.md` for what belongs in one.
+- Verify the exact commit command against Core Rule 5 (`-S --signoff`) before executing, and against the body decision above. Pass a body with `-F -`, not by cramming it into `-m`.
 
 ## Branch and History Safety Checklist
 
@@ -66,7 +67,7 @@ Before creating, switching, rebasing, merging, force-pushing, or deleting branch
 | --- | --- |
 | `references/branching.md` | Branch flow, trunk-based, GitFlow, release branches, branch naming |
 | `references/linear-history.md` | Fast-forward vs rebase decisions, linear integration, conflict preflight |
-| `references/commits.md` | Conventional Commits, atomic commits, signed commits, DCO sign-off, staging, interactive rebase/autosquash cleanup |
+| `references/commits.md` | Conventional Commits, commit bodies, atomic commits, signed commits, DCO sign-off, staging, interactive rebase/autosquash cleanup |
 | `references/conflicts-recovery.md` | Pull/merge/rebase/cherry-pick/stash conflicts, abort/continue flows, revert/reset/reflog recovery, untracking accidentally committed files |
 | `references/releases.md` | Git tags, forge-neutral release notes, release branch safety |
 | `references/anti-patterns.md` | Common Git mistakes before staging, committing, pushing, or merging |
