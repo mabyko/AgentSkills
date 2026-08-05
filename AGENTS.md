@@ -44,7 +44,24 @@ Optional per-skill resources:
 - Quote all string values in `agents/openai.yaml`.
 - Use kebab-case for skill folder names and plugin names.
 - List every skill in the `## Skills` section of both `README.md` and `README.ko.md`.
-- When skill content changes, bump `version` in `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json` so plugin hosts detect the update.
+- When skill content changes, bump `version` in `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json` so plugin hosts detect the update. Keep both versions identical; use patch bumps for doc-level skill changes.
+
+## Hooks
+
+Hooks are repository-level, not per-skill. They ship only through a plugin install, so they are absent from `npx skills add` installs.
+
+```text
+hooks/hooks.json          Claude Code (auto-discovered at the plugin root)
+codex-hooks/hooks.json    Codex (referenced by .codex-plugin/plugin.json)
+scripts/hooks/*.sh        Shared hook implementations
+```
+
+Rules:
+
+- Anchor every hook command to the plugin root. Both hosts run hook processes with the *session's* working directory, so a relative path like `./scripts/hooks/foo.sh` resolves inside the user's project and fails. Use `"${CLAUDE_PLUGIN_ROOT}"/...` for Claude and `"${CODEX_PLUGIN_ROOT:-$CLAUDE_PLUGIN_ROOT}"/...` for Codex.
+- Keep hook scripts executable (`chmod +x`); the validator enforces this.
+- Write one shared script per behavior and branch on a `--client=` flag rather than duplicating logic per host. Claude honors `additionalContext`; Codex honors only `permissionDecision`/`permissionDecisionReason`.
+- Hooks must exit `0` on paths that should not interrupt the agent.
 
 ## Validation
 

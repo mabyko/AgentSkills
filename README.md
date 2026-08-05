@@ -10,7 +10,7 @@ The canonical skill source is the top-level `skills/` directory. Plugin manifest
 
 - `docs-sync`: Sync documentation with user-facing code changes, or check whether docs define intended code behavior.
 - `flutter-flavors`: Set up or audit Flutter flavors, `flutter_flavorizr` / `flavorizr.yaml`, platform app identities, launch configs, and build-mode boundaries.
-- `git-workflow`: Guide safe local Git workflows such as staging, commits, branches, merges, rebases, tags, and recovery.
+- `git-workflow`: Guide safe local Git workflows such as staging, commits, branches, merges, rebases, tags, and recovery. Defaults to signed commits with DCO sign-off (`git commit -S --signoff`) and falls back explicitly when signing is unavailable.
 - `github-workflow`: Guide GitHub collaboration workflows such as pull requests, review threads, Actions checks, releases, and `gh` CLI usage.
 - `github-upstream-sync`: Create or review GitHub Actions workflows that sync fork repositories from upstream.
 
@@ -76,6 +76,8 @@ npx skills@latest add mabyko/AgentSkills --global
 
 The `skills` CLI discovers this repository's top-level `skills/` directory and installs each selected skill into the target agent's expected location.
 
+Note: the `skills` CLI installs skills only. The repository's [hooks](#hooks) live outside `skills/` and ship through a plugin install instead. Use one of the plugin paths below if you want them.
+
 ## Codex Plugin
 
 Use this path when you want Codex to install the repository as a plugin from a marketplace.
@@ -118,6 +120,17 @@ Note: Plugin installs may be cached by the host tool. If you need the latest ski
 
 This keeps Claude Code's repository guidance aligned with canonical instructions in `AGENTS.md`.
 
+## Hooks
+
+Installing this repository as a plugin also installs a `PreToolUse` hook. When a Bash call runs a history-affecting Git command (`commit`, `rebase`, `merge`, `reset`, `push`, `tag`, and similar), the hook surfaces the `git-workflow` skill's safety rules once per session: signed commits with DCO sign-off, atomic commits, no `--no-verify` / `--no-gpg-sign`, `--force-with-lease` only, and confirmation before destructive operations.
+
+Client behavior differs because the two hosts read different fields:
+
+- Claude Code receives a non-blocking `additionalContext` hint.
+- Codex denies the first matching command so the reason is displayed, then allows the retry.
+
+Hooks are repository-level rather than per-skill, so they are installed only through the Codex or Claude Code plugin paths above, not through `npx skills add`.
+
 ## Repository Layout
 
 ```text
@@ -135,11 +148,18 @@ skills/
 └── plugin.json
 .agents/
 └── plugins/marketplace.json
+.github/
+└── workflows/validate.yml
+hooks/
+└── hooks.json
+codex-hooks/
+└── hooks.json
 templates/
 └── skill/
 scripts/
 ├── new-skill.sh
-└── validate-skills.sh
+├── validate-skills.sh
+└── hooks/
 AGENTS.md
 CLAUDE.md
 ```

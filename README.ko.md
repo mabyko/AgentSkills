@@ -10,7 +10,7 @@ Codex, Claude Code, OpenCode, 그리고 open agent skills 형식을 지원하는
 
 - `docs-sync`: 사용자에게 보이는 코드 변경에 맞춰 문서를 동기화하거나, 문서가 의도된 코드 동작을 정의하는지 확인합니다.
 - `flutter-flavors`: Flutter flavor, `flutter_flavorizr` / `flavorizr.yaml`, 플랫폼 앱 identity, launch config, build mode 경계를 설정하거나 점검합니다.
-- `git-workflow`: staging, commit, branch, merge, rebase, tag, recovery 같은 안전한 로컬 Git workflow를 안내합니다.
+- `git-workflow`: staging, commit, branch, merge, rebase, tag, recovery 같은 안전한 로컬 Git workflow를 안내합니다. 기본값으로 DCO sign-off를 포함한 서명 커밋(`git commit -S --signoff`)을 사용하며, 서명이 불가능하면 명시적인 fallback을 따릅니다.
 - `github-workflow`: pull request, review thread, Actions check, release, `gh` CLI 사용 같은 GitHub 협업 workflow를 안내합니다.
 - `github-upstream-sync`: fork 저장소를 upstream과 동기화하는 GitHub Actions workflow를 만들거나 검토합니다.
 
@@ -76,6 +76,8 @@ npx skills@latest add mabyko/AgentSkills --global
 
 `skills` CLI는 이 저장소의 최상위 `skills/` 디렉터리를 찾아 선택한 스킬을 각 에이전트가 기대하는 위치에 설치합니다.
 
+참고: `skills` CLI는 스킬만 설치합니다. 이 저장소의 [훅](#훅)은 `skills/` 바깥에 있어서 플러그인 설치 경로로만 배포됩니다. 훅이 필요하면 아래 플러그인 설치 방법을 사용하세요.
+
 ## Codex 플러그인
 
 Codex marketplace에서 이 저장소를 플러그인으로 설치하려면 이 방법을 사용하세요.
@@ -118,6 +120,17 @@ Claude Code는 `.claude-plugin/marketplace.json`(marketplace 이름 `mabyko`)으
 
 이를 통해 Claude Code의 저장소 지침이 canonical instruction인 `AGENTS.md`와 맞춰집니다.
 
+## 훅
+
+이 저장소를 플러그인으로 설치하면 `PreToolUse` 훅도 함께 설치됩니다. Bash 호출이 히스토리에 영향을 주는 Git 명령(`commit`, `rebase`, `merge`, `reset`, `push`, `tag` 등)을 실행하면, 훅이 세션당 한 번 `git-workflow` 스킬의 안전 규칙을 알려줍니다. DCO sign-off를 포함한 서명 커밋, atomic commit, `--no-verify` / `--no-gpg-sign` 금지, `--force-with-lease`만 사용, 파괴적 작업 전 확인이 그 내용입니다.
+
+두 호스트가 읽는 필드가 달라서 동작도 다릅니다.
+
+- Claude Code는 실행을 막지 않는 `additionalContext` 힌트를 받습니다.
+- Codex는 첫 매칭 명령을 한 번 deny해서 이유를 보여주고, 재시도는 허용합니다.
+
+훅은 스킬 단위가 아니라 저장소 단위라서, `npx skills add`가 아니라 위의 Codex/Claude Code 플러그인 설치 경로로만 설치됩니다.
+
 ## 저장소 구조
 
 ```text
@@ -135,11 +148,18 @@ skills/
 └── plugin.json
 .agents/
 └── plugins/marketplace.json
+.github/
+└── workflows/validate.yml
+hooks/
+└── hooks.json
+codex-hooks/
+└── hooks.json
 templates/
 └── skill/
 scripts/
 ├── new-skill.sh
-└── validate-skills.sh
+├── validate-skills.sh
+└── hooks/
 AGENTS.md
 CLAUDE.md
 ```
