@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "./scripts/hooks/git-workflow-trigger.sh --client=codex"
+            "command": "\"${CODEX_PLUGIN_ROOT:-$CLAUDE_PLUGIN_ROOT}\"/scripts/hooks/git-workflow-trigger.sh --client=codex"
           }
         ]
       }

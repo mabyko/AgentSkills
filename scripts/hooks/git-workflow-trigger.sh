@@ -39,7 +39,9 @@ input=$(cat)
 printf '%s' "$input" | grep -qE 'git[[:space:]]+(commit|rebase|merge|reset|cherry-pick|revert|tag|stash|push|reflog|branch[[:space:]]+-[dDMm])' || exit 0
 
 sid=$(printf '%s' "$input" | grep -oE '"session_?[iI]d"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | grep -oE '[A-Za-z0-9-]+"$' | tr -d '"') || sid=""
-marker="${TMPDIR:-/tmp}/git-workflow-hook-${sid:-nosession}"
+# ponytail: no session_id (unknown client) falls back to PPID, so the reminder repeats
+# instead of going silent - a safety hook should fail loud. Both supported clients send one.
+marker="${TMPDIR:-/tmp}/git-workflow-hook-${sid:-pid-$PPID}"
 # Marker present = already handled this session (Claude: reminded / Codex: this is the allowed retry).
 [ -f "$marker" ] && exit 0
 touch "$marker"
