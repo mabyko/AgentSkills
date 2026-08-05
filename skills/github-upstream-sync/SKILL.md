@@ -21,11 +21,20 @@ Use this skill when the user wants a GitHub Actions workflow that keeps a fork b
 1. Convert the requested schedule to GitHub Actions cron in UTC. If the user writes `4:00` or `4시 25분` without a timezone, use the session/environment timezone. If no timezone is available, ask for it.
 2. If target branch and upstream branch are the same, prefer `gh repo sync "${{ github.repository }}" --branch <branch>`.
 3. Add `--source OWNER/REPO` to `gh repo sync` only when the user specifies the upstream repo or the fork parent should not be trusted.
-4. If target branch and upstream branch differ, use `aormsby/Fork-Sync-With-Upstream-action` with separate `target_sync_branch` and `upstream_sync_branch`. Check the action's latest release tag before pinning; the template's pinned version may be stale.
-5. Use `GH_TOKEN: ${{ secrets.GH_TOKEN }}` by default. The secret must be a PAT that can write contents and workflow files in the target fork. This avoids failures when upstream adds or modifies `.github/workflows/*`.
-6. Use `permissions: contents: read` because the write authority comes from the PAT secret, not from `github.token`.
-7. Do not use `permissions.actions: write` to solve workflow-file sync failures; that permission controls Actions API operations, not writing workflow YAML files.
-8. Keep generated workflow YAML short. Do not add comments unless the user asks for annotated output.
+4. If target branch and upstream branch differ, use `aormsby/Fork-Sync-With-Upstream-action` with separate `target_sync_branch` and `upstream_sync_branch`. Check the action's latest release before pinning; the template's pinned version may be stale.
+5. Pin third-party actions to a full commit SHA, not a tag. This workflow hands the action a PAT that can write repository contents and workflow files, and Git tags are mutable, so a retagged release would silently gain that access. Resolve the SHA for the chosen release and add the version as a trailing comment.
+
+```bash
+gh api repos/aormsby/Fork-Sync-With-Upstream-action/releases/latest --jq '.tag_name'
+gh api repos/aormsby/Fork-Sync-With-Upstream-action/commits/<tag> --jq '.sha'
+```
+
+First-party `actions/*` steps may stay on major-version tags.
+
+6. Use `GH_TOKEN: ${{ secrets.GH_TOKEN }}` by default. The secret must be a PAT that can write contents and workflow files in the target fork. This avoids failures when upstream adds or modifies `.github/workflows/*`.
+7. Use `permissions: contents: read` because the write authority comes from the PAT secret, not from `github.token`.
+8. Do not use `permissions.actions: write` to solve workflow-file sync failures; that permission controls Actions API operations, not writing workflow YAML files.
+9. Keep generated workflow YAML short. Apart from the action pin comment, do not add comments unless the user asks for annotated output.
 
 ## Templates
 
@@ -86,7 +95,7 @@ jobs:
 
       - name: Sync upstream changes
         id: sync
-        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.3
+        uses: aormsby/Fork-Sync-With-Upstream-action@<full-commit-sha> # <tag>
         with:
           target_sync_branch: <target-branch>
           target_repo_token: ${{ secrets.GH_TOKEN }}
@@ -105,7 +114,7 @@ jobs:
 
 ## Output
 
-Return the workflow YAML and a brief note that `GH_TOKEN` must be a PAT with contents write and workflow-file permission for the target fork.
+Return the workflow YAML and a brief note that `GH_TOKEN` must be a PAT with contents write and workflow-file permission for the target fork. When the workflow uses a third-party action, report the resolved release tag and the commit SHA it was pinned to.
 
 ## Example Prompts
 

@@ -1,6 +1,6 @@
 # Mobile Flavor Identities (Canonical and Personal)
 
-Use this reference for Android/iOS flavor identities. Replace example values with project-specific IDs and names from the user's docs or native project files. Identifier validation and slug-derivation rules live in `SKILL.md`; do not restate or override them here.
+Use this reference for Android/iOS flavor identities. Replace example values with project-specific IDs and names from the user's docs or native project files. Identifier validation and slug-derivation rules live in `identifier-rules.md`; do not restate or override them here.
 
 Two identity sets share the same structure:
 
@@ -38,7 +38,7 @@ flutter build ipa --flavor prod --release
 
 Use Kotlin DSL in `android/app/build.gradle.kts`. Configure an `environment` flavor dimension and product flavors `dev`, `test`, `beta`, `prod`.
 
-Android `applicationId` policy: at least two dot-separated segments, each segment starts with a lowercase letter, and segment characters are lowercase letters, digits, or `_`. Do not use `-` or uppercase in Android IDs. This is stricter than the raw Android build syntax on purpose; Java/Kotlin package naming, Play operations, and practical team consistency are cleaner with lowercase-only IDs.
+Apply the Android `applicationId` policy from `identifier-rules.md`.
 
 Example base values (canonical; for personal, append `.personal` to the IDs and `(Personal)` to the label):
 
@@ -70,7 +70,7 @@ Represent flavor identity with schemes/build configurations that set:
 - `PRODUCT_BUNDLE_IDENTIFIER`
 - `APP_DISPLAY_NAME`
 
-Apple bundle identifiers allow letters, digits, `-`, and `.` and are case-insensitive. Do not use `_` in Apple bundle IDs.
+Apply the Apple bundle identifier policy from `identifier-rules.md`.
 
 `ios/Runner/Info.plist` should reference build settings:
 

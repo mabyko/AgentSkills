@@ -15,11 +15,7 @@ Flutter flavor/environment and Flutter build mode are separate axes.
 - Build mode (`debug`, `profile`, `release`) defines how the Flutter runtime is compiled.
 - Do not use `profile` as a synonym for `beta`.
 - Do not use `release` as a synonym for `prod`.
-- Do not apply example IDs (`com.company.appname`, `Example App`) literally. Resolve real IDs from user input first, then project docs/native files; if unavailable or conflicting, ask before editing.
-- Validate identifiers per platform before editing. Android `applicationId` segments must start with a lowercase letter and use only lowercase letters, digits, or `_`; do not use uppercase in Android IDs. Apple bundle identifiers use letters, digits, `-`, and `.` and are case-insensitive. Do not blindly copy one platform's ID to another when `-`, `_`, case, or segment rules differ.
-- If deriving an identifier slug from an app display name, propose the normalized lowercase result and ask before editing unless the user already approved that exact ID. Example: `Test APP` can become Android segment `test_app` and Apple segment `test-app`, but prefer existing explicit IDs over derived slugs.
-- When deriving slugs, replace only explicit separators such as spaces, hyphens, and underscores. Do not infer word boundaries from casing; for example, propose `TestAPP` as `testapp` and ask before applying it.
-- Preserve existing explicit Apple bundle identifier casing. If an Apple bundle ID contains uppercase characters while Android IDs are lowercase, ask before changing Apple casing for cross-platform consistency.
+- Validate every app ID against `references/identifier-rules.md` before editing. That reference owns platform character rules, cross-platform ID differences, slug derivation from display names, and the ban on applying example IDs literally.
 - When Flavorizr config and native platform files both exist, treat them as separate sources until reconciled. Before applying canonical or personal changes, identify which one is source of truth and update the other to match; if they conflict, ask before editing.
 - Preserve unknown or extra flavors unless the user explicitly asks to remove or rename them. If applying canonical or personal policy, ask whether extra flavors should be updated, mapped, or left untouched.
 - If multiple flavor meanings coexist, such as environment flavors (`dev`, `test`, `beta`, `prod`) plus custom flavors (`custom_flavor_a`, `custom_flavor_b`), ask whether to flatten combinations or keep them independent. When kept independent, add VS Code debug launch configs for custom-only flavors unless the user requests profile/release variants.
@@ -28,6 +24,7 @@ Flutter flavor/environment and Flutter build mode are separate axes.
 
 Current bundled references cover generic Android/iOS mobile setup:
 
+- Read `references/identifier-rules.md` before writing any app ID, bundle identifier, or derived slug.
 - Read `references/mobile-identities.md` for canonical team identities and personal Apple Developer/local device testing identities.
 - Read `references/flutter-flavorizr.md` when a project already uses `flutter_flavorizr`, has `flavorizr.yaml`, or the user asks to generate/manage Flutter Flavorizr configuration.
 - Read `references/example-prompts.md` only when the user asks for example prompts or usage examples.

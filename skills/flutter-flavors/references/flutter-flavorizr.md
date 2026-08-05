@@ -38,8 +38,7 @@ Keep the existing project's flavor names (`dev`, `test`, `beta`, `prod`, or othe
 
 ## Safety
 
-- Validate IDs using this skill's platform rules before writing `flavorizr.yaml`.
-- Do not write example IDs literally.
+- Validate IDs against `identifier-rules.md` before writing `flavorizr.yaml`, including the rule against writing example IDs literally.
 - When `flavorizr.yaml` and native platform files both exist, do not assume either one is source of truth. Reconcile canonical/personal identity policy first; if they conflict, ask which side should win before editing.
 - Preserve unknown or extra flavors in `flavorizr.yaml` unless the user explicitly asks to remove or rename them. If expected flavors are missing, ask whether to add them, map existing flavors to the expected policy, or leave the current flavor set unchanged.
 - If environment flavors and custom flavors coexist, do not auto-generate the full cross-product. Ask whether to use flattened names such as `custom_flavor_a_beta` or keep independent flavors. For independent custom flavors, VS Code launch configs should default to `flutterMode: "debug"` unless the user asks for profile/release entries.
