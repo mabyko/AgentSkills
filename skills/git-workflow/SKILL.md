@@ -9,7 +9,7 @@ Use for Git operations that affect history, branches, tags, commits, or conflict
 
 ## Core Rules
 
-1. Inspect repository-specific Git guidance first: `AGENTS.md`, `docs/git-workflow.md`, `CONTRIBUTING.md`, `README.md`, release docs.
+1. Inspect repository-specific Git guidance first: `AGENTS.md`, `CLAUDE.md`, `docs/git-workflow.md`, `CONTRIBUTING.md`, `README.md`, release docs.
 2. Never claim a check passed unless you ran it and can report the command.
 3. Avoid direct pushes to protected or shared base branches unless repo guidance and the user explicitly allow it.
 4. Keep commits atomic: one logical change per commit, no final `WIP`, `fixup`, or mixed-change commits.
@@ -50,6 +50,7 @@ Before any user-requested commit or amend:
 - Check staged files or staged diff before committing.
 - Use Conventional Commits unless the repository documents another convention.
 - Write a commit body unless the title is fully self-explanatory. Decide this explicitly rather than defaulting to a title-only commit: a fix, a workaround, a rejected alternative, a behavior or interface change, or anything a future `git blame` reader would ask "why" about needs a body. See `references/commits.md` for what belongs in one.
+- Resolve the subject-description language, and the body language separately when a body is needed, using `references/commits.md`.
 - Verify the exact commit command against Core Rule 5 (`-S --signoff`) before executing, and against the body decision above. Pass a body with `-F -`, not by cramming it into `-m`.
 
 ## Branch and History Safety Checklist
@@ -67,7 +68,7 @@ Before creating, switching, rebasing, merging, force-pushing, or deleting branch
 | --- | --- |
 | `references/branching.md` | Branch flow, trunk-based, GitFlow, release branches, branch naming |
 | `references/linear-history.md` | Fast-forward vs rebase decisions, linear integration, conflict preflight |
-| `references/commits.md` | Conventional Commits, commit bodies, atomic commits, signed commits, DCO sign-off, staging, interactive rebase/autosquash cleanup |
+| `references/commits.md` | Conventional Commits, commit bodies, message language, atomic commits, signed commits, DCO sign-off, staging, interactive rebase/autosquash cleanup |
 | `references/conflicts-recovery.md` | Pull/merge/rebase/cherry-pick/stash conflicts, abort/continue flows, revert/reset/reflog recovery, untracking accidentally committed files |
 | `references/releases.md` | Git tags, forge-neutral release notes, release branch safety |
 | `references/anti-patterns.md` | Common Git mistakes before staging, committing, pushing, or merging |

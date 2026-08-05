@@ -25,6 +25,65 @@ Common types:
 - `chore`: maintenance
 - `revert`: revert a prior commit
 
+## Message Language
+
+Resolve the subject description and, when a body is needed, the body independently. For
+each required part, follow the first source that explicitly specifies that part:
+
+1. The user's explicit instruction.
+2. An explicit rule in `AGENTS.md`, `CLAUDE.md`, `CONTRIBUTING.md`, or `README.md`. If
+   two of them disagree, ask rather than picking one.
+3. Usable human-authored history.
+
+The language a guidance document is written in is not evidence about commit-message
+language. A rule that specifies only the subject does not decide the body; continue
+through the list for the body.
+
+When history is needed, pin `HEAD` once so the subject and body inspect the same history
+reachable from it, including ancestor commits.
+
+```bash
+git rev-parse --verify --quiet HEAD
+```
+
+Use the commit ID it prints for both `git log` commands below. If `HEAD` does not resolve,
+leave the parts that still need history unresolved and let the combined question below
+cover them; parts already decided by an earlier source stay decided. A `git log` failure
+on that commit ID is an error worth reporting.
+
+The `git log` examples below are written for a POSIX shell; adapt the quoting to the
+shell in use.
+
+```bash
+git --no-pager log -30 --no-merges --format='%an <%ae>%x09%s' <commit-id>
+```
+
+Exclude bot and automation commits. For Conventional Commit subjects, remove the
+optional prefix (`type:`, `type(scope):`, and their `!` variants) and judge only the
+description.
+
+For the body, inspect the first five usable prose bodies within the same 30 commits:
+
+```bash
+git --no-pager log -30 --no-merges \
+  --format='commit %H%nAuthor: %an <%ae>%nBody:%n%b%n' <commit-id>
+```
+
+Ignore trailers when deciding whether a prose body is present and when judging its
+language. Do not infer the body language from the subject. Treat mixed-language or
+identifier-only text that cannot be assigned one language as unusable. For each part,
+a language is dominant only when it appears in more than half of the usable sample, and
+fewer than two usable samples never decides a part. Ask one combined question for every
+part left unresolved.
+
+Cache the resolved subject and body languages separately for the session, per
+repository. Re-resolve after changing branches or applicable guidance. A later user
+instruction replaces the applicable cached value.
+
+Conventional Commit types and scopes, and trailer keys, stay in their standard ASCII
+English form: `feat(auth): 토큰 만료 처리 추가`. Preserve trailer values such as names,
+email addresses, and references unchanged.
+
 ## Commit Body
 
 The title says what changed; the body says why and what to know. Write a body when the
