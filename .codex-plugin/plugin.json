@@ -1,8 +1,29 @@
 {
   "name": "agent-skills",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Reusable agent skills for Codex workflows.",
+  "author": {
+    "name": "mabyko",
+    "url": "https://github.com/mabyko"
+  },
+  "homepage": "https://github.com/mabyko/AgentSkills",
+  "repository": "https://github.com/mabyko/AgentSkills",
   "license": "MIT",
+  "keywords": ["git", "github", "documentation", "flutter", "workflow"],
   "skills": "./skills/",
-  "hooks": "./codex-hooks/hooks.json"
+  "hooks": "./codex-hooks/hooks.json",
+  "interface": {
+    "displayName": "Agent Skills",
+    "shortDescription": "Git, GitHub, docs, and Flutter flavor workflows.",
+    "longDescription": "Reusable agent skills for safe local Git workflows, GitHub pull requests and releases, documentation sync, Flutter flavor setup, and fork upstream sync. Includes a PreToolUse hook that surfaces Git safety rules before history-affecting commands.",
+    "developerName": "mabyko",
+    "category": "Productivity",
+    "brandColor": "#2563EB",
+    "websiteURL": "https://github.com/mabyko/AgentSkills",
+    "defaultPrompt": [
+      "Help me split these changes into safe, atomic commits.",
+      "Review this PR's checks and merge readiness.",
+      "Check whether the docs need updates for this diff."
+    ]
+  }
 }

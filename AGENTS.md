@@ -70,3 +70,5 @@ Run this before committing skill changes:
 ```bash
 scripts/validate-skills.sh
 ```
+
+`.github/workflows/validate.yml` runs the same script on every push and pull request, so a skipped local run fails in CI instead. Beyond skill structure it also checks that both `plugin.json` versions match, that hook commands anchor to a plugin-root variable, and that hook scripts stay executable.

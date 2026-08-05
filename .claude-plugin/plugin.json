@@ -1,6 +1,13 @@
 {
   "name": "agent-skills",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Reusable agent skills for Claude Code.",
-  "license": "MIT"
+  "author": {
+    "name": "mabyko",
+    "url": "https://github.com/mabyko"
+  },
+  "homepage": "https://github.com/mabyko/AgentSkills",
+  "repository": "https://github.com/mabyko/AgentSkills",
+  "license": "MIT",
+  "keywords": ["git", "github", "documentation", "flutter", "workflow"]
 }
