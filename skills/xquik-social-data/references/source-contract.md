@@ -5,7 +5,10 @@ Use the current public contract instead of guessing endpoint or tool names.
 ## Canonical Sources
 
 - Documentation: https://docs.xquik.com
-- API specification: https://xquik.com/openapi.yaml
+- API specification (JSON): https://xquik.com/openapi.json
+- API specification (YAML): https://docs.xquik.com/openapi.yaml
+- MCP discovery: https://xquik.com/.well-known/mcp.json
+- SDK guides: https://docs.xquik.com/sdks
 - Agent skill: https://github.com/Xquik-dev/x-twitter-scraper
 
 The REST base URL is `https://xquik.com/api/v1`. Common public evidence routes
@@ -20,8 +23,10 @@ Use the credential mechanism already configured by the user. Keep API keys in
 the runtime environment or secret store. Never put credentials in prompts,
 query strings, source packets, committed files, or tool arguments.
 
-If credentials are unavailable, use eligible public or prepaid reads, a
-user-provided export, or return the exact collection request needed.
+Use prepaid reads only with a usable `paid_reads` credential the user approved.
+Get explicit confirmation before creating or topping up a guest wallet, or
+before starting a direct MPP payment. Otherwise, use eligible free public reads,
+a user-provided export, or return the exact collection request needed.
 
 ## Pagination
 

@@ -10,15 +10,16 @@ normalization, and interpretation separate so every conclusion remains traceable
 
 ## Inputs
 
-Confirm these before collecting data:
+Confirm these required inputs before collecting data:
 
 - Research question or decision
 - Handles, post URLs, keywords, lists, or communities
-- Time window and language or geography filters
+- Time window
 - Required fields and output format
 - Public-only or approved account-backed scope
 
-If 2 or more are missing, return a collection plan instead of inventing results.
+Language and geography filters are optional. If any required input is missing,
+return a collection plan instead of inventing results.
 
 ## Workflow
 
