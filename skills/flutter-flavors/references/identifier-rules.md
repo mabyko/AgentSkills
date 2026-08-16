@@ -23,6 +23,8 @@ Bundle identifier policy:
 
 Preserve existing explicit Apple bundle identifier casing. If an Apple bundle ID contains uppercase characters while Android IDs are lowercase, ask before changing Apple casing for cross-platform consistency.
 
+Registration safety — Apple App ID global uniqueness, automatic-signing registration, personal-team hazards — is owned by the `apple-bundle-id-guardrails` skill; consult it before entering any Apple bundle ID into a signing configuration.
+
 ## Cross-Platform
 
 Do not blindly copy one platform's ID to another when `-`, `_`, case, or segment rules differ. The same logical app usually needs `com.acme.test_app` on Android and `com.acme.test-app` on Apple platforms.

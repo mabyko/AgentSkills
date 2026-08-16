@@ -1,6 +1,6 @@
 {
   "name": "agent-skills",
-  "version": "0.1.9",
+  "version": "0.2.0",
   "description": "Reusable agent skills for Codex workflows.",
   "author": {
     "name": "mabyko",
@@ -9,13 +9,13 @@
   "homepage": "https://github.com/mabyko/AgentSkills",
   "repository": "https://github.com/mabyko/AgentSkills",
   "license": "MIT",
-  "keywords": ["git", "github", "documentation", "flutter", "workflow"],
+  "keywords": ["git", "github", "documentation", "flutter", "xcode", "workflow"],
   "skills": "./skills/",
   "hooks": "./codex-hooks/hooks.json",
   "interface": {
     "displayName": "Agent Skills",
-    "shortDescription": "Git, GitHub, docs, and Flutter flavor workflows.",
-    "longDescription": "Reusable agent skills for safe local Git workflows, GitHub pull requests and releases, documentation sync, Flutter flavor setup, and fork upstream sync. Includes a PreToolUse hook that surfaces Git safety rules before history-affecting commands.",
+    "shortDescription": "Git, GitHub, docs, Flutter flavor, and Apple identity workflows.",
+    "longDescription": "Reusable agent skills for safe local Git workflows, GitHub pull requests and releases, documentation sync, Flutter flavor setup, Apple bundle ID guardrails, and fork upstream sync. Includes a PreToolUse hook that surfaces Git safety rules before history-affecting commands.",
     "developerName": "mabyko",
     "category": "Productivity",
     "brandColor": "#2563EB",

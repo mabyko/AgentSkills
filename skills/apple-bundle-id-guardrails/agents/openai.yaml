@@ -1,0 +1,7 @@
+interface:
+  display_name: "Apple Bundle ID Guardrails"
+  short_description: "Keep canonical Apple App IDs out of signing until the org team owns them."
+  brand_color: "#3B82F6"
+  default_prompt: "Use $apple-bundle-id-guardrails to set up or audit the xcconfig bundle ID guardrail so automatic signing never registers the canonical App ID to a personal team."
+policy:
+  allow_implicit_invocation: true
