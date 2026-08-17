@@ -14,6 +14,7 @@ The canonical skill source is the top-level `skills/` directory. Plugin manifest
 - `git-workflow`: Guide safe local Git workflows such as staging, commits, branches, merges, rebases, tags, and recovery. Defaults to signed commits with DCO sign-off (`git commit -S --signoff`) and falls back explicitly when signing is unavailable.
 - `github-workflow`: Guide GitHub collaboration workflows such as pull requests, review threads, Actions checks, releases, and `gh` CLI usage.
 - `github-upstream-sync`: Create or review GitHub Actions workflows that sync fork repositories from upstream.
+- `xquik-social-data`: Collect, normalize, and verify source-backed X/Twitter data before analysis.
 
 ## Usage Examples
 
@@ -23,6 +24,7 @@ The canonical skill source is the top-level `skills/` directory. Plugin manifest
 - `$git-workflow Help me split these changes into safe commits.`
 - `$github-workflow Review this PR's checks and merge readiness.`
 - `$github-upstream-sync Create a workflow that syncs my repository's main branch from upstream main every day at 4:00.`
+- `$xquik-social-data Build an evidence table from this X/Twitter export.`
 
 ## Quick Install
 

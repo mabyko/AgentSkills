@@ -14,6 +14,7 @@ Codex, Claude Code, OpenCode, 그리고 open agent skills 형식을 지원하는
 - `git-workflow`: staging, commit, branch, merge, rebase, tag, recovery 같은 안전한 로컬 Git workflow를 안내합니다. 기본값으로 DCO sign-off를 포함한 서명 커밋(`git commit -S --signoff`)을 사용하며, 서명이 불가능하면 명시적인 fallback을 따릅니다.
 - `github-workflow`: pull request, review thread, Actions check, release, `gh` CLI 사용 같은 GitHub 협업 workflow를 안내합니다.
 - `github-upstream-sync`: fork 저장소를 upstream과 동기화하는 GitHub Actions workflow를 만들거나 검토합니다.
+- `xquik-social-data`: 분석 전에 출처가 확인된 X/Twitter 데이터를 수집, 정규화, 검증합니다.
 
 ## 사용 예시
 
@@ -23,6 +24,7 @@ Codex, Claude Code, OpenCode, 그리고 open agent skills 형식을 지원하는
 - `$git-workflow 지금 변경사항을 안전한 commit 단위로 나누는 걸 도와줘.`
 - `$github-workflow 이 PR의 check와 merge 가능 상태를 검토해줘.`
 - `$github-upstream-sync 내 저장소의 main 브랜치를 upstream main과 매일 4시에 동기화하는 workflow 만들어줘.`
+- `$xquik-social-data 이 X/Twitter export로 근거 표를 만들어줘.`
 
 ## 빠른 설치
 

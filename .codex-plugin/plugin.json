@@ -1,6 +1,6 @@
 {
   "name": "agent-skills",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Reusable agent skills for Codex workflows.",
   "author": {
     "name": "mabyko",
@@ -9,13 +9,13 @@
   "homepage": "https://github.com/mabyko/AgentSkills",
   "repository": "https://github.com/mabyko/AgentSkills",
   "license": "MIT",
-  "keywords": ["git", "github", "documentation", "flutter", "xcode", "workflow"],
+  "keywords": ["git", "github", "documentation", "flutter", "xcode", "workflow", "twitter", "twitter-api", "social-data"],
   "skills": "./skills/",
   "hooks": "./codex-hooks/hooks.json",
   "interface": {
     "displayName": "Agent Skills",
-    "shortDescription": "Git, GitHub, docs, Flutter flavor, and Apple identity workflows.",
-    "longDescription": "Reusable agent skills for safe local Git workflows, GitHub pull requests and releases, documentation sync, Flutter flavor setup, Apple bundle ID guardrails, and fork upstream sync. Includes a PreToolUse hook that surfaces Git safety rules before history-affecting commands.",
+    "shortDescription": "Git, GitHub, docs, Flutter, Apple identity, and X research workflows.",
+    "longDescription": "Reusable agent skills for safe local Git workflows, GitHub pull requests and releases, documentation sync, Flutter flavor setup, Apple bundle ID guardrails, source-backed X/Twitter research, and fork upstream sync. Includes a PreToolUse hook that surfaces Git safety rules before history-affecting commands.",
     "developerName": "mabyko",
     "category": "Productivity",
     "brandColor": "#2563EB",
@@ -23,7 +23,8 @@
     "defaultPrompt": [
       "Help me split these changes into safe, atomic commits.",
       "Review this PR's checks and merge readiness.",
-      "Check whether the docs need updates for this diff."
+      "Check whether the docs need updates for this diff.",
+      "Build a source-backed evidence table from this X/Twitter research scope."
     ]
   }
 }
