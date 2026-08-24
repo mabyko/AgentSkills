@@ -57,7 +57,7 @@ Harvesting the team ID (current Xcode's Accounts pane does not display it):
 
 ## Verification
 
-- `git grep -n "com\.acme\."` (the real org namespace) over tracked files → zero hits.
+- `git grep -n "com\.acme\." -- '*.pbxproj' '*.xcconfig' '*.plist' '*.entitlements'` (the real org namespace, build configuration only) → zero hits. Prose documentation is exempt: a macOS app's uninstall instructions need the shipping ID for `tccutil` and the preferences path to work, and Xcode reads no markdown.
 - `git grep -n "DEVELOPMENT_TEAM"` over tracked files → zero hits.
 - `git check-ignore Config/Local.xcconfig` → ignored.
 - `xcodebuild -showBuildSettings | grep PRODUCT_BUNDLE_IDENTIFIER` → sacrificial ID without `Local.xcconfig`, personal ID with it.
@@ -75,6 +75,17 @@ ln -s <main-checkout>/Config/Local.xcconfig Config/Local.xcconfig
 ```
 
 Keep the original in the main checkout and symlink it from each worktree; a worktree setup hook can automate the link. xcconfig `#include?` expands neither `~` nor build variables, so a shared per-user path cannot be included directly; the symlink or copy is the practical route.
+
+## macOS Permissions (TCC)
+
+Apps requesting Accessibility, Input Monitoring, or Screen Recording hold one TCC grant per bundle ID, keyed to the ID plus the code signature. Suffixed personal and `.dev` IDs therefore carry their own grants, isolated from an installed release's.
+
+- Reproduce first-run behaviour by resetting the grant: `tccutil reset Accessibility com.acme.myapp.alice.dev`. Service names are the TCC key minus the `kTCCService` prefix — `Accessibility`, `ListenEvent` (Input Monitoring), `PostEvent`, `ScreenCapture`.
+- **`tccutil reset` resolves the bundle ID through LaunchServices and fails with `No such bundle identifier` (OSStatus -10814) when no installed app matches.** Reset before deleting an app, never after. A grant left behind by an already-deleted app is stranded: System Settings hides rows it cannot resolve, so nothing reaches it until something with that ID is installed again. Uninstall instructions that delete the app first are broken; order them permission → app → preferences.
+- Deleting an app never revokes its grant. Anything later installed under the same ID inherits it without prompting — the reason a public repo's sacrificial ID matters even for macOS-only projects that skip App ID registration.
+- `UserDefaults` splits along the same line: `~/Library/Preferences/<bundle-id>.plist`, or under `~/Library/Containers/<bundle-id>/` when sandboxed. Suffixed IDs keep development settings out of the release's domain.
+- Changing a bundle ID orphans both the grant and the preferences domain, so settle it before shipping.
+- Writing any file inside a signed `.app` invalidates the signature (`a sealed resource is missing or invalid`), and the TCC grant keyed to that signature goes with it. Settings belong in `UserDefaults`, never in the bundle.
 
 ## Flutter and Generated Projects
 
