@@ -253,15 +253,20 @@ git config user.name
 git config user.email
 git config user.signingkey
 git config gpg.format
+git config gpg.openpgp.program
+git config gpg.program
 git config commit.gpgsign
 ```
 
 An unset `user.signingkey` does not mean signing is broken: with the default gpg
-format, git falls back to a secret key matching the committer identity. Treat signing
-as unavailable only when a key probe fails — gpg format:
-`gpg --list-secret-keys "$(git config user.signingkey || git config user.email)"`
-finds no secret key; ssh format: the `user.signingkey` file is missing — or when a
-`-S` commit has just failed with a signing error, even if `commit.gpgsign` is set.
+format, git falls back to a secret key matching the committer identity. For an OpenPGP
+key probe, first use the program configured by `gpg.openpgp.program` or its legacy
+synonym `gpg.program`; use Git's default `gpg` only when neither is configured. Run
+only the selected program and stop if it fails: GnuPG commands may start `gpg-agent`,
+so trying another installation can change the agent later Git signing reaches. Treat
+signing as unavailable only when that probe finds no secret key; ssh format: the
+`user.signingkey` file is missing — or when a `-S` commit has just failed with a
+signing error, even if `commit.gpgsign` is set.
 When signing is unavailable, do not retry the failing command and do not silently
 bypass signing. Check repository policy first (`CONTRIBUTING.md`, `README.md`, a
 `DCO` file, `AGENTS.md`), then act by this table:
