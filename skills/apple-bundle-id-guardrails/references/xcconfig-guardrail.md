@@ -48,9 +48,36 @@ Name the setting after the product (`MYAPP_BUNDLE_ID`, not `BUNDLE_ID`) so inclu
 
 Selecting a team in Xcode's Signing & Capabilities UI writes `DEVELOPMENT_TEAM = <team-id>` into the tracked `project.pbxproj`: a public repo then commits a personal team ID, contributors inherit signing errors for a team they are not in, and every fresh checkout repeats the setup. Keep `DEVELOPMENT_TEAM` in `Local.xcconfig` alongside the bundle ID instead. A team ID is not a secret — it ships in every signed binary — so this is repo hygiene and contributor friction, not secrecy.
 
-Harvesting the team ID (current Xcode's Accounts pane does not display it):
+Read the team ID from an installed signing certificate first; this does not touch Xcode's UI or `project.pbxproj`:
 
-1. Select the team once in the Signing & Capabilities UI.
+1. List valid code-signing identities:
+
+   ```sh
+   security find-identity -v -p codesigning
+   ```
+
+   The first value on each line is the certificate's SHA-1 digest, and the quoted value is its inferred label ([Apple SecurityTool source](https://github.com/apple-oss-distributions/SecurityTool/blob/main/identity_find.c#L192-L221)):
+
+   ```text
+   1) <certificate-sha1> "Apple Development: <email> (<certificate-id>)"
+   ```
+
+2. Use the relevant `Apple Development` label to print that certificate's subject:
+
+   ```sh
+   security find-certificate -c "Apple Development: <email>" -p \
+     | openssl x509 -noout -subject
+   ```
+
+   `find-certificate -c` matches the certificate name and `-p` emits PEM ([Apple SecurityTool source](https://github.com/apple-oss-distributions/SecurityTool/blob/main/security.c#L322-L342)); OpenSSL's `-subject` prints the subject and `-noout` suppresses the encoded certificate ([OpenSSL documentation](https://docs.openssl.org/master/man1/openssl-x509/)).
+
+3. Copy the subject's `OU=<team-id>` value into `Local.xcconfig` as `DEVELOPMENT_TEAM = <team-id>`. Apple places the Team ID in a code-signing certificate's subject `OU` field ([TN3161](https://developer.apple.com/documentation/technotes/tn3161-inside-code-signing-certificates)).
+
+**Identifier warning:** the parenthesized `<certificate-id>` inside `CN=Apple Development: <email> (<certificate-id>)` is a certificate-name identifier — for a certificate issued to a team member, Apple calls it the Team Member ID — not the signing Team ID. The signing Team ID is the separate `OU=<team-id>` value ([Apple: Code Signing Identifiers Explained](https://developer.apple.com/forums/thread/811970)).
+
+Fallback when no development certificate is installed, or when certificates from multiple teams make the match ambiguous:
+
+1. Select the intended team once in the Signing & Capabilities UI.
 2. Read the `DEVELOPMENT_TEAM` value from `git --no-pager diff --no-color -- '*.pbxproj'`.
 3. Move the value into `Local.xcconfig`.
 4. Revert the `project.pbxproj` change.
