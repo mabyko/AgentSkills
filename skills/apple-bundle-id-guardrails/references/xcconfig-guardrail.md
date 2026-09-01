@@ -44,24 +44,17 @@ Name the setting after the product (`MYAPP_BUNDLE_ID`, not `BUNDLE_ID`) so inclu
 5. Add `Config/Local.xcconfig` to `.gitignore`.
 6. Create the developer's own `Local.xcconfig` with their personal namespace and team ID.
 
-## Optional Development Build Appearance
+## Optional Development Build Name
 
-When development and release builds may be installed together, make Debug visually distinct in the checked-in base configuration:
+When development and release builds may be installed together, give Debug a distinct display name in the checked-in base configuration:
 
 ```xcconfig
 APP_DISPLAY_NAME = MyApp
 APP_DISPLAY_NAME[config=Debug] = MyApp Dev
 INFOPLIST_KEY_CFBundleDisplayName = $(APP_DISPLAY_NAME)
-
-ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon
-ASSETCATALOG_COMPILER_APPICON_NAME[config=Debug] = AppIcon-Dev
 ```
 
-Add both `AppIcon` and `AppIcon-Dev` to the asset catalog. `INFOPLIST_KEY_CFBundleDisplayName` applies when Xcode generates the Info.plist; otherwise set the checked-in plist's `CFBundleDisplayName` to `$(APP_DISPLAY_NAME)`. Set `PRODUCT_NAME = $(APP_DISPLAY_NAME)` only when the built `.app` filename must differ too. Xcode supports specializing the primary app icon for Debug and Release configurations ([Configuring your app icon](https://developer.apple.com/documentation/xcode/configuring-your-app-icon)).
-
-The Dock uses that primary app icon. A `MenuBarExtra` or `NSStatusItem` icon is separate: under the project's Debug compilation condition (normally `#if DEBUG`), select a distinct asset such as `MenuBarIcon-Dev`; otherwise use `MenuBarIcon`. Prefer a template image or SF Symbol so the system can adapt it to the current appearance. Skip this step when the app has no menu bar status item.
-
-Keep these values in `Base.xcconfig`, not `Local.xcconfig`: they are shared visual cues, not signing identity. The bundle ID guardrail remains unchanged.
+`INFOPLIST_KEY_CFBundleDisplayName` applies when Xcode generates the Info.plist; otherwise set the checked-in plist's `CFBundleDisplayName` to `$(APP_DISPLAY_NAME)`. Set `PRODUCT_NAME = $(APP_DISPLAY_NAME)` only when the built `.app` filename must differ too. Keep this value in `Base.xcconfig`, not `Local.xcconfig`: it is a shared visual cue, not signing identity. The bundle ID guardrail remains unchanged.
 
 ## Signing Team (`DEVELOPMENT_TEAM`)
 
@@ -107,6 +100,16 @@ Fallback when no development certificate is installed, or when certificates from
 - `git grep -n "DEVELOPMENT_TEAM"` over tracked files → zero hits.
 - `git check-ignore Config/Local.xcconfig` → ignored.
 - `xcodebuild -showBuildSettings | grep PRODUCT_BUNDLE_IDENTIFIER` → sacrificial ID without `Local.xcconfig`, personal ID with it.
+- With `Local.xcconfig`, compare the side-by-side identity settings:
+
+  ```sh
+  for configuration in Debug Release; do
+    xcodebuild -configuration "$configuration" -showBuildSettings \
+      | grep -E 'PRODUCT_BUNDLE_IDENTIFIER|APP_DISPLAY_NAME'
+  done
+  ```
+
+  Debug and Release must resolve to different values for both settings.
 
 Editing Signing & Capabilities in the Xcode UI can write literal IDs and `DEVELOPMENT_TEAM` back into `project.pbxproj` — re-run both greps after any signing UI change.
 

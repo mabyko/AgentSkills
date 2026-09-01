@@ -1,0 +1,7 @@
+interface:
+  display_name: "Apple App Icon Generator"
+  short_description: "Create and install Xcode app icon variants."
+  brand_color: "#3B82F6"
+  default_prompt: "Use $apple-app-icon-generator to create and install app icons for this Xcode project, adding a Debug variant only when Debug and Release bundle IDs differ."
+policy:
+  allow_implicit_invocation: true

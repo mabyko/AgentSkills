@@ -1,11 +1,11 @@
 ---
 name: apple-bundle-id-guardrails
-description: "Use when creating a new Xcode or mobile app project, choosing or entering an Apple bundle ID / App ID, configuring a signing team (especially a free personal team), setting up a macOS app that requests TCC permissions (Accessibility, Input Monitoring, Screen Recording), auditing a repo for identifier leaks, or hitting 'An App ID with Identifier is not available' / 'Failed to register bundle identifier' errors."
+description: "Use when creating a new Xcode or mobile app project, choosing or entering an Apple bundle ID / App ID, configuring a signing team (especially a free personal team), setting up side-by-side Release and Debug installs, setting up a macOS app that requests TCC permissions (Accessibility, Input Monitoring, Screen Recording), auditing a repo for identifier leaks, or hitting 'An App ID with Identifier is not available' / 'Failed to register bundle identifier' errors."
 ---
 
 # Apple Bundle ID Guardrails
 
-Use this skill whenever an Apple bundle identifier meets a signing configuration: new Xcode or mobile project setup, entering a bundle ID or signing team, repo audits for identifier leaks, and App ID registration errors. This skill owns registration safety; character-level identifier syntax is owned by the `flutter-flavors` skill's identifier rules.
+Use this skill whenever an Apple bundle identifier meets a signing configuration: new Xcode or mobile project setup, side-by-side Release/Debug identity, entering a bundle ID or signing team, repo audits for identifier leaks, and App ID registration errors. This skill owns registration safety; character-level identifier syntax is owned by the `flutter-flavors` skill's identifier rules.
 
 ## Why This Exists
 
@@ -25,14 +25,15 @@ Resolve real org, product, and github-handle values from the user or project doc
 
 ## Workflow
 
-1. Identify the branch: new-project or retrofit setup, audit, personal-ID choice, org-team handover, or registration-error recovery.
+1. Identify the branch: new-project or retrofit setup, side-by-side Release/Debug identity, audit, personal-ID choice, org-team handover, or registration-error recovery.
 2. Setup (new project or retrofit): follow `references/xcconfig-guardrail.md`. Done when a clean clone builds with the sacrificial ID and the org namespace appears nowhere in tracked files.
-3. Audit: search every tracked file — `project.pbxproj`, `*.xcconfig`, `*.plist`, `*.entitlements`, export options, CI configs — for the org namespace and for `DEVELOPMENT_TEAM` literals. Done when every hit is reported with its file and line (org namespace as a registration hazard, `DEVELOPMENT_TEAM` as a hygiene leak), and the override file is confirmed git-ignored.
-4. Org-team handover checklist:
+3. Side-by-side identity: use the `.dev` ID from Rule 2 and follow **Optional Development Build Name** in `references/xcconfig-guardrail.md`. Done when Release and Debug resolve to different bundle IDs and display names.
+4. Audit: search every tracked file — `project.pbxproj`, `*.xcconfig`, `*.plist`, `*.entitlements`, export options, CI configs — for the org namespace and for `DEVELOPMENT_TEAM` literals. Done when every hit is reported with its file and line (org namespace as a registration hazard, `DEVELOPMENT_TEAM` as a hygiene leak), and the override file is confirmed git-ignored.
+5. Org-team handover checklist:
    - Enumerate every canonical explicit bundle ID: each app, plus each extension and widget, is its own App ID.
    - Register each in the org team's portal (Certificates, Identifiers & Profiles → Identifiers).
    - Only then move canonical IDs into signing configs and release lanes; personal suffixed IDs stay for local development.
-5. Recovery from "An App ID with Identifier … is not available" / "Failed to register bundle identifier": the ID is already registered to some team. If a team you control owns it, delete it from that team's Identifiers list to release it. A free personal team cannot see Identifiers — treat that ID as burned and switch to a suffixed personal ID.
+6. Recovery from "An App ID with Identifier … is not available" / "Failed to register bundle identifier": the ID is already registered to some team. If a team you control owns it, delete it from that team's Identifiers list to release it. A free personal team cannot see Identifiers — treat that ID as burned and switch to a suffixed personal ID.
 
 ## Output
 

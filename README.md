@@ -8,6 +8,7 @@ The canonical skill source is the top-level `skills/` directory. Plugin manifest
 
 ## Skills
 
+- `apple-app-icon-generator`: Generate and install Apple app icons, creating a related Debug variant only when Debug and Release use different bundle IDs.
 - `apple-bundle-id-guardrails`: Keep canonical Apple App IDs unregistered until the organization team exists — sacrificial checked-in bundle IDs, git-ignored xcconfig overrides, and an org-team preemption checklist.
 - `docs-sync`: Sync documentation with user-facing code changes, or check whether docs define intended code behavior.
 - `flutter-flavors`: Set up or audit Flutter flavors, `flutter_flavorizr` / `flavorizr.yaml`, platform app identities, launch configs, and build-mode boundaries.
@@ -17,6 +18,7 @@ The canonical skill source is the top-level `skills/` directory. Plugin manifest
 
 ## Usage Examples
 
+- `$apple-app-icon-generator Create app icons for this Xcode project and add a Debug variant only if the builds install side by side.`
 - `$apple-bundle-id-guardrails Set up the bundle ID guardrail for this new Xcode project.`
 - `$docs-sync Check whether the docs need updates for this diff.`
 - `$flutter-flavors Audit Android/iOS flavors and check whether flavorizr.yaml matches native files.`

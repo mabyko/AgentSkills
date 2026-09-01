@@ -8,6 +8,7 @@ Codex, Claude Code, OpenCode, 그리고 open agent skills 형식을 지원하는
 
 ## 스킬
 
+- `apple-app-icon-generator`: Apple 앱 아이콘을 생성하고 설치하며, Debug와 Release의 번들 ID가 다를 때만 서로 닮은 Debug 변형을 추가합니다.
 - `apple-bundle-id-guardrails`: 조직 팀이 생기기 전까지 canonical Apple App ID가 등록되지 않도록 지킵니다 — 희생용 체크인 번들 ID, git 비추적 xcconfig 오버라이드, 조직 팀 선점 체크리스트.
 - `docs-sync`: 사용자에게 보이는 코드 변경에 맞춰 문서를 동기화하거나, 문서가 의도된 코드 동작을 정의하는지 확인합니다.
 - `flutter-flavors`: Flutter flavor, `flutter_flavorizr` / `flavorizr.yaml`, 플랫폼 앱 identity, launch config, build mode 경계를 설정하거나 점검합니다.
@@ -17,6 +18,7 @@ Codex, Claude Code, OpenCode, 그리고 open agent skills 형식을 지원하는
 
 ## 사용 예시
 
+- `$apple-app-icon-generator 이 Xcode 프로젝트의 앱 아이콘을 만들고, 두 빌드를 함께 설치할 때만 Debug 변형도 추가해줘.`
 - `$apple-bundle-id-guardrails 이 새 Xcode 프로젝트에 번들 ID 가드레일을 설정해줘.`
 - `$docs-sync 이 diff에 맞춰 문서 업데이트가 필요한지 확인해줘.`
 - `$flutter-flavors Android/iOS flavor를 점검하고 flavorizr.yaml이 native 파일과 맞는지 확인해줘.`
