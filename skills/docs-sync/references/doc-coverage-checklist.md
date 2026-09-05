@@ -15,7 +15,7 @@ Use this checklist after loading the main `docs-sync` skill.
 - Do not use edit order alone to pick the source of truth.
 - Declared intent can come from the user request, issue, PR description, design/spec doc, implementation plan, tests, or explicit docs-as-spec instruction.
 - Code-led: implementation is the declared intended behavior; docs should describe it.
-- Docs-led: documentation is the declared intended behavior; code may need follow-up work.
+- Docs-led: documentation is the declared intended behavior; update code when requested, or report code gaps in audit mode.
 - Mixed change: code and docs changed together; verify both reflect the same declared intent.
 - Constraint conflict: declared intent conflicts with tests, build behavior, runtime behavior, or security constraints; report instead of choosing a winner silently.
 - Ambiguous: report the mismatch and ask before changing code or docs.
@@ -66,6 +66,8 @@ Use this checklist after loading the main `docs-sync` skill.
 - Update navigation files when adding, moving, or renaming pages.
 - Leave excluded docs untouched.
 - Verify with the repository's docs build, link checker, formatter, or tests when available.
+
+Use the report below for audits. After an update, report the applied changes, verification, and unresolved gaps; a separate pre-edit report is unnecessary when the request already authorizes the edits.
 
 ## Docs Sync Report Format
 

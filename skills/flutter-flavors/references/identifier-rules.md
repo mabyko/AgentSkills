@@ -23,7 +23,7 @@ Bundle identifier policy:
 
 Preserve existing explicit Apple bundle identifier casing. If an Apple bundle ID contains uppercase characters while Android IDs are lowercase, ask before changing Apple casing for cross-platform consistency.
 
-Registration safety — Apple App ID global uniqueness, automatic-signing registration, personal-team hazards — is owned by the `apple-bundle-id-guardrails` skill; consult it before entering any Apple bundle ID into a signing configuration.
+Registration safety — Apple App ID global uniqueness, automatic-signing registration, personal-team hazards — is covered by `apple-bundle-id-guardrails`; consult it when available before changing Apple signing identity. For standalone use: keep an unregistered canonical ID out of active signing settings until the intended organization team has registered it; use a validated `<canonical>.<github-handle>` for new personal identities and preserve existing IDs unless migration is requested.
 
 ## Cross-Platform
 

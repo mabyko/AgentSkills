@@ -10,11 +10,10 @@ The canonical skill source is the top-level `skills/` directory. Plugin manifest
 
 - `apple-app-icon-generator`: Generate and install Apple app icons, creating a related Debug variant only when Debug and Release use different bundle IDs.
 - `apple-bundle-id-guardrails`: Keep canonical Apple App IDs unregistered until the organization team exists — sacrificial checked-in bundle IDs, git-ignored xcconfig overrides, and an org-team preemption checklist.
-- `docs-sync`: Sync documentation with user-facing code changes, or check whether docs define intended code behavior.
+- `docs-sync`: Audit docs/code consistency, or apply requested documentation and docs-led code updates with verification.
 - `flutter-flavors`: Set up or audit Flutter flavors, `flutter_flavorizr` / `flavorizr.yaml`, platform app identities, launch configs, and build-mode boundaries.
 - `git-workflow`: Guide safe local Git workflows such as staging, commits, branches, merges, rebases, tags, and recovery. Defaults to signed commits with DCO sign-off (`git commit -S --signoff`) and falls back explicitly when signing is unavailable.
-- `github-workflow`: Guide GitHub collaboration workflows such as pull requests, review threads, Actions checks, releases, and `gh` CLI usage.
-- `github-upstream-sync`: Create or review GitHub Actions workflows that sync fork repositories from upstream.
+- `github-workflow`: Guide GitHub collaboration workflows such as pull requests, review threads, Actions checks, releases, and `gh` CLI usage, including creating or reviewing fork upstream-sync workflows.
 
 ## Usage Examples
 
@@ -24,7 +23,7 @@ The canonical skill source is the top-level `skills/` directory. Plugin manifest
 - `$flutter-flavors Audit Android/iOS flavors and check whether flavorizr.yaml matches native files.`
 - `$git-workflow Help me split these changes into safe commits.`
 - `$github-workflow Review this PR's checks and merge readiness.`
-- `$github-upstream-sync Create a workflow that syncs my repository's main branch from upstream main every day at 4:00.`
+- `$github-workflow Create a workflow that syncs my repository's main branch from upstream main every day at 4:00.`
 
 ## Quick Install
 

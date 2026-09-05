@@ -5,7 +5,7 @@ description: "Use when creating a new Xcode or mobile app project, choosing or e
 
 # Apple Bundle ID Guardrails
 
-Use this skill whenever an Apple bundle identifier meets a signing configuration: new Xcode or mobile project setup, side-by-side Release/Debug identity, entering a bundle ID or signing team, repo audits for identifier leaks, and App ID registration errors. This skill owns registration safety; character-level identifier syntax is owned by the `flutter-flavors` skill's identifier rules.
+Use this skill whenever an Apple bundle identifier meets a signing configuration: new Xcode or mobile project setup, side-by-side Release/Debug identity, entering a bundle ID or signing team, repo audits for identifier leaks, and App ID registration errors. This skill owns Apple registration safety and works independently of Flutter. Before writing an Apple bundle ID, allow only letters, digits, hyphens, and dots; preserve existing casing and target suffixes. Validate derived IDs before use; preserve existing personal IDs unless migration is requested.
 
 ## Why This Exists
 
@@ -16,19 +16,19 @@ macOS carries a second, independent hazard that does not depend on registration 
 ## Rules
 
 1. Never enter the canonical ID (`com.<org>.<product>`) into any signing configuration until the organization team exists and has registered it. This is the only fatal mistake.
-2. Personal development uses `<canonical>.<github-handle>`; development builds append `.dev` (example shape: `com.acme.myapp.alice.dev`). App ID uniqueness is exact-string, so registering a suffixed ID never blocks the canonical one — a mistake's blast radius is one personal suffix.
-3. The first action after the organization team opens is to register every canonical App ID to it. From that moment these guardrails become unnecessary.
-4. Repos — public ones especially — carry the canonical ID in no build or signing configuration: an outside contributor's automatic signing could try to register it. Prose documentation is exempt — uninstall and support instructions need the shipping ID to work, and Xcode reads no markdown. Rule 5 is the mechanism.
-5. Check in only a sacrificial ID with no organization namespace (convention: `forked.<product>.local`) and no `DEVELOPMENT_TEAM`; personal bundle IDs and the signing team live in a git-ignored xcconfig override. Setup procedure: `references/xcconfig-guardrail.md`.
+2. New personal development identities use `<canonical>.<github-handle>`; development builds append `.dev` (example shape: `com.acme.myapp.alice.dev`). App ID uniqueness is exact-string, so registering a suffixed ID never blocks the canonical one — a mistake's blast radius is one personal suffix.
+3. The first action after the organization team opens is to register every canonical App ID to it. After registration, canonical IDs may enter the organization's release configuration; keep personal overrides and side-by-side identity isolation where needed.
+4. Before organization registration, repos — public ones especially — carry the canonical ID in no active build or signing configuration: an outside contributor's automatic signing could try to register it. Documentation and non-executable comments are exempt; audit effective setting values, not text mentions. Rule 5 is the mechanism.
+5. Before organization registration, check in only a sacrificial ID with no organization namespace (convention: `forked.<product>.local`) and no `DEVELOPMENT_TEAM`; personal bundle IDs and the signing team live in a git-ignored xcconfig override. Setup procedure: `references/xcconfig-guardrail.md`.
 
 Resolve real org, product, and github-handle values from the user or project docs before writing anything; never apply the example IDs above literally.
 
 ## Workflow
 
 1. Identify the branch: new-project or retrofit setup, side-by-side Release/Debug identity, audit, personal-ID choice, org-team handover, or registration-error recovery.
-2. Setup (new project or retrofit): follow `references/xcconfig-guardrail.md`. Done when a clean clone builds with the sacrificial ID and the org namespace appears nowhere in tracked files.
+2. Setup before organization registration (new project or retrofit): follow `references/xcconfig-guardrail.md`. Done when each app, extension, and widget resolves to its own sacrificial ID without the local override, and tracked active build/signing values contain neither the organization namespace nor a personal team ID. Verify the available unsigned or simulator build separately; report unavailable signing checks.
 3. Side-by-side identity: use the `.dev` ID from Rule 2 and follow **Optional Development Build Name** in `references/xcconfig-guardrail.md`. Done when Release and Debug resolve to different bundle IDs and display names.
-4. Audit: search every tracked file — `project.pbxproj`, `*.xcconfig`, `*.plist`, `*.entitlements`, export options, CI configs — for the org namespace and for `DEVELOPMENT_TEAM` literals. Done when every hit is reported with its file and line (org namespace as a registration hazard, `DEVELOPMENT_TEAM` as a hygiene leak), and the override file is confirmed git-ignored.
+4. Audit: search every tracked file — `project.pbxproj`, `*.xcconfig`, `*.plist`, `*.entitlements`, export options, CI configs — for the org namespace and for `DEVELOPMENT_TEAM` literals. Classify hits as active settings or documentation/comments. Report active organization IDs as registration hazards only before organization registration, and personal team literals as hygiene issues; include file and line evidence and confirm the override is git-ignored.
 5. Org-team handover checklist:
    - Enumerate every canonical explicit bundle ID: each app, plus each extension and widget, is its own App ID.
    - Register each in the org team's portal (Certificates, Identifiers & Profiles → Identifiers).

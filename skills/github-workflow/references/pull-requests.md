@@ -27,7 +27,7 @@ git push -u origin HEAD
 
 Outside of PR creation, push only when the user asked to push.
 
-Before creating a PR, confirm the intended base branch with the user when the request did not name it.
+Resolve the base branch from the user's request or prior decisions, repository guidance, and branch/PR metadata. Proceed when that evidence identifies one intended base; ask only when plausible targets remain ambiguous. Preserve an established stacked-PR parent instead of assuming the repository default branch.
 
 `gh pr create --fill` builds the title and body from commit messages and ignores PR templates. Use it only when the repository has no PR template:
 

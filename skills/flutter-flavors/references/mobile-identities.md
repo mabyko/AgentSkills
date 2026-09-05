@@ -18,7 +18,7 @@ Canonical:
 | `beta` | TestFlight / Google Play testing candidate | `com.company.appname.beta` | `com.company.appname.beta` | `Example App (BETA)` |
 | `prod` | App Store / Google Play production | `com.company.appname` | `com.company.appname` | `Example App` |
 
-Personal: use the same matrix with base ID `com.company.appname.personal` (so `dev` becomes `com.company.appname.personal.dev`, personal `prod` is `com.company.appname.personal`) and append `Personal` to display names, e.g. `Example App (DEV Personal)`, `Example App (Personal)`. Personal `prod` is production-like local testing only, never the canonical production identity.
+Personal: for new identities, use the same matrix with base ID `<canonical>.<github-handle>` (for handle `alice`, `dev` becomes `com.company.appname.alice.dev` and personal `prod` is `com.company.appname.alice`) and append `Personal` to display names, e.g. `Example App (DEV Personal)`, `Example App (Personal)`. Personal `prod` is production-like local testing only, never the canonical production identity. Preserve existing explicit personal IDs unless migration is requested. Validate the handle-derived segment per platform using `identifier-rules.md`; if normalization is needed, resolve the proposed ID before editing.
 
 ## Command Matrix
 
@@ -40,7 +40,7 @@ Use Kotlin DSL in `android/app/build.gradle.kts`. Configure an `environment` fla
 
 Apply the Android `applicationId` policy from `identifier-rules.md`.
 
-Example base values (canonical; for personal, append `.personal` to the IDs and `(Personal)` to the label):
+Example base values (canonical; for new personal identities, append the validated developer suffix, such as `.alice`, to the IDs and `(Personal)` to the label):
 
 - `namespace = "com.company.appname"`
 - `defaultConfig.applicationId = "com.company.appname"`

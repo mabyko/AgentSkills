@@ -10,11 +10,10 @@ Codex, Claude Code, OpenCode, 그리고 open agent skills 형식을 지원하는
 
 - `apple-app-icon-generator`: Apple 앱 아이콘을 생성하고 설치하며, Debug와 Release의 번들 ID가 다를 때만 서로 닮은 Debug 변형을 추가합니다.
 - `apple-bundle-id-guardrails`: 조직 팀이 생기기 전까지 canonical Apple App ID가 등록되지 않도록 지킵니다 — 희생용 체크인 번들 ID, git 비추적 xcconfig 오버라이드, 조직 팀 선점 체크리스트.
-- `docs-sync`: 사용자에게 보이는 코드 변경에 맞춰 문서를 동기화하거나, 문서가 의도된 코드 동작을 정의하는지 확인합니다.
+- `docs-sync`: 문서와 코드의 일치 여부를 점검합니다. 갱신 요청은 문서 수정이나 문서 기준 코드 수정까지 수행하고 검증합니다.
 - `flutter-flavors`: Flutter flavor, `flutter_flavorizr` / `flavorizr.yaml`, 플랫폼 앱 identity, launch config, build mode 경계를 설정하거나 점검합니다.
 - `git-workflow`: staging, commit, branch, merge, rebase, tag, recovery 같은 안전한 로컬 Git workflow를 안내합니다. 기본값으로 DCO sign-off를 포함한 서명 커밋(`git commit -S --signoff`)을 사용하며, 서명이 불가능하면 명시적인 fallback을 따릅니다.
-- `github-workflow`: pull request, review thread, Actions check, release, `gh` CLI 사용 같은 GitHub 협업 workflow를 안내합니다.
-- `github-upstream-sync`: fork 저장소를 upstream과 동기화하는 GitHub Actions workflow를 만들거나 검토합니다.
+- `github-workflow`: pull request, review thread, Actions check, release, `gh` CLI 사용과 fork upstream 동기화 workflow 생성·검토를 안내합니다.
 
 ## 사용 예시
 
@@ -24,7 +23,7 @@ Codex, Claude Code, OpenCode, 그리고 open agent skills 형식을 지원하는
 - `$flutter-flavors Android/iOS flavor를 점검하고 flavorizr.yaml이 native 파일과 맞는지 확인해줘.`
 - `$git-workflow 지금 변경사항을 안전한 commit 단위로 나누는 걸 도와줘.`
 - `$github-workflow 이 PR의 check와 merge 가능 상태를 검토해줘.`
-- `$github-upstream-sync 내 저장소의 main 브랜치를 upstream main과 매일 4시에 동기화하는 workflow 만들어줘.`
+- `$github-workflow 내 저장소의 main 브랜치를 upstream main과 매일 4시에 동기화하는 workflow 만들어줘.`
 
 ## 빠른 설치
 

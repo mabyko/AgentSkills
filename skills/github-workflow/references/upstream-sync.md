@@ -1,11 +1,6 @@
----
-name: github-upstream-sync
-description: "Use only when the user explicitly asks to create or review an upstream-sync GitHub Actions workflow for a fork repository, especially with phrases like upstream sync, fork sync, gh repo sync, or syncing fork branches from upstream."
----
-
 # GitHub Upstream Sync
 
-Use this skill when the user wants a GitHub Actions workflow that keeps a fork branch synced with an upstream repository.
+Read this reference only when the user asks to create or review a GitHub Actions workflow that keeps a fork branch synced with an upstream repository.
 
 ## Inputs
 
@@ -118,5 +113,5 @@ Return the workflow YAML and a brief note that `GH_TOKEN` must be a PAT with con
 
 ## Example Prompts
 
-- `$github-upstream-sync 내 저장소의 main 브랜치를 upstream main과 매일 4시에 동기화하는 workflow 만들어줘.`
-- `$github-upstream-sync 내 저장소의 main 브랜치에 upstream develop을 매일 KST 04:25에 동기화하고 dry run 체크박스도 넣어줘.`
+- `$github-workflow 내 저장소의 main 브랜치를 upstream main과 매일 4시에 동기화하는 workflow 만들어줘.`
+- `$github-workflow 내 저장소의 main 브랜치에 upstream develop을 매일 KST 04:25에 동기화하고 dry run 체크박스도 넣어줘.`
