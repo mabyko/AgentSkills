@@ -1,6 +1,6 @@
 ---
 name: github-workflow
-description: "Use when working with GitHub workflows: pull requests, PR reviews, review threads, PR merges, auto-merge, GitHub Actions checks, CI annotations, branch protection, GitHub Releases, gh CLI commands, or release publishing."
+description: "Use when working with GitHub workflows: pull requests, PR reviews, review threads, PR merges, auto-merge, GitHub Actions checks, CI annotations, branch protection, GitHub Releases, gh CLI commands, release publishing, or fork upstream-sync automation."
 ---
 
 # GitHub Workflow
@@ -17,11 +17,14 @@ Use for GitHub-hosted collaboration and publishing. Use `git-workflow` for local
 
 ## Reference Routing
 
+Read only the references needed for the requested task.
+
 | Reference | Use For |
 | --- | --- |
 | `references/pull-requests.md` | Creating PRs, PR descriptions, review responses, merge readiness |
 | `references/stacked-prs.md` | Stacked PR chains, sequential squash merges, base retargeting |
 | `references/github-releases.md` | GitHub Releases, release publishing, latest flag, published release recovery |
+| `references/upstream-sync.md` | Explicit requests to create or review fork upstream-sync GitHub Actions workflows |
 
 ## GitHub Action Safety Checklist
 
