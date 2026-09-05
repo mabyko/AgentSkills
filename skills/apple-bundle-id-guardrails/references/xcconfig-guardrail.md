@@ -1,6 +1,6 @@
 # xcconfig Guardrail Setup
 
-Goal: a clean clone builds with a sacrificial bundle ID, neither the canonical ID nor any personal `DEVELOPMENT_TEAM` exists in tracked files, and each developer overrides locally with an untracked file.
+Goal before organization registration: every app, extension, and widget resolves to a distinct sacrificial bundle ID without local overrides. Tracked active build/signing values contain neither the organization namespace nor a personal `DEVELOPMENT_TEAM`; documentation and comments may describe them. Each developer overrides locally with an untracked file.
 
 Substitute real values for `myapp`, `com.acme.myapp`, and `alice` throughout; resolve them from the user or project docs first.
 
@@ -12,8 +12,8 @@ Substitute real values for `myapp`, `com.acme.myapp`, and `alice` throughout; re
 // Build setting defaults.
 //
 // Bundle ID guardrail: cloning and building this repo uses the sacrificial ID
-// (forked.myapp.local). The canonical ID (com.acme.myapp) exists nowhere in the
-// repo, so automatic signing cannot register it by accident.
+// (forked.myapp.local). The canonical ID is absent from active build settings,
+// so automatic signing cannot register it by accident.
 // For personal builds, create an untracked Local.xcconfig next to this file:
 //
 //   MYAPP_BUNDLE_ID = com.acme.myapp.<github-handle>
@@ -33,13 +33,13 @@ MYAPP_BUNDLE_ID[config=Debug] = com.acme.myapp.alice.dev
 DEVELOPMENT_TEAM = ABCDE12345
 ```
 
-Name the setting after the product (`MYAPP_BUNDLE_ID`, not `BUNDLE_ID`) so included xcconfigs from other sources cannot collide. `#include?` is the optional-include directive: a missing `Local.xcconfig` is not an error, so clean clones still build. Keep the recipe comment in `Base.xcconfig` — it is the onboarding doc teammates actually see.
+Name the setting after the product (`MYAPP_BUNDLE_ID`, not `BUNDLE_ID`) so included xcconfigs from other sources cannot collide. `#include?` is the optional-include directive: a missing `Local.xcconfig` is not an include error. Device builds may still require local signing credentials. Keep the recipe comment in `Base.xcconfig` — it is the onboarding doc teammates actually see.
 
 ## Steps
 
 1. Create `Config/Base.xcconfig` as above.
-2. Attach it as the base configuration for the project or targets: Xcode project Info tab → Configurations, or `baseConfigurationReference` in `project.pbxproj`.
-3. In every target's build settings, set `PRODUCT_BUNDLE_IDENTIFIER = $(MYAPP_BUNDLE_ID)`, replacing any literal ID in `project.pbxproj`.
+2. Integrate it with the existing configuration chain for the requested targets. Preserve existing base configurations and generated includes; include the guardrail from them where appropriate.
+3. Set the main app's `PRODUCT_BUNDLE_IDENTIFIER = $(MYAPP_BUNDLE_ID)`. Preserve each extension/widget suffix: for example, an existing `.widget` target becomes `$(MYAPP_BUNDLE_ID).widget`. Give independent apps their own product-named settings and sacrificial defaults. Record the target-to-ID mapping; never assign all targets the same complete ID.
 4. Remove any `DEVELOPMENT_TEAM` lines from `project.pbxproj`, keeping `CODE_SIGN_STYLE = Automatic`; the xcconfig value then applies as-is.
 5. Add `Config/Local.xcconfig` to `.gitignore`.
 6. Create the developer's own `Local.xcconfig` with their personal namespace and team ID.
@@ -96,10 +96,9 @@ Fallback when no development certificate is installed, or when certificates from
 
 ## Verification
 
-- `git grep -n "com\.acme\." -- '*.pbxproj' '*.xcconfig' '*.plist' '*.entitlements'` (the real org namespace, build configuration only) → zero hits. Prose documentation is exempt: a macOS app's uninstall instructions need the shipping ID for `tccutil` and the preferences path to work, and Xcode reads no markdown.
-- `git grep -n "DEVELOPMENT_TEAM"` over tracked files → zero hits.
+- Search tracked project files, xcconfigs, plists, entitlements, export options, and CI configuration for the real organization namespace and `DEVELOPMENT_TEAM`. Inspect each hit: before organization registration, active build/signing values must contain no organization namespace or personal team ID. Documentation, comments, and variable references are allowed; zero raw text matches is not the acceptance criterion.
 - `git check-ignore Config/Local.xcconfig` → ignored.
-- `xcodebuild -showBuildSettings | grep PRODUCT_BUNDLE_IDENTIFIER` → sacrificial ID without `Local.xcconfig`, personal ID with it.
+- Inspect resolved build settings for the actual schemes/configurations and every affected app, extension, and widget: distinct sacrificial IDs without `Local.xcconfig`, distinct personal IDs with it, preserving target suffixes. Run an available unsigned or simulator build and report any signing verification that could not run.
 - With `Local.xcconfig`, compare the side-by-side identity settings:
 
   ```sh
@@ -111,7 +110,7 @@ Fallback when no development certificate is installed, or when certificates from
 
   Debug and Release must resolve to different values for both settings.
 
-Editing Signing & Capabilities in the Xcode UI can write literal IDs and `DEVELOPMENT_TEAM` back into `project.pbxproj` — re-run both greps after any signing UI change.
+Editing Signing & Capabilities in the Xcode UI can write literal IDs and `DEVELOPMENT_TEAM` back into `project.pbxproj` — repeat the active-value audit after any signing UI change.
 
 ## Fresh Checkouts (Clone, `git worktree`, CI)
 
