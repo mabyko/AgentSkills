@@ -14,6 +14,7 @@ Codex, Claude Code, OpenCode, 그리고 open agent skills 형식을 지원하는
 - `flutter-flavors`: Flutter flavor, `flutter_flavorizr` / `flavorizr.yaml`, 플랫폼 앱 identity, launch config, build mode 경계를 설정하거나 점검합니다.
 - `git-workflow`: staging, commit, branch, merge, rebase, tag, recovery 같은 안전한 로컬 Git workflow를 안내합니다. 기본값으로 DCO sign-off를 포함한 서명 커밋(`git commit -S --signoff`)을 사용하며, 서명이 불가능하면 명시적인 fallback을 따릅니다.
 - `github-workflow`: pull request, review thread, Actions check, release, `gh` CLI 사용과 fork upstream 동기화 workflow 생성·검토를 안내합니다.
+- `show-me`: 현재 대화의 내용을 간결한 다이어그램, 코드 구조, 변경 전후 diff, HTML로 보여줍니다.
 
 ## 사용 예시
 
@@ -24,6 +25,8 @@ Codex, Claude Code, OpenCode, 그리고 open agent skills 형식을 지원하는
 - `$git-workflow 지금 변경사항을 안전한 commit 단위로 나누는 걸 도와줘.`
 - `$github-workflow 이 PR의 check와 merge 가능 상태를 검토해줘.`
 - `$github-workflow 내 저장소의 main 브랜치를 upstream main과 매일 4시에 동기화하는 workflow 만들어줘.`
+- `$show-me 지금 이야기한 내용을 그림으로 설명해줘.`
+- `$show-me 이번 리팩터링에서 파일별 책임이 어떻게 바뀌는지 보여줘.`
 
 ## 빠른 설치
 

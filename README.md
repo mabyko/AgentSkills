@@ -14,6 +14,7 @@ The canonical skill source is the top-level `skills/` directory. Plugin manifest
 - `flutter-flavors`: Set up or audit Flutter flavors, `flutter_flavorizr` / `flavorizr.yaml`, platform app identities, launch configs, and build-mode boundaries.
 - `git-workflow`: Guide safe local Git workflows such as staging, commits, branches, merges, rebases, tags, and recovery. Defaults to signed commits with DCO sign-off (`git commit -S --signoff`) and falls back explicitly when signing is unavailable.
 - `github-workflow`: Guide GitHub collaboration workflows such as pull requests, review threads, Actions checks, releases, and `gh` CLI usage, including creating or reviewing fork upstream-sync workflows.
+- `show-me`: Explain the current topic visually with concise diagrams, code-shape sketches, before/after diffs, and focused HTML artifacts.
 
 ## Usage Examples
 
@@ -24,6 +25,8 @@ The canonical skill source is the top-level `skills/` directory. Plugin manifest
 - `$git-workflow Help me split these changes into safe commits.`
 - `$github-workflow Review this PR's checks and merge readiness.`
 - `$github-workflow Create a workflow that syncs my repository's main branch from upstream main every day at 4:00.`
+- `$show-me Explain the current topic with a concise visual.`
+- `$show-me Show how file responsibilities change in this refactor.`
 
 ## Quick Install
 
