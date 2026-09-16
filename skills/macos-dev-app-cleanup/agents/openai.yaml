@@ -1,0 +1,6 @@
+interface:
+  display_name: "macOS Dev App Cleanup"
+  short_description: "Remove project test apps while preserving Release and data"
+  default_prompt: "Use $macos-dev-app-cleanup to remove this project's macOS development and QA apps while preserving Release apps and shared settings."
+policy:
+  allow_implicit_invocation: true
