@@ -54,11 +54,52 @@ APP_DISPLAY_NAME[config=Debug] = MyApp Dev
 INFOPLIST_KEY_CFBundleDisplayName = $(APP_DISPLAY_NAME)
 ```
 
-`INFOPLIST_KEY_CFBundleDisplayName` applies when Xcode generates the Info.plist; otherwise set the checked-in plist's `CFBundleDisplayName` to `$(APP_DISPLAY_NAME)`. Set `PRODUCT_NAME = $(APP_DISPLAY_NAME)` only when the built `.app` filename must differ too. Keep this value in `Base.xcconfig`, not `Local.xcconfig`: it is a shared visual cue, not signing identity. The bundle ID guardrail remains unchanged.
+`INFOPLIST_KEY_CFBundleDisplayName` applies when Xcode generates the Info.plist; otherwise set the checked-in plist's `CFBundleDisplayName` to `$(APP_DISPLAY_NAME)`. Set `PRODUCT_NAME = $(APP_DISPLAY_NAME)` only when the built `.app` filename must differ too. Keep shared name defaults in `Base.xcconfig`; identity-specific names may override them as described below. The bundle ID guardrail remains unchanged.
+
+## Multiple Teams and Build Modes
+
+Use only the identities requested. Personal, Team B, and organization identities can each have Release and Debug builds; additional teams follow the same pattern. These are naming conventions, not Apple-defined categories. Preserve existing IDs unless migration is requested.
+
+| Identity | Mode | Example bundle ID | Signing team | Example display name |
+| --- | --- | --- | --- | --- |
+| Personal | Release | `com.acme.myapp.alice` | Developer's chosen team | MyApp Alice |
+| Personal | Debug | `com.acme.myapp.alice.dev` | Same personal team | MyApp Alice Dev |
+| Team B | Release | `com.acme.myapp.teamb` | Team owning the Team B IDs | MyApp B |
+| Team B | Debug | `com.acme.myapp.teamb.dev` | Same Team B signing team | MyApp B Dev |
+| Organization | Release | `com.acme.myapp` | Organization team | MyApp |
+| Organization | Debug | `com.acme.myapp.dev` | Organization team | MyApp Dev |
+
+Resolve Team B's actual Apple Team ID separately from its label. An internal B team may share the organization's Team ID; a separate Apple Developer team uses its own. Validate suffixes and reject collisions across all requested identities and targets. Preserve extension/widget suffixes after the complete app ID, for example `com.acme.myapp.teamb.dev.widget`.
+
+Register the requested organization IDs under the organization team before enabling that identity, including Debug when requested. Verify existing Team B IDs belong to its selected team; register new shared Team B IDs under that team before enabling them. A bundle ID plus a different `DEVELOPMENT_TEAM` does not create a second app identity or transfer ownership. See [Apple's App ID registration guidance](https://developer.apple.com/help/account/identifiers/register-an-app-id). Release alone does not select an App Store/TestFlight distribution workflow.
+
+For local switching, keep the existing Debug/Release configurations and the optional `Local.xcconfig` include. Store each requested identity in a separate file under git-ignored `Config/Identities/`. Each file defines the Release and Debug IDs, signing team, and display names together. For example, `Config/Identities/TeamB.xcconfig`:
+
+```xcconfig
+MYAPP_BUNDLE_ID = com.acme.myapp.teamb
+MYAPP_BUNDLE_ID[config=Debug] = com.acme.myapp.teamb.dev
+DEVELOPMENT_TEAM = <team-b-apple-team-id>
+APP_DISPLAY_NAME = MyApp B
+APP_DISPLAY_NAME[config=Debug] = MyApp B Dev
+```
+
+Use the corresponding matrix values for personal and organization files. Substitute actual Team IDs before use. In `Base.xcconfig`, place the shared display-name defaults and Info.plist mapping **before** `#include? "Local.xcconfig"`, so the selected identity's names override them. Keep `PRODUCT_BUNDLE_IDENTIFIER` derived from `MYAPP_BUNDLE_ID` for all targets; remove higher-priority target/project literals that mask the selected ID, team, or display name.
+
+Make `Config/Local.xcconfig` select exactly one identity, replacing any previous inline identity settings:
+
+```xcconfig
+#include "Identities/TeamB.xcconfig"
+```
+
+Use a required include here: an explicitly selected but missing identity must produce a configuration diagnostic rather than silently selecting another identity. Xcode supports nested includes and configuration conditions; see [Apple's xcconfig guidance](https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project). Keep `Config/Local.xcconfig` and `Config/Identities/` git-ignored. Before organization registration, tracked active values still contain only sacrificial IDs and no signing team.
+
+If one-click scheme selection or CI needs all identities available together, reuse the project's existing scheme/configuration or flavor structure; add named configurations only when needed. Match conditional settings to their actual names (`[config=Debug]` does not cover `Debug-TeamB`). After organization registration, shared team configurations may be tracked for exact IDs already owned by the intended team; keep personal values local and fresh-checkout defaults sacrificial. Check Run, Test, Profile, and Archive mappings explicitly so an archive uses the requested identity and build mode.
+
+Verify every requested identity in both modes using resolved build settings, including `DEVELOPMENT_TEAM`, display name, and each extension/widget ID. Check ID-bound entitlements and provisioning profiles against the selected team; resolve any App Group, keychain group, or iCloud sharing intentionally. Without local overrides, confirm sacrificial IDs and no inherited personal/team signing value. Preserve the user's original selection after checks.
 
 ## Signing Team (`DEVELOPMENT_TEAM`)
 
-Selecting a team in Xcode's Signing & Capabilities UI writes `DEVELOPMENT_TEAM = <team-id>` into the tracked `project.pbxproj`: a public repo then commits a personal team ID, contributors inherit signing errors for a team they are not in, and every fresh checkout repeats the setup. Keep `DEVELOPMENT_TEAM` in `Local.xcconfig` alongside the bundle ID instead. A team ID is not a secret — it ships in every signed binary — so this is repo hygiene and contributor friction, not secrecy.
+Selecting a team in Xcode's Signing & Capabilities UI writes `DEVELOPMENT_TEAM = <team-id>` into the tracked `project.pbxproj`: a public repo then commits a personal team ID, contributors inherit signing errors for a team they are not in, and every fresh checkout repeats the setup. For local identities, keep `DEVELOPMENT_TEAM` alongside the bundle ID in `Local.xcconfig` or its selected identity file instead. Registered shared-team configurations may be tracked as described above. A team ID is not a secret — it ships in every signed binary — so this is repo hygiene and contributor friction, not secrecy.
 
 Read the team ID from an installed signing certificate first; this does not touch Xcode's UI or `project.pbxproj`:
 
@@ -98,17 +139,17 @@ Fallback when no development certificate is installed, or when certificates from
 
 - Search tracked project files, xcconfigs, plists, entitlements, export options, and CI configuration for the real organization namespace and `DEVELOPMENT_TEAM`. Inspect each hit: before organization registration, active build/signing values must contain no organization namespace or personal team ID. Documentation, comments, and variable references are allowed; zero raw text matches is not the acceptance criterion.
 - `git check-ignore Config/Local.xcconfig` → ignored.
-- Inspect resolved build settings for the actual schemes/configurations and every affected app, extension, and widget: distinct sacrificial IDs without `Local.xcconfig`, distinct personal IDs with it, preserving target suffixes. Run an available unsigned or simulator build and report any signing verification that could not run.
+- Inspect resolved build settings for the actual schemes/configurations and every affected app, extension, and widget: distinct sacrificial IDs without `Local.xcconfig`, the selected personal/team/organization IDs with it, preserving target suffixes and checking `DEVELOPMENT_TEAM`. Run an available unsigned or simulator build and report any signing verification that could not run.
 - With `Local.xcconfig`, compare the side-by-side identity settings:
 
   ```sh
   for configuration in Debug Release; do
     xcodebuild -configuration "$configuration" -showBuildSettings \
-      | grep -E 'PRODUCT_BUNDLE_IDENTIFIER|APP_DISPLAY_NAME'
+      | grep -E 'PRODUCT_BUNDLE_IDENTIFIER|DEVELOPMENT_TEAM|APP_DISPLAY_NAME'
   done
   ```
 
-  Debug and Release must resolve to different values for both settings.
+  Debug and Release must resolve to different bundle IDs and display names, and the intended signing team for each identity. For multiple identities, repeat with each selection; supply the actual project/workspace and scheme when needed.
 
 Editing Signing & Capabilities in the Xcode UI can write literal IDs and `DEVELOPMENT_TEAM` back into `project.pbxproj` — repeat the active-value audit after any signing UI change.
 
@@ -123,6 +164,8 @@ ln -s <main-checkout>/Config/Local.xcconfig Config/Local.xcconfig
 ```
 
 Keep the original in the main checkout and symlink it from each worktree; a worktree setup hook can automate the link. xcconfig `#include?` expands neither `~` nor build variables, so a shared per-user path cannot be included directly; the symlink or copy is the practical route.
+
+When `Local.xcconfig` selects an identity file, also make its `Config/Identities/` dependency available in the new checkout. Copy or link the matching directory together with the selector, preserving relative include paths. CI must select the intended identity explicitly rather than inherit a developer's current local selection.
 
 ## macOS Permissions (TCC)
 

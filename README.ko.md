@@ -9,7 +9,7 @@ Codex, Claude Code, OpenCode, 그리고 open agent skills 형식을 지원하는
 ## 스킬
 
 - `apple-app-icon-generator`: Apple 앱 아이콘을 생성하고 설치하며, Debug와 Release의 번들 ID가 다를 때만 서로 닮은 Debug 변형을 추가합니다.
-- `apple-bundle-id-guardrails`: 조직 팀이 생기기 전까지 canonical Apple App ID가 등록되지 않도록 지킵니다 — 희생용 체크인 번들 ID, git 비추적 xcconfig 오버라이드, 조직 팀 선점 체크리스트.
+- `apple-bundle-id-guardrails`: 조직 App ID가 잘못 등록되지 않도록 보호하고, 개인·추가 팀·조직의 Release/Debug 번들 ID와 서명 팀을 분리해 설정합니다.
 - `docs-sync`: 문서와 코드의 일치 여부를 점검합니다. 갱신 요청은 문서 수정이나 문서 기준 코드 수정까지 수행하고 검증합니다.
 - `flutter-flavors`: Flutter flavor, `flutter_flavorizr` / `flavorizr.yaml`, 플랫폼 앱 identity, launch config, build mode 경계를 설정하거나 점검합니다.
 - `git-workflow`: staging, commit, branch, merge, rebase, tag, recovery 같은 안전한 로컬 Git workflow를 안내합니다. 기본값으로 DCO sign-off를 포함한 서명 커밋(`git commit -S --signoff`)을 사용하며, 서명이 불가능하면 명시적인 fallback을 따릅니다.
