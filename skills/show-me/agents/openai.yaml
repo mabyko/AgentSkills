@@ -1,7 +1,0 @@
-interface:
-  display_name: "Show Me"
-  short_description: "코드 구조와 실행 흐름, 변경 전후를 그림으로 설명합니다"
-  brand_color: "#3B82F6"
-  default_prompt: "$show-me 지금 이야기한 내용을 이해하기 쉬운 그림이나 코드 구조로 보여줘."
-policy:
-  allow_implicit_invocation: true

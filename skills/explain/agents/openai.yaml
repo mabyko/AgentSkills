@@ -1,0 +1,7 @@
+interface:
+  display_name: "Explain"
+  short_description: "주제에 맞는 글·그림·인터랙티브 웹·설명 영상으로 이해를 돕습니다"
+  brand_color: "#3B82F6"
+  default_prompt: "$explain 지금 이야기한 내용을 이해하기 쉽게 만들어줘. 글·그림·인터랙티브 웹·설명 영상 중 효과적인 형식을 골라 실제 결과물까지 보여줘."
+policy:
+  allow_implicit_invocation: true

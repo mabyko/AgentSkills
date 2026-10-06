@@ -15,7 +15,7 @@ The canonical skill source is the top-level `skills/` directory. Plugin manifest
 - `git-workflow`: Guide safe local Git workflows such as staging, commits, branches, merges, rebases, tags, and recovery. Defaults to signed commits with DCO sign-off (`git commit -S --signoff`) and falls back explicitly when signing is unavailable.
 - `github-workflow`: Guide GitHub collaboration workflows such as pull requests, review threads, Actions checks, releases, and `gh` CLI usage, including creating or reviewing fork upstream-sync workflows.
 - `macos-dev-app-cleanup`: Remove or verify removal of a project's macOS Debug, Dev, and QA apps by exact path, preserving Release apps, user data, and shared settings.
-- `show-me`: Explain the current topic visually with concise diagrams, code-shape sketches, before/after diffs, and focused HTML artifacts.
+- `explain`: Turn a topic or model output into clear prose, diagrams/images, interactive HTML, or custom explainer videos, following Karpathy's proposal and adapting ideas from answer-me-with-html and kar-plain.
 
 ## Usage Examples
 
@@ -27,8 +27,13 @@ The canonical skill source is the top-level `skills/` directory. Plugin manifest
 - `$github-workflow Review this PR's checks and merge readiness.`
 - `$github-workflow Create a workflow that syncs my repository's main branch from upstream main every day at 4:00.`
 - `$macos-dev-app-cleanup Remove this project's macOS test apps, keeping the installed Release and shared settings.`
-- `$show-me Explain the current topic with a concise visual.`
-- `$show-me Show how file responsibilities change in this refactor.`
+- `$explain Help me understand the current topic; choose an effective format and make the result.`
+- `$explain prose: Explain this notice while preserving its conditions and exceptions.`
+- `$explain diagram: Show the relationships and branches in this process.`
+- `$explain web: Let me change the rate and duration to explore compound interest.`
+- `$explain video: Make a 60-second explanation of this process with English narration and captions.`
+
+`explain` uses the current conversation when no topic is supplied. You can choose the format in ordinary language. It uses the environment's available production tools; it does not bundle a rendering or speech engine. [Design sources and attribution](skills/explain/references/sources.md).
 
 ## Quick Install
 

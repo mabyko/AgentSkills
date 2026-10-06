@@ -15,7 +15,7 @@ Codex, Claude Code, OpenCode, 그리고 open agent skills 형식을 지원하는
 - `git-workflow`: staging, commit, branch, merge, rebase, tag, recovery 같은 안전한 로컬 Git workflow를 안내합니다. 기본값으로 DCO sign-off를 포함한 서명 커밋(`git commit -S --signoff`)을 사용하며, 서명이 불가능하면 명시적인 fallback을 따릅니다.
 - `github-workflow`: pull request, review thread, Actions check, release, `gh` CLI 사용과 fork upstream 동기화 workflow 생성·검토를 안내합니다.
 - `macos-dev-app-cleanup`: 프로젝트의 macOS Debug·Dev·QA 앱을 정확한 경로로 식별해 정리하거나 삭제 여부를 확인하고, Release·사용자 데이터·공유 설정은 보존합니다.
-- `show-me`: 현재 대화의 내용을 간결한 다이어그램, 코드 구조, 변경 전후 diff, HTML로 보여줍니다.
+- `explain`: 주제나 모델의 작업 결과를 명료한 글, 그림, 인터랙티브 HTML, 맞춤형 설명 영상으로 만듭니다. 카파시의 제안과 answer-me-with-html·kar-plain의 제작 방식을 참고했습니다.
 
 ## 사용 예시
 
@@ -27,8 +27,13 @@ Codex, Claude Code, OpenCode, 그리고 open agent skills 형식을 지원하는
 - `$github-workflow 이 PR의 check와 merge 가능 상태를 검토해줘.`
 - `$github-workflow 내 저장소의 main 브랜치를 upstream main과 매일 4시에 동기화하는 workflow 만들어줘.`
 - `$macos-dev-app-cleanup 이 프로젝트의 macOS 테스트 앱을 정리해줘. 설치된 Release와 공유 설정은 남겨줘.`
-- `$show-me 지금 이야기한 내용을 그림으로 설명해줘.`
-- `$show-me 이번 리팩터링에서 파일별 책임이 어떻게 바뀌는지 보여줘.`
+- `$explain 지금 이야기한 내용을 이해하기 쉽게 만들어줘. 효과적인 형식을 골라 실제 결과물까지 보여줘.`
+- `$explain 글: 이 안내문의 조건과 예외를 보존하면서 설명해줘.`
+- `$explain 그림: 이 과정의 관계와 분기를 보여줘.`
+- `$explain 웹: 금리와 기간을 바꾸며 복리를 살펴볼 수 있게 만들어줘.`
+- `$explain 영상: 이 과정을 한국어 내레이션과 자막이 있는 60초 영상으로 만들어줘.`
+
+`$explain`만 입력하면 현재 대화의 주제를 사용합니다. 형식은 자연어로 지정할 수 있습니다. 제작에는 환경에서 사용할 수 있는 도구를 쓰며, 렌더러나 음성 엔진을 스킬에 포함하지는 않습니다. [설계 출처와 저작권 표시](skills/explain/references/sources.md).
 
 ## 빠른 설치
 
