@@ -13,7 +13,7 @@ The canonical skill source is the top-level `skills/` directory. Plugin manifest
 - `docs-sync`: Audit docs/code consistency, or apply requested documentation and docs-led code updates with verification.
 - `flutter-flavors`: Set up or audit Flutter flavors, `flutter_flavorizr` / `flavorizr.yaml`, platform app identities, launch configs, and build-mode boundaries.
 - `git-workflow`: Guide safe local Git workflows such as staging, commits, branches, merges, rebases, tags, and recovery. Defaults to signed commits with DCO sign-off (`git commit -S --signoff`) and falls back explicitly when signing is unavailable.
-- `github-workflow`: Guide GitHub collaboration workflows such as pull requests, review threads, Actions checks, releases, and `gh` CLI usage, including creating or reviewing fork upstream-sync workflows.
+- `github-workflow`: Guide GitHub pull requests, stacked PRs with optional gh-stack, reviews, checks, releases, and fork upstream-sync workflows. Offers installation guidance and available tool or browser alternatives when CLI tools are missing.
 - `macos-dev-app-cleanup`: Remove or verify removal of a project's macOS Debug, Dev, and QA apps by exact path, preserving Release apps, user data, and shared settings.
 - `break-it-down`: Unpack complex topics, systems, or model outputs so the reader can understand the reasoning and relationships, using clear prose, diagrams, interactive HTML, or explainer videos.
 
@@ -25,6 +25,7 @@ The canonical skill source is the top-level `skills/` directory. Plugin manifest
 - `$flutter-flavors Audit Android/iOS flavors and check whether flavorizr.yaml matches native files.`
 - `$git-workflow Help me split these changes into safe commits.`
 - `$github-workflow Review this PR's checks and merge readiness.`
+- `$github-workflow Split this feature into dependent PR layers; continue without installing gh-stack if it is unavailable.`
 - `$github-workflow Create a workflow that syncs my repository's main branch from upstream main every day at 4:00.`
 - `$macos-dev-app-cleanup Remove this project's macOS test apps, keeping the installed Release and shared settings.`
 - `$break-it-down Help me understand the current topic; choose an effective format and make the result.`
