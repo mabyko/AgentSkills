@@ -22,7 +22,7 @@ Use real labels and supported values. An arrow must have an interpretable direct
 
 Use Mermaid or SVG when relationships and labels need to be exact and editable. Use an available image-generation workflow when a spatial illustration or visual analogy better explains the idea. Preserve its relevant editable source or generation brief.
 
-Render the result and inspect labels, edge direction, overlaps, contrast, and legibility at the delivered size. Check branches and exceptions against the source; attractive geometry cannot compensate for a missing condition.
+For a finished diagram, render the result and inspect labels, edge direction, overlaps, contrast, and legibility at the delivered size. For a source-only request, check the source's structure and relationships and state any unverified rendering. Check branches and exceptions against the source; attractive geometry cannot compensate for a missing condition.
 
 ## Produce a web explanation
 
@@ -32,7 +32,7 @@ Separate the explanation's data and content from layout and rendering. Reuse ava
 
 Make interaction serve learning. Examples include changing a parameter and observing the result, stepping through a protocol, toggling an alternative, or revealing the evidence behind a claim. Theme switching alone does not satisfy a request to explore a model. Label controls, expose units and assumptions, and supply a useful initial state.
 
-Keep the content draft beside the output or embedded as safely escaped text that can be copied back out. On revision, change the affected section and preserve unrelated content and user edits.
+Keep the content draft beside the output or embedded as safely escaped text that can be copied back out.
 
 Check before delivery:
 
@@ -41,10 +41,4 @@ Check before delivery:
 3. Check visible controls with keyboard focus and ensure meaning is not conveyed by color alone. Verify runtime errors and missing assets.
 4. Confirm labels, document language, and controls match the requested language. For a promised offline file, check that required assets and data are bundled.
 
-## Using answer-me-with-html when already available
-
-The upstream `am` renderer accepts extended Markdown panels and computes the HTML, SVG layout, and themes. Use its installed help for the current syntax, render the draft, inspect the output, and correct reported issues. Keep the draft for panel-level updates.
-
-At reviewed version 0.4.9, UI language support is English, Chinese, and Japanese. Korean text is treated as Chinese for detection and length checks, and `lang: ko` does not provide Korean support. For Korean, use a renderer with verified Korean support or generate the HTML directly with Korean labels and `lang="ko"`. Do not rewrite Korean merely to pass the Chinese lint rules.
-
-This skill does not require that renderer. If it is unavailable, use the same content-first process with the environment's native tools. Do not claim the upstream project's performance measurements for a different implementation.
+When considering an installed answer-me-with-html renderer, read the [renderer adapter](answer-me-with-html.md).

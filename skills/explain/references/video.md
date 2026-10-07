@@ -4,6 +4,8 @@ Create a bespoke explanation of the requested topic, including animation, captio
 
 ## Establish the deliverable
 
+For a script or storyboard request, use the scene-planning steps and check the text, sequence, and estimated pacing. Deliver that stage as complete. For a finished-video request, continue through rendering and playback verification below.
+
 Use the requested duration, output language, aspect ratio, narration preference, and delivery surface. If unspecified, choose a sequence long enough to develop the explanation and provide captions. Include voice when requested, or when a narrated sequence is the selected teaching approach and an appropriate speech workflow is available. Respect requests for silence. Use an available local or already-authorized speech workflow; an API key's presence alone is not authorization for paid usage.
 
 Discover the available animation, speech, rendering, and export tools before committing to a pipeline. Use the current environment's supported workflow rather than assuming a specific library is installed. For a generic video request, default to a downloadable playable video file; honor an explicit format such as MP4. A player page is suitable when a web animation or HTML player was requested. Identify a missing required capability before promising the finished file.
@@ -14,11 +16,14 @@ Discover the available animation, speech, rendering, and export tools before com
 2. Make each beat introduce or change the corresponding visual element. Reveal arrows, values, branches, and outcomes at the point they are explained. Keep names and visual identity consistent across scenes so the reader can follow an object as it moves.
 3. Use focus, highlighting, or camera motion to direct attention to the object currently being discussed. Keep the relevant context visible. Reuse a scene template or renderer for repeated mechanics; custom-build the transformation needed for the topic.
 4. Write narration for speech in the chosen language. Explain notation and unfamiliar terms before relying on them. Preserve the factual qualifications from the source without reading dense technical prose verbatim.
-5. Produce the audio when requested and use its measured duration to schedule beats. Otherwise allow enough time to read the captions. Render the animation and captions, then export the requested playable artifact.
 
-If an installed answer-me-with-html video renderer fits the topic, its draft-to-scenes workflow can supply the player and optional video export. Inspect its current capabilities and language support first. It is an option, not a dependency; use another available workflow for unsupported visuals or output requirements.
+## Render a finished video
 
-## Verify and deliver
+Produce the audio when requested and use its measured duration to schedule beats. Otherwise allow enough time to read the captions. Render the animation and captions, then export the requested playable artifact.
+
+When considering an installed answer-me-with-html renderer, read the [renderer adapter](answer-me-with-html.md).
+
+## Verify and deliver the rendered result
 
 - Play the exported artifact, including the beginning, transitions, and ending; check for blank scenes, cropped labels, and clipped captions. Verify full-file decoding when a suitable tool is available.
 - Confirm the requested duration, dimensions, and format. Compare scene and caption timing with the narration; listen to pronunciation and pacing when voice is included.

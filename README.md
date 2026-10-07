@@ -35,6 +35,8 @@ The canonical skill source is the top-level `skills/` directory. Plugin manifest
 
 `explain` uses the current conversation when no topic is supplied. You can choose the format in ordinary language. It uses the environment's available production tools; it does not bundle a rendering or speech engine. [Design sources and attribution](skills/explain/references/sources.md).
 
+It works toward the reader's learning or decision goal and completes the requested stage: a script-only request ends with a checked script; a finished-video request includes rendering and playback checks. [Behavioral evaluation cases and recorded checks](docs/explain/cases.md) live outside the installed skill.
+
 ## Quick Install
 
 Run this from the project folder where you want the skills installed:
