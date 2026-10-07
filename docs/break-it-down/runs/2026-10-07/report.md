@@ -8,7 +8,7 @@
 - 적용 스킬 SHA-256: `e5e4af98ae270a0848cece318c528eb1210c0ec4da775b08c0e7a4b4f9345090`. 파일을 상대 경로 순으로 정렬하고, 각 상대 경로·NUL·파일 바이트·NUL을 이어 해시했다.
 - 작성·검토: GPT-6 Astra, high reasoning, T3 Code / Codex, 같은 대화 세션
 - 환경: macOS, 한국어 요청, T3 협업 브라우저에서 로컬 HTML 조작
-- 입력과 판정 기준: [cases.md](../../cases.md)
+- 입력과 판정 기준: [당시 cases.md](https://github.com/mabyko/AgentSkills/blob/db6a2c4319070b86ee40cb43391e8ab6ce218e31/docs/explain/cases.md). [현재 재사용 사례](../../cases.md)는 이름 변경 후의 호출을 사용한다.
 
 스킬 작성자가 판정 기준을 이미 읽은 상태에서 사례를 적용하고 검토했다. 독립 생성·익명 평가가 아니며, 스킬 변경의 인과적 효과나 사람의 이해도 향상을 측정하지 않았다. 변경 전 스킬로 결과물을 새로 생성하지 않았으므로 변경 전후의 품질 우열을 주장하지 않는다.
 

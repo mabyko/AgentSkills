@@ -15,7 +15,7 @@ The canonical skill source is the top-level `skills/` directory. Plugin manifest
 - `git-workflow`: Guide safe local Git workflows such as staging, commits, branches, merges, rebases, tags, and recovery. Defaults to signed commits with DCO sign-off (`git commit -S --signoff`) and falls back explicitly when signing is unavailable.
 - `github-workflow`: Guide GitHub collaboration workflows such as pull requests, review threads, Actions checks, releases, and `gh` CLI usage, including creating or reviewing fork upstream-sync workflows.
 - `macos-dev-app-cleanup`: Remove or verify removal of a project's macOS Debug, Dev, and QA apps by exact path, preserving Release apps, user data, and shared settings.
-- `explain`: Turn a topic or model output into clear prose, diagrams/images, interactive HTML, or custom explainer videos, following Karpathy's proposal and adapting ideas from answer-me-with-html and kar-plain.
+- `break-it-down`: Unpack complex topics, systems, or model outputs so the reader can understand the reasoning and relationships, using clear prose, diagrams, interactive HTML, or explainer videos.
 
 ## Usage Examples
 
@@ -27,15 +27,15 @@ The canonical skill source is the top-level `skills/` directory. Plugin manifest
 - `$github-workflow Review this PR's checks and merge readiness.`
 - `$github-workflow Create a workflow that syncs my repository's main branch from upstream main every day at 4:00.`
 - `$macos-dev-app-cleanup Remove this project's macOS test apps, keeping the installed Release and shared settings.`
-- `$explain Help me understand the current topic; choose an effective format and make the result.`
-- `$explain prose: Explain this notice while preserving its conditions and exceptions.`
-- `$explain diagram: Show the relationships and branches in this process.`
-- `$explain web: Let me change the rate and duration to explore compound interest.`
-- `$explain video: Make a 60-second explanation of this process with English narration and captions.`
+- `$break-it-down Help me understand the current topic; choose an effective format and make the result.`
+- `$break-it-down prose: Explain this notice while preserving its conditions and exceptions.`
+- `$break-it-down diagram: Show the relationships and branches in this process.`
+- `$break-it-down web: Let me change the rate and duration to explore compound interest.`
+- `$break-it-down video: Make a 60-second explanation of this process with English narration and captions.`
 
-`explain` uses the current conversation when no topic is supplied. You can choose the format in ordinary language. It uses the environment's available production tools; it does not bundle a rendering or speech engine. [Design sources and attribution](skills/explain/references/sources.md).
+`break-it-down` replaces the former `explain` skill; invoke it as `$break-it-down`. It uses the current conversation when no topic is supplied. You can choose the format in ordinary language. It uses the environment's available production tools; it does not bundle a rendering or speech engine. [Design sources and attribution](skills/break-it-down/references/sources.md).
 
-It works toward the reader's learning or decision goal and completes the requested stage: a script-only request ends with a checked script; a finished-video request includes rendering and playback checks. [Behavioral evaluation cases and recorded checks](docs/explain/cases.md) live outside the installed skill.
+It works toward the reader's learning or decision goal and completes the requested stage: a script-only request ends with a checked script; a finished-video request includes rendering and playback checks. [Behavioral evaluation cases and recorded checks](docs/break-it-down/cases.md) live outside the installed skill.
 
 ## Quick Install
 

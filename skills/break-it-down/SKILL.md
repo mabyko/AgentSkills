@@ -1,15 +1,15 @@
 ---
-name: explain
-description: Explain a topic or model output through clear prose, diagrams/images, interactive HTML, or custom explainer videos. Use for "explain this", "이해하기 쉽게 설명해줘", visual explanations, explorable comparisons, and narrated walkthroughs.
+name: break-it-down
+description: Break down complex topics, systems, or model outputs into clear explanations using prose, diagrams, interactive HTML, or video. Use when the user asks to "break this down", "explain how it works", or "쉽게 풀어서 설명해줘", or wants a visual, interactive, or narrated explanation.
 ---
 
-# Explain
+# Break It Down
 
-Help the reader understand and inspect a topic by making an explanation tailored to it. Follow Karpathy's invitation to explore richer output: clear writing, diagrams/images, interactive web pages, and bespoke explainer videos. A custom, disposable app or video can be worth creating for a single question.
+Make complex topics or model outputs easier to understand by unpacking the relevant concepts, reasoning, and relationships for the reader. Follow Karpathy's invitation to explore richer output: clear writing, diagrams/images, interactive web pages, and bespoke explainer videos. A custom, disposable app or video can be worth creating for a single question.
 
 ## 1. Establish the goal and deliverable
 
-`$explain` alone uses the current topic and chooses a medium. The user can add a topic, source, audience, or format in ordinary language. Recognize `글/prose`, `그림·도해/diagram`, `웹·HTML/web`, `영상/video`, and `자동/auto` without requiring command syntax.
+`$break-it-down` alone uses the current topic and chooses a medium. The user can add a topic, source, audience, or format in ordinary language. Recognize `글/prose`, `그림·도해/diagram`, `웹·HTML/web`, `영상/video`, and `자동/auto` without requiring command syntax.
 
 Identify what the reader should be able to understand, predict, or decide after the explanation. Infer this goal and the reader's background from the request and context; ask only when a missing fact would materially change the result.
 

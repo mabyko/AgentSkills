@@ -1,0 +1,7 @@
+interface:
+  display_name: "Break It Down"
+  short_description: "복잡한 내용을 글·도해·인터랙티브 웹·영상으로 쉽게 풀어줍니다"
+  brand_color: "#3B82F6"
+  default_prompt: "$break-it-down 지금 이야기한 내용을 이해하기 쉽게 풀어줘. 내 이해 목적에 맞는 글·도해·인터랙티브 웹·영상으로 요청한 단계까지 만들어줘."
+policy:
+  allow_implicit_invocation: true

@@ -1,4 +1,4 @@
-# Explain 행동 검증 사례
+# Break It Down 행동 검증 사례
 
 이 사례는 스킬을 수정할 때 요청 범위, 의미 보존, 결과물의 동작을 비교하기 위한 가상 입력이다. 설치되는 스킬 밖에서 관리한다. 실행 지침에는 이 문서를 연결하지 않는다.
 
@@ -13,11 +13,13 @@
 
 기록: [2026-10-07 작성자 적용 점검](runs/2026-10-07/report.md).
 
+이 기록은 이름 변경 전 `explain` 0.3.8에 대한 점검이다. 당시 입력은 [고정된 커밋의 사례](https://github.com/mabyko/AgentSkills/blob/db6a2c4319070b86ee40cb43391e8ab6ce218e31/docs/explain/cases.md)에 남아 있다. 아래의 재사용 사례는 현재 호출 이름을 사용하며, 이름 변경 후의 독립 실행 결과를 뜻하지 않는다.
+
 ## C1. 영상 대본만 요청
 
 ### 요청과 원자료
 
-> $explain 아래 모델을 중학생에게 설명하는 60초 영상의 한국어 대본만 써줘.
+> $break-it-down 아래 모델을 중학생에게 설명하는 60초 영상의 한국어 대본만 써줘.
 >
 > 가상 캐시 모델: 처음 조회한 결과를 조회 시각과 함께 저장한다. 다음 요청 시 저장 후 경과 시간이 300초 미만이면 저장된 결과를 사용한다. 300초 이상이면 그 요청에서 원본을 다시 조회하고 저장 시각을 바꾼다. 요청이 없으면 시간이 지나도 다시 조회하지 않는다. 모든 시각은 하나의 시계로 측정한다고 가정한다.
 
@@ -32,7 +34,7 @@
 
 ### 요청과 원자료
 
-> $explain 글: 아래 가상 복원 정책을 처음 이용하는 한국어 사용자에게 설명해줘. 언제 복원할 수 있는지 판단할 수 있게 해줘.
+> $break-it-down 글: 아래 가상 복원 정책을 처음 이용하는 한국어 사용자에게 설명해줘. 언제 복원할 수 있는지 판단할 수 있게 해줘.
 >
 > A normal restore requires both a snapshot less than 14 calendar days old and approval from the workspace owner. Downloading a snapshot saves a separate copy; it does not restore the workspace. If the team confirms that the service caused data corruption, the team restores the latest intact snapshot even when it is 14 calendar days old or older. Owner approval is required for both normal and corruption-related restores. The team usually replies within two business days, but this response time is not guaranteed.
 
@@ -52,7 +54,7 @@
 
 ### 요청
 
-> $explain 이 HTML에서 "TTL이 지나면 캐시는 자동으로 갱신됩니다."만 "TTL이 지나면 다음 요청에서 원본을 다시 조회합니다."로 바꿔줘. 나머지 글, 스타일, 조작과 설정값은 유지해줘.
+> $break-it-down 이 HTML에서 "TTL이 지나면 캐시는 자동으로 갱신됩니다."만 "TTL이 지나면 다음 요청에서 원본을 다시 조회합니다."로 바꿔줘. 나머지 글, 스타일, 조작과 설정값은 유지해줘.
 
 ### 판정 기준
 
@@ -66,7 +68,7 @@
 
 ### 요청과 조건
 
-> $explain C1의 가상 캐시 모델을 한국어 내레이션과 자막이 있는 60초 MP4로 만들어줘. 새 유료 서비스는 쓰지 마.
+> $break-it-down C1의 가상 캐시 모델을 한국어 내레이션과 자막이 있는 60초 MP4로 만들어줘. 새 유료 서비스는 쓰지 마.
 
 실행 환경: 영상 렌더링은 가능하지만 허용된 음성 생성 수단은 없다. 이 조건은 실제 환경에서 확인하거나 도구를 제한한 평가 환경에서 구성한다. 후자의 경우 모의 제약임을 기록한다. C1 원자료를 함께 제공한다.
 
