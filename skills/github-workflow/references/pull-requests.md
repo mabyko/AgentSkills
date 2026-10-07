@@ -4,6 +4,8 @@ For ambiguous "merge this" requests, stay in this reference when the target is a
 
 Use `git-workflow` only for local conflict resolution, local squash/rebase decisions, history cleanup, or branch-safety decisions.
 
+Use `stacked-prs.md` when creating dependent PR layers, editing a lower layer, or merging a PR registered in a GitHub Stack. Preserve Stack membership when gh-stack is unavailable; follow the no-installation path there rather than ordinary PR merge commands.
+
 ## PR Shape
 
 Keep pull requests focused. A useful default target is under 400 changed lines when practical.

@@ -5,7 +5,7 @@ description: "Use when choosing or executing Git-only workflows: branching, stag
 
 # Git Workflow
 
-Use for Git operations that affect history, branches, tags, commits, or conflict recovery. Use `github-workflow` for GitHub PRs, reviews, Actions, Releases, and `gh` CLI workflows.
+Use for Git operations that affect history, branches, tags, commits, or conflict recovery. Use `github-workflow` for GitHub PRs, stacked PRs and gh-stack, reviews, Actions, Releases, and `gh` CLI workflows.
 
 ## Core Rules
 
@@ -35,6 +35,7 @@ git --no-pager show --no-color --no-ext-diff
 - Identify the actual base branch from repo docs or remote metadata. Do not assume `main`.
 - Refresh remote-tracking refs before operations whose correctness depends on remote state: merging into a base branch, rebasing onto it, release range review, or branch cleanup.
 - Check whether the branch is shared before rebasing or force-pushing.
+- Apply these Git safeguards to the underlying operations of tools such as gh-stack, including implicit commits, rebases, and force pushes. Use `github-workflow` for stack orchestration and tool availability.
 - Stage only intentional changes. Prefer `git add -p` or explicit file paths.
 - When creating or renaming local task branches, default to `feature/`, `fix/`, `hotfix/`, `docs/`, `test/`, `refactor/`, `release/`, or `chore/` based on the work type unless the user supplies an exact branch name.
 

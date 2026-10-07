@@ -13,7 +13,7 @@ Codex, Claude Code, OpenCode, 그리고 open agent skills 형식을 지원하는
 - `docs-sync`: 문서와 코드의 일치 여부를 점검합니다. 갱신 요청은 문서 수정이나 문서 기준 코드 수정까지 수행하고 검증합니다.
 - `flutter-flavors`: Flutter flavor, `flutter_flavorizr` / `flavorizr.yaml`, 플랫폼 앱 identity, launch config, build mode 경계를 설정하거나 점검합니다.
 - `git-workflow`: staging, commit, branch, merge, rebase, tag, recovery 같은 안전한 로컬 Git workflow를 안내합니다. 기본값으로 DCO sign-off를 포함한 서명 커밋(`git commit -S --signoff`)을 사용하며, 서명이 불가능하면 명시적인 fallback을 따릅니다.
-- `github-workflow`: pull request, review thread, Actions check, release, `gh` CLI 사용과 fork upstream 동기화 workflow 생성·검토를 안내합니다.
+- `github-workflow`: PR, 선택적 gh-stack을 통한 stacked PR, review, check, release, fork upstream 동기화 workflow를 안내합니다. CLI 도구가 없으면 설치 방법과 사용 가능한 연동 도구·브라우저 경로를 안내합니다.
 - `macos-dev-app-cleanup`: 프로젝트의 macOS Debug·Dev·QA 앱을 정확한 경로로 식별해 정리하거나 삭제 여부를 확인하고, Release·사용자 데이터·공유 설정은 보존합니다.
 - `break-it-down`: 복잡한 주제, 시스템이나 모델의 작업 결과를 이해하기 쉽게 풀어줍니다. 독자가 원리와 관계를 이해할 수 있도록 글·도해·인터랙티브 HTML·설명 영상 중 알맞은 형식을 사용합니다.
 
@@ -25,6 +25,7 @@ Codex, Claude Code, OpenCode, 그리고 open agent skills 형식을 지원하는
 - `$flutter-flavors Android/iOS flavor를 점검하고 flavorizr.yaml이 native 파일과 맞는지 확인해줘.`
 - `$git-workflow 지금 변경사항을 안전한 commit 단위로 나누는 걸 도와줘.`
 - `$github-workflow 이 PR의 check와 merge 가능 상태를 검토해줘.`
+- `$github-workflow 이 기능을 의존하는 PR 여러 개로 나눠줘. gh-stack이 없으면 설치 없이 진행해줘.`
 - `$github-workflow 내 저장소의 main 브랜치를 upstream main과 매일 4시에 동기화하는 workflow 만들어줘.`
 - `$macos-dev-app-cleanup 이 프로젝트의 macOS 테스트 앱을 정리해줘. 설치된 Release와 공유 설정은 남겨줘.`
 - `$break-it-down 지금 이야기한 내용을 이해하기 쉽게 만들어줘. 효과적인 형식을 골라 실제 결과물까지 보여줘.`
