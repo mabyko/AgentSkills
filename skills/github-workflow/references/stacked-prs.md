@@ -2,6 +2,8 @@
 
 Use this reference when creating dependent PR layers, editing a lower layer, submitting or syncing with gh-stack, or merging and cleaning up a PR chain. Use separate branches or stacks for independent changes.
 
+Follow the entrypoint's single-PR default and requested scope first. The creation examples below assume dependent PR layers have already been chosen; they do not require splitting ordinary PR work.
+
 Example shape:
 
 ```text

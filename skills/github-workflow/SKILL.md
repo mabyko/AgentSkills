@@ -14,6 +14,7 @@ Use for GitHub-hosted collaboration and publishing. Use `git-workflow` for local
 3. Do not merge, close, publish, mark latest, delete releases, or delete remote branches unless explicitly requested.
 4. Treat green status as necessary but not sufficient: also check annotations, warnings, bot comments, and review state.
 5. For local Git history decisions, follow `git-workflow`.
+6. Default to a single PR for one cohesive change. Preserve the user's specified branch and PR counts. Use a stacked workflow for requested dependent PR layers, an existing stack, or repository guidance that calls for one. gh-stack availability or a native Stack's two-PR minimum is not a reason to split work into additional PRs.
 
 ## Tool Availability and Installation
 
