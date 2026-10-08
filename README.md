@@ -15,6 +15,7 @@ The canonical skill source is the top-level `skills/` directory. Plugin manifest
 - `git-workflow`: Guide safe local Git workflows such as staging, commits, branches, merges, rebases, tags, and recovery. Defaults to signed commits with DCO sign-off (`git commit -S --signoff`) and falls back explicitly when signing is unavailable.
 - `github-workflow`: Guide GitHub pull requests, stacked PRs with optional gh-stack, reviews, checks, releases, and fork upstream-sync workflows. Offers installation guidance and available tool or browser alternatives when CLI tools are missing.
 - `macos-dev-app-cleanup`: Remove or verify removal of a project's macOS Debug, Dev, and QA apps by exact path, preserving Release apps, user data, and shared settings.
+- `css-typography-ko`: Improve Korean web UI readability with CSS typography, covering text hierarchy, fonts, spacing, word boundaries, balanced wrapping, and overflow handling.
 - `break-it-down`: Unpack complex topics, systems, or model outputs so the reader can understand the reasoning and relationships, using clear prose, diagrams, interactive HTML, or explainer videos.
 
 ## Usage Examples
@@ -28,6 +29,7 @@ The canonical skill source is the top-level `skills/` directory. Plugin manifest
 - `$github-workflow Split this feature into dependent PR layers; continue without installing gh-stack if it is unavailable.`
 - `$github-workflow Create a workflow that syncs my repository's main branch from upstream main every day at 4:00.`
 - `$macos-dev-app-cleanup Remove this project's macOS test apps, keeping the installed Release and shared settings.`
+- `$css-typography-ko Improve this Korean web UI's readability, hierarchy, spacing, and wrapping while preserving its visual identity.`
 - `$break-it-down Help me understand the current topic; choose an effective format and make the result.`
 - `$break-it-down prose: Explain this notice while preserving its conditions and exceptions.`
 - `$break-it-down diagram: Show the relationships and branches in this process.`

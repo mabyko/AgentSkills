@@ -1,0 +1,7 @@
+interface:
+  display_name: "한국어 CSS 타이포그래피"
+  short_description: "CSS로 한국어 웹 UI의 가독성, 텍스트 위계와 줄바꿈을 다듬습니다"
+  brand_color: "#3B82F6"
+  default_prompt: "Use $css-typography-ko to improve this Korean web UI's readability, text hierarchy, spacing, and wrapping while preserving its visual identity."
+policy:
+  allow_implicit_invocation: true

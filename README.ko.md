@@ -15,6 +15,7 @@ Codex, Claude Code, OpenCode, 그리고 open agent skills 형식을 지원하는
 - `git-workflow`: staging, commit, branch, merge, rebase, tag, recovery 같은 안전한 로컬 Git workflow를 안내합니다. 기본값으로 DCO sign-off를 포함한 서명 커밋(`git commit -S --signoff`)을 사용하며, 서명이 불가능하면 명시적인 fallback을 따릅니다.
 - `github-workflow`: PR, 선택적 gh-stack을 통한 stacked PR, review, check, release, fork upstream 동기화 workflow를 안내합니다. CLI 도구가 없으면 설치 방법과 사용 가능한 연동 도구·브라우저 경로를 안내합니다.
 - `macos-dev-app-cleanup`: 프로젝트의 macOS Debug·Dev·QA 앱을 정확한 경로로 식별해 정리하거나 삭제 여부를 확인하고, Release·사용자 데이터·공유 설정은 보존합니다.
+- `css-typography-ko`: CSS로 한국어 웹 UI의 가독성을 개선합니다. 텍스트 위계, 글꼴과 간격, 어절 단위 줄바꿈, 줄 길이 조정, 긴 텍스트의 넘침 처리를 함께 다룹니다.
 - `break-it-down`: 복잡한 주제, 시스템이나 모델의 작업 결과를 이해하기 쉽게 풀어줍니다. 독자가 원리와 관계를 이해할 수 있도록 글·도해·인터랙티브 HTML·설명 영상 중 알맞은 형식을 사용합니다.
 
 ## 사용 예시
@@ -28,6 +29,7 @@ Codex, Claude Code, OpenCode, 그리고 open agent skills 형식을 지원하는
 - `$github-workflow 이 기능을 의존하는 PR 여러 개로 나눠줘. gh-stack이 없으면 설치 없이 진행해줘.`
 - `$github-workflow 내 저장소의 main 브랜치를 upstream main과 매일 4시에 동기화하는 workflow 만들어줘.`
 - `$macos-dev-app-cleanup 이 프로젝트의 macOS 테스트 앱을 정리해줘. 설치된 Release와 공유 설정은 남겨줘.`
+- `$css-typography-ko 이 한국어 웹 UI의 기존 디자인을 유지하면서 가독성, 텍스트 위계, 행간과 줄바꿈을 다듬어줘.`
 - `$break-it-down 지금 이야기한 내용을 이해하기 쉽게 만들어줘. 효과적인 형식을 골라 실제 결과물까지 보여줘.`
 - `$break-it-down 글: 이 안내문의 조건과 예외를 보존하면서 설명해줘.`
 - `$break-it-down 그림: 이 과정의 관계와 분기를 보여줘.`
