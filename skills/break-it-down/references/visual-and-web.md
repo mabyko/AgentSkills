@@ -1,44 +1,28 @@
-# Diagrams and interactive HTML
+# Visual and interactive explanations
 
-## Draft the content first
+Start from the relationship or experiment the reader needs to understand. Choose a representation that makes it visible: a flow for branches, a sequence for messages over time, a map for responsibilities, or a chart for changing quantities. Label arrows with their meaning and quantities with their units. Mark invented values and proposed relationships.
 
-Write the core answer and the supporting sub-questions before styling. Give each panel one question. Choose a linear reading order for a guided explanation, or an overview layout when the reader needs to compare parts. Split or simplify a crowded view instead of shrinking its labels.
+## Diagrams and illustrations
 
-Select representations by the information:
+Use an editable diagram format such as Mermaid or SVG for exact structure and labels. Use the available image workflow for an illustration that benefits from visual analogy or spatial detail. Preserve diagram source or the generation brief for revision.
 
-| Information | Useful representation |
-| --- | --- |
-| Structure, relationships, decisions | Flow graph with labeled edges and branches |
-| Messages between actors over time | Sequence diagram |
-| Modules, folders, categories | Tree |
-| Evolution or phases | Timeline |
-| Alternatives across common criteria | Comparison table and a reasoned conclusion |
-| Values against a limit | Labeled quantities with units and a visible threshold |
-| Changes or misconceptions | Before/after view or an annotated example |
+Keep a clear reading order and enough context to interpret each part. Divide an overloaded diagram into related views instead of shrinking its text. Do not merge distinct actors merely to reduce node count.
 
-Use real labels and supported values. An arrow must have an interpretable direction and meaning. Label inferred or proposed relationships. Mark illustrative values explicitly.
+For a finished diagram, render and inspect it at the delivered size. Check labels, arrow direction, branch conditions, overlap, and contrast. Compare its paths with the source. For a source-only request, check the source and identify unverified rendering.
 
-## Produce a diagram or image
+## Interactive HTML
 
-Use Mermaid or SVG when relationships and labels need to be exact and editable. Use an available image-generation workflow when a spatial illustration or visual analogy better explains the idea. Preserve its relevant editable source or generation brief.
+Define the learning interaction before adding controls: what the reader changes, which state or result changes, and what that reveals. Examples include stepping through a request, comparing two cases, or changing an input to see its consequence. A text-only response can be sufficient when text is the outcome; controls must still reveal something relevant to the explanation.
 
-For a finished diagram, render the result and inspect labels, edge direction, overlaps, contrast, and legibility at the delivered size. For a source-only request, check the source's structure and relationships and state any unverified rendering. Check branches and exceptions against the source; attractive geometry cannot compensate for a missing condition.
+Show the current state, assumptions, units, and a useful initial example. Keep controls close to their effects. Give the reader a way to revisit a state or restore initial values when the experiment needs it. Keep explanatory text and visuals consistent with the selected state.
 
-## Produce a web explanation
+Use the requested stack or host surface. For an unspecified standalone format, prefer one HTML file with embedded styles, scripts, and required assets. External source links may remain links. Reuse appropriate components without restricting the explanation to their catalog. Retain editable content and model logic in the delivered source.
 
-For a standalone deliverable with no specified stack, prefer one self-contained HTML file with inline styles and scripts and local or embedded assets. For inline output, use the host's supported rendering surface. If the user specifies a stack or existing application, work within it.
+Before delivering a finished page:
 
-Separate the explanation's data and content from layout and rendering. Reuse available components or a suitable renderer instead of regenerating repeated styling and calculating diagram coordinates by hand. A renderer's component set should not limit the user's requested experiment: implement the additional interaction when needed.
+1. Open the actual artifact using the environment's browser or preview workflow. Check desktop and narrow layouts for clipped content and unreadable diagrams.
+2. Exercise the main interaction and relevant boundary or invalid inputs. Compare displayed results with the source model or a known calculation. Check reset or reverse navigation when provided.
+3. Operate visible controls with the keyboard, check focus and labels, and ensure color is not the only way to interpret a state.
+4. Check runtime errors, missing assets, and output-language consistency. If offline use was promised, verify that the required assets and data are bundled.
 
-Make interaction serve learning. Examples include changing a parameter and observing the result, stepping through a protocol, toggling an alternative, or revealing the evidence behind a claim. Theme switching alone does not satisfy a request to explore a model. Label controls, expose units and assumptions, and supply a useful initial state.
-
-Keep the content draft beside the output or embedded as safely escaped text that can be copied back out.
-
-Check before delivery:
-
-1. Open the actual output in the available browser or preview tool. Inspect desktop and narrow layouts for clipped text, diagrams, or controls.
-2. Exercise the primary interaction, including relevant bounds, invalid input, and reset behavior. Check a known result against the explanation's formula or logic.
-3. Check visible controls with keyboard focus and ensure meaning is not conveyed by color alone. Verify runtime errors and missing assets.
-4. Confirm labels, document language, and controls match the requested language. For a promised offline file, check that required assets and data are bundled.
-
-When considering an installed answer-me-with-html renderer, read the [renderer adapter](answer-me-with-html.md).
+Report any checks that could not be performed. Source inspection alone does not verify interaction or rendering.

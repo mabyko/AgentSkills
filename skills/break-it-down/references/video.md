@@ -1,34 +1,27 @@
-# Explainer videos
+# A guided visual explanation
 
-Create a bespoke explanation of the requested topic, including animation, captions, and narration when requested. A 3Blue1Brown-style request calls for a coherent visual derivation: show objects, introduce changes, and reveal consequences in time with the explanation.
+Develop the explanation through visible changes over time. Introduce an object, show an operation or relationship, and let the reader see its consequence. For a visual derivation, keep the relevant objects recognizable as they transform.
 
-## Establish the deliverable
+## Plan the requested stage
 
-For a script or storyboard request, use the scene-planning steps and check the text, sequence, and estimated pacing. Deliver that stage as complete. For a finished-video request, continue through rendering and playback verification below.
+Use the requested language, duration, aspect ratio, narration, and format. A script-only or storyboard request ends after that stage is reviewed. Treat timings as estimates until measured.
 
-Use the requested duration, output language, aspect ratio, narration preference, and delivery surface. If unspecified, choose a sequence long enough to develop the explanation and provide captions. Include voice when requested, or when a narrated sequence is the selected teaching approach and an appropriate speech workflow is available. Respect requests for silence. Use an available local or already-authorized speech workflow; an API key's presence alone is not authorization for paid usage.
+For a finished video, first identify available animation, speech, rendering, and export tools. Use an existing suitable workflow; no particular engine is required. Include requested narration. Otherwise use voice when it serves the explanation and an appropriate workflow is available; honor requests for silence. Existing credentials alone do not authorize new paid usage.
 
-Discover the available animation, speech, rendering, and export tools before committing to a pipeline. Use the current environment's supported workflow rather than assuming a specific library is installed. For a generic video request, default to a downloadable playable video file; honor an explicit format such as MP4. A player page is suitable when a web animation or HTML player was requested. Identify a missing required capability before promising the finished file.
+A generic finished-video request calls for a playable downloadable file. An HTML player fits an explicit web-animation or player request. Identify missing capabilities before promising the complete output.
 
-## Build the scene sequence
+## Make the sequence
 
-1. Draft the explanation as scenes. Give each scene one concept or step, a visual, and its spoken or captioned beats. Start with the question or core model, then show the reasoning and its conclusion.
-2. Make each beat introduce or change the corresponding visual element. Reveal arrows, values, branches, and outcomes at the point they are explained. Keep names and visual identity consistent across scenes so the reader can follow an object as it moves.
-3. Use focus, highlighting, or camera motion to direct attention to the object currently being discussed. Keep the relevant context visible. Reuse a scene template or renderer for repeated mechanics; custom-build the transformation needed for the topic.
-4. Write narration for speech in the chosen language. Explain notation and unfamiliar terms before relying on them. Preserve the factual qualifications from the source without reading dense technical prose verbatim.
+1. Draft the argument as scenes. For each scene, specify the idea, the visible change, and the spoken or captioned explanation. Use only enough scenes to make the reasoning followable.
+2. Introduce a term or symbol before relying on it. Coordinate labels, highlights, and motion with the point being explained. Keep conditions and qualifications readable without filling the frame with prose.
+3. Preserve continuity between scenes so a viewer can follow the same object, value, or actor. Use motion to explain a relationship, not to imply an unsupported cause or chronology.
+4. For narrated output, produce the audio and measure it before finalizing scene timing. Without voice, allow time to read captions and inspect the visual change. Export the requested format with captions when not excluded by the request.
 
-## Render a finished video
+## Verify the finished artifact
 
-Produce the audio when requested and use its measured duration to schedule beats. Otherwise allow enough time to read the captions. Render the animation and captions, then export the requested playable artifact.
+- Inspect the exported video's beginning, scene transitions, and ending. Check cropped labels, blank frames, captions, duration, dimensions, and format. Check full-file decoding when a suitable tool is available.
+- Listen to the narration when present. Check pronunciation, pacing, and synchronization against the visual sequence; duration metadata alone cannot establish these.
+- Compare the explanation and its limits with the source. Review whether a viewer can follow the reasoning at playback speed.
+- For a player page, exercise play, pause, replay, and seeking when provided. Confirm that required assets are delivered.
 
-When considering an installed answer-me-with-html renderer, read the [renderer adapter](answer-me-with-html.md).
-
-## Verify and deliver the rendered result
-
-- Play the exported artifact, including the beginning, transitions, and ending; check for blank scenes, cropped labels, and clipped captions. Verify full-file decoding when a suitable tool is available.
-- Confirm the requested duration, dimensions, and format. Compare scene and caption timing with the narration; listen to pronunciation and pacing when voice is included.
-- Check the explanation against the source. Motion must not imply a causal or chronological relationship that the source does not support.
-- For a player page, exercise play/pause, replay, and seeking when supplied. Check that required media assets are available in the delivered package.
-- Deliver the playable result plus the scene draft and captions or other editable source needed for revision. A script, storyboard, silent video, and narrated video are distinct deliverables; label the one actually produced.
-
-When a required capability is unavailable, report the blocker and offer the completed source or intermediate artifact as a partial result. Do not describe a storyboard as a rendered video or quietly drop requested narration.
+Deliver the playable artifact and editable scene or animation source, including captions when separate. State what was actually checked. If a capability is unavailable, label any script, storyboard, or silent intermediate accurately and identify what remains incomplete.
