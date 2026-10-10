@@ -23,7 +23,8 @@ usage() {
     '--agent, or --project-dir skips it unless --interactive is supplied.' \
     'Without a terminal, the defaults apply unless options override them.' \
     'Node.js 22.20+ uses skills CLI search and Clack prompts; otherwise the UI uses Bash.' \
-    'Select agents first, then scope. Esc/Ctrl-C cancels; q searches in the Node agent list.' \
+    'Select scope first, then agents. Project agents are grouped by instruction file.' \
+    'Esc/Ctrl-C cancels; q searches in the Node agent list.' \
     'Cursor, Junie, Kimi Code CLI, and Warp support project scope in this installer.' \
     '--agent all selects every supported agent for the chosen scope.' \
     'No npm install is needed.' \
@@ -132,7 +133,7 @@ run_node_ui() {
   else node "$node_ui" "$@" <&3 2>&3; fi
 }
 menu() {
-  local title=$1 mode=$2 initial=$3 cursor=0 key sequence mark pointer i message= result status start end height
+  local title=$1 mode=$2 initial=$3 cursor=0 key sequence mark pointer i message= result status start end height group previous_group hint entry
   shift 3
   local labels=("$@") checked=()
   if [[ -n "$node_ui" ]]; then
@@ -168,13 +169,23 @@ menu() {
     else
       printf '  Up/Down: move  Enter: select  q/Esc: cancel\n' >&3
     fi
+    previous_group=
     for ((i=start; i<end; i++)); do
       pointer=' '
       mark=' '
       if [[ $i -eq $cursor ]]; then pointer='>'; fi
       if [[ "$mode" == multiple && "${checked[i]}" == true ]]; then mark=x; fi
       if [[ "$mode" == multiple ]]; then
-        printf '  %s [%s] %s\n' "$pointer" "$mark" "${labels[i]%%$'\t'*}" >&3
+        entry=${labels[i]#*$'\t'}
+        hint=${entry%%$'\t'*}
+        group=
+        if [[ "$entry" == *$'\t'* ]]; then group=${entry#*$'\t'}; fi
+        if [[ -n "$group" && "$group" != "$previous_group" ]]; then
+          printf '  -- %s --\n' "$group" >&3
+          height=$((height + 1))
+        fi
+        previous_group=$group
+        printf '  %s [%s] %s (%s)\n' "$pointer" "$mark" "${labels[i]%%$'\t'*}" "$hint" >&3
       else
         printf '  %s %s\n' "$pointer" "${labels[i]}" >&3
       fi
@@ -219,26 +230,38 @@ if $interactive; then
   trap 'printf "\nCancelled. No files changed.\n" >&3; exit 130' INT TERM
   prepare_node_ui
   if [[ -z "$node_ui" ]]; then printf '\nAgentSkills / Coding principles / %s / Bash UI\n\n' "$action" >&3; fi
+  initial=1
+  for chosen in "${selected_agents[@]}"; do if project_only_agent "$chosen"; then scope=project; fi; done
+  if [[ "$scope" == project ]]; then initial=0; fi
+  menu 'Installation scope' single "$initial" 'Project' 'Global'
+  if [[ "${choices[0]}" == 1 ]]; then scope=global; project_dir=; else scope=project; fi
+  normalize_agents
   initial=
   ui_agents=()
-  for ((i=0; i<${#agent_ids[@]}; i++)); do
-    ui_agents+=("${agent_labels[i]}"$'\t'"${agent_hints[i]}")
-    for chosen in "${selected_agents[@]}"; do if [[ "$chosen" == "${agent_ids[i]}" ]]; then initial="$initial $i"; fi; done
+  ui_agent_ids=()
+  # Group default project targets; existing files and overrides resolve in the summary.
+  groups=('Shared instructions (AGENTS.md)' 'Separate instruction files')
+  if [[ "$scope" == global ]]; then groups=(''); fi
+  for group in "${groups[@]}"; do
+    for ((i=0; i<${#agent_ids[@]}; i++)); do
+      if [[ "$scope" == global ]]; then
+        if project_only_agent "${agent_ids[i]}"; then continue; fi
+        hint=${agent_hints[i]#* / }
+        agent_group=
+      else
+        hint=${agent_hints[i]%% / *}
+        if [[ "$hint" == AGENTS.md ]]; then agent_group=${groups[0]}; else agent_group=${groups[1]}; fi
+      fi
+      [[ "$agent_group" == "$group" ]] || continue
+      for chosen in "${selected_agents[@]}"; do if [[ "$chosen" == "${agent_ids[i]}" ]]; then initial="$initial ${#ui_agent_ids[@]}"; fi; done
+      ui_agents+=("${agent_labels[i]}"$'\t'"$hint"$'\t'"$agent_group")
+      ui_agent_ids+=("${agent_ids[i]}")
+    done
   done
   menu 'Choose agents' multiple "$initial" "${ui_agents[@]}"
   selected_agents=()
-  for i in "${choices[@]}"; do selected_agents+=("${agent_ids[i]}"); done
-  project_required=false
-  for chosen in "${selected_agents[@]}"; do if project_only_agent "$chosen"; then project_required=true; fi; done
-  if $project_required; then
-    menu 'Installation scope' single 0 'Project'
-  else
-    initial=1
-    if [[ "$scope" == project ]]; then initial=0; fi
-    menu 'Installation scope' single "$initial" 'Project' 'Global'
-  fi
-  if [[ "${choices[0]}" == 1 ]]; then scope=global; project_dir=; else
-    scope=project
+  for i in "${choices[@]}"; do selected_agents+=("${ui_agent_ids[i]}"); done
+  if [[ "$scope" == project ]]; then
     if [[ -n "$node_ui" ]]; then menu 'Project folder' text "${project_dir:-$PWD}"; else
       printf 'Project folder [%s]: ' "${project_dir:-$PWD}" >&3
       IFS= read -r directory <&3 || cancel

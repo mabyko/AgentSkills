@@ -58,9 +58,9 @@ Bash 3.2 이상과 기본 Unix 명령으로 동작하며, 원격 설치에는 cu
 curl -fsSL https://raw.githubusercontent.com/mabyko/AgentSkills/main/scripts/install-coding-principles.sh | bash
 ```
 
-이미 내려받은 저장소에서는 지금 `./scripts/install-coding-principles.sh`로 실행할 수 있습니다. Space로 에이전트를 선택하고 전역·프로젝트 범위를 고른 뒤, 지침 파일 경로를 확인하고 적용하세요. Node 화면에서는 이름을 입력해 목록을 검색하고 선택한 도구를 요약해서 볼 수 있습니다. 방향키로 이동하고 Enter로 진행합니다. Esc·Ctrl-C로 취소할 수 있습니다. Bash 화면에서는 q로도 취소할 수 있지만, Node의 검색 목록에서는 q도 검색어로 입력됩니다.
+이미 내려받은 저장소에서는 지금 `./scripts/install-coding-principles.sh`로 실행할 수 있습니다. 전역·프로젝트 범위를 먼저 고르고 Space로 에이전트를 선택한 뒤, 지침 파일 경로를 확인하고 적용하세요. 프로젝트에서는 기본 지침이 `AGENTS.md`인 도구와 별도 지침 파일을 쓰는 도구를 나눠 보여주며, 어느 그룹도 강제로 포함하지 않습니다. Node 화면에서는 이름을 입력해 검색하고, 그룹 제목에서 Space로 묶음 선택·해제하거나 좌우 방향키로 접고 펼칠 수 있습니다. 위아래 방향키로 이동하고 Enter로 진행합니다. Esc·Ctrl-C로 취소할 수 있습니다. Bash 화면에서는 q로도 취소할 수 있지만, Node의 검색 목록에서는 q도 검색어로 입력됩니다.
 
-에이전트 목록은 지침 경로를 확인한 22개 도구로 구성하며, Cursor·Copilot·Cline·Gemini CLI·Amp·Zed 등을 포함합니다. 이름 옆에는 스킬 폴더 대신 기본 지침 파일 경로를 표시합니다. PC에 설치돼 있지 않아도 선택할 수 있고, 지침 경로를 확인하지 못한 도구는 표시하지 않습니다. Cursor·Junie·Kimi Code CLI·Warp는 이 설치기에서 프로젝트 범위만 지원합니다. [도구별 경로와 적용 조건](docs/coding-principles-install.md#agent-instruction-files)을 참고하세요.
+에이전트 목록은 지침 경로를 확인한 22개 도구로 구성하며, Cursor·Copilot·Cline·Gemini CLI·Amp·Zed 등을 포함합니다. 이름 옆에는 선택한 범위의 기본 지침 파일 경로를 표시하고, 기존 파일이나 경로 설정을 반영한 실제 경로는 마지막 요약에서 확인합니다. PC에 설치돼 있지 않아도 선택할 수 있고, 지침 경로를 확인하지 못한 도구는 표시하지 않습니다. Cursor·Junie·Kimi Code CLI·Warp는 이 설치기에서 프로젝트 범위만 지원하므로 전역 선택 화면에서는 제외합니다. [도구별 경로와 적용 조건](docs/coding-principles-install.md#agent-instruction-files)을 참고하세요.
 
 Clack 화면은 필요한 라이브러리를 포함한 파일로 배포하므로 실행할 때 npm으로 설치할 필요가 없습니다. 원격 실행에서는 선택 전에 이 파일을 내려받고 종료 시 지웁니다. 다운로드나 로딩에 실패하면 Bash 화면을 사용합니다. 두 화면 모두 같은 Bash 코드로 설치·제거합니다.
 

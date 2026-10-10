@@ -1,4 +1,4 @@
-import { confirm, intro, isCancel, note, select, text } from '@clack/prompts';
+import { confirm, intro, isCancel, log, note, select, text } from '@clack/prompts';
 import pc from 'picocolors';
 import { cancelSymbol, searchMultiselect } from './vendor/skills-search-multiselect.ts';
 
@@ -28,25 +28,28 @@ async function main() {
     note([initial, '', ...labels.map(path => pc.cyan(path))].join('\n'), message, terminal);
     return;
   }
-  if (mode === 'multiple') intro(pc.bgCyan(pc.black(' coding principles ')), terminal);
+  if (message === 'Installation scope') intro(pc.bgCyan(pc.black(' coding principles ')), terminal);
   const values = mode === 'multiple' || mode === 'single'
     ? initial.trim().split(/\s+/).filter(Boolean).map(Number) : [];
   const options = {
     message,
     options: labels.map((entry, value) => {
-      const [label, hint] = entry.split('\t');
-      return { label, hint, value };
+      const [label, hint, group] = entry.split('\t');
+      return { label, hint, group, value };
     }),
     ...terminal,
   };
   if (message === 'Installation scope') {
     options.options[0].hint = 'Install in project directory (shared with your project)';
     if (options.options[1]) options.options[1].hint = 'Install in home directory (available across all projects)';
-    else options.options[0].hint = 'Selected agents require project instructions';
   }
   let result;
   if (mode === 'multiple') {
-    result = await searchMultiselect({ ...terminal, message, items: options.options, initialSelected: values, required: true });
+    const grouped = options.options.some(item => item.group);
+    const items = options.options;
+    log.step(`${items.length} agents`, terminal);
+    if (grouped) log.info('Space selects an agent or group; ←→ collapse/expand groups. Paths are defaults.', terminal);
+    result = await searchMultiselect({ ...terminal, message, items, initialSelected: values, required: true, selectGroups: grouped, maxVisible: grouped ? items.length + 2 : 8 });
   } else if (mode === 'confirm') {
     result = await confirm({ ...terminal, message, initialValue: true });
   } else if (mode === 'text') {

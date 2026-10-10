@@ -27,12 +27,14 @@ Run without options in a terminal:
 ./scripts/install-coding-principles.sh
 ```
 
-1. Move through agents with Up/Down, toggle them with Space, then press Enter. Select at least one agent. In the Node UI, type to filter the list; selections persist while searching. Each agent shows its default project/global instruction paths. The Bash list scrolls in pages of eight.
-2. Choose project or personal/global scope with Up/Down and Enter.
+1. Choose project or personal/global scope with Up/Down and Enter.
+2. Move through agents with Up/Down, toggle them with Space, then press Enter. Select at least one agent. Each agent shows its default instruction path for the chosen scope. Project agents are grouped into `Shared instructions (AGENTS.md)` and `Separate instruction files`; global agents remain individually selectable. In the Node UI, type to filter the list; selections persist while searching. Space on a group heading toggles its visible agents, and Left/Right collapses or expands the group. The Bash list shows the same group headings and paths, with individual selection in pages of eight.
 3. For project scope, enter the project folder; Enter accepts the displayed folder.
 4. Review the instruction paths and apply, or cancel. Esc and Ctrl-C cancel before any files change. Bash also accepts q to cancel; in the Node agent list, q is search input.
 
-Personal scope and Codex + Claude Code are preselected. Selecting Cursor, Junie, Kimi Code CLI, or Warp restricts scope to Project because this installer only has a verified project instruction target for them. `uninstall` opens the same UI for removal. The UI requires a controlling terminal; `--interactive` reports an error when none is available.
+Personal scope and Codex + Claude Code are preselected. Preselecting Cursor, Junie, Kimi Code CLI, or Warp starts the scope chooser on Project because this installer only has a verified project instruction target for them. Choosing Global omits those tools from the agent list. `uninstall` opens the same UI for removal. The UI requires a controlling terminal; `--interactive` reports an error when none is available.
+
+Project grouping follows default instruction filenames, not the skills CLI's `.agents/skills` compatibility group. Neither group is locked or automatically included: selecting only Claude Code does not create `AGENTS.md`. Selecting a shared group preserves each tool's existing-file and override rules, so it can resolve to more than one file; the final summary lists the actual paths before confirmation. With no overrides, selected tools sharing `AGENTS.md` add or remove the block only once.
 
 With Node.js 22.20 or later, agent selection uses the [original skills CLI search renderer](https://github.com/vercel-labs/skills/blob/13e4063a1cf913f5606d57d42ab83a86f5001e04/src/prompts/search-multiselect.ts), with its search input, selection markers, selected-item summary, colors, and redraw behavior. Scope and project-folder prompts, the summary box, and Yes/No confirmation use [Clack](https://github.com/bombshell-dev/clack). The vendored renderer retains its MIT license and only adds configurable terminal streams and an abort signal for the Bash bridge.
 

@@ -525,7 +525,7 @@ esac
     def test_ui_selects_only_grok_globally(self):
         grok = self.home / ".grok/AGENTS.md"
         for args in ((), ("uninstall",)):
-            code, output = self.run_ui([(b"Choose agents", b" \x1b[B \x1b[B \n"), (b"Installation scope", b"\n"), (b"Proceed with", b"\n")], args=args)
+            code, output = self.run_ui([(b"Installation scope", b"\n"), (b"Choose agents", b" \x1b[B \x1b[B \n"), (b"Proceed with", b"\n")], args=args)
             self.assertEqual(code, 0, output)
             self.assertIn(str(grok), output)
             if not args:
@@ -537,10 +537,11 @@ esac
 
     def test_piped_ui_selects_all_agents_in_current_project(self):
         env, temporary = self.remote_environment()
-        code, output = self.run_ui([(b"Choose agents", b"\x1b[B\x1b[B \x1b[B \x1b[B \x1b[B \n"), (b"Installation scope", b"\x1b[B\n"), (b"Project folder", b"\n"), (b"Proceed with", b"\n")], env=env, piped=True)
+        code, output = self.run_ui([(b"Installation scope", b"\x1b[A\n"), (b"Choose agents", b"\n"), (b"Project folder", b"\n"), (b"Proceed with", b"\n")], args=("--interactive", "--agent", "all"), env=env, piped=True)
         self.assertEqual(code, 0, output)
         self.assertEqual((self.project / "AGENTS.md").read_bytes().count(START), 1)
         self.assertEqual((self.project / "CLAUDE.md").read_bytes().count(START), 1)
+        self.assertEqual((self.project / ".junie/guidelines.md").read_bytes().count(START), 1)
         self.assertFalse(self.codex.exists())
         self.assertFalse(self.claude.exists())
         self.assertFalse(self.pi.exists())
@@ -551,7 +552,7 @@ esac
         self.codex.mkdir()
         agents = self.codex / "AGENTS.md"
         agents.write_bytes(b"Existing instructions\n")
-        for steps, expected_code in (([(b"Choose agents", b"q")], 0), ([(b"Choose agents", b"\x1b")], 0), ([(b"Choose agents", b"\n"), (b"Global\r\n  \r\n", b"\x03")], 130), ([(b"Choose agents", b"\n"), (b"Installation scope", b"q")], 0), ([(b"Choose agents", b"\n"), (b"Installation scope", b"\n"), (b"Proceed with", b"\x1b[B\n")], 0)):
+        for steps, expected_code in (([(b"Installation scope", b"q")], 0), ([(b"Installation scope", b"\x1b")], 0), ([(b"Installation scope", b"\x03")], 130), ([(b"Installation scope", b"\n"), (b"Choose agents", b"q")], 0), ([(b"Installation scope", b"\n"), (b"Choose agents", b"\n"), (b"Proceed with", b"\x1b[B\n")], 0)):
             with self.subTest(steps=steps):
                 code, output = self.run_ui(steps)
                 self.assertEqual(code, expected_code, output)
@@ -560,13 +561,13 @@ esac
                 self.assertFalse(self.claude.exists())
                 self.assertEqual(list(self.project.iterdir()), [])
         env, temporary = self.remote_environment()
-        code, output = self.run_ui([(b"Choose agents", b"\n"), (b"Installation scope", b"\n"), (b"Proceed with", b"q")], env=env, piped=True)
+        code, output = self.run_ui([(b"Installation scope", b"\n"), (b"Choose agents", b"\n"), (b"Proceed with", b"q")], env=env, piped=True)
         self.assertEqual(code, 0, output)
         self.assertFalse(Path(env["DOWNLOAD_LOG"]).exists())
         self.assertEqual(list(temporary.iterdir()), [])
 
     def test_ui_requires_one_agent_and_yes_skips_the_ui(self):
-        code, output = self.run_ui([(b"Choose agents", b" \x1b[B \n"), (b"at least one", b" \n"), (b"Installation scope", b"\n"), (b"Proceed with", b"\n")])
+        code, output = self.run_ui([(b"Installation scope", b"\n"), (b"Choose agents", b" \x1b[B \n"), (b"at least one", b" \n"), (b"Proceed with", b"\n")])
         self.assertEqual(code, 0, output)
         self.assertFalse(self.codex.exists())
         self.assertIn(START, (self.claude / "CLAUDE.md").read_bytes())
@@ -597,7 +598,7 @@ esac
         self.enable_node()
         env = dict(self.env, FORCE_COLOR="1")
         env.pop("NO_COLOR", None)
-        code, output = self.run_ui([(b"Choose agents", b" \x1b[B pi"), (b"pi", b" \r"), (b"Installation scope", b"\r"), (b"Proceed with", b"\r")], env=env)
+        code, output = self.run_ui([(b"Installation scope", b"\r"), (b"Choose agents", b" \x1b[B pi"), (b"pi", b" \r"), (b"Proceed with", b"\r")], env=env)
         self.assertEqual(code, 0, output)
         plain = re.sub(r"\x1b\[[0-9;]*m", "", output)
         self.assertIn("Search: pi", plain)
@@ -611,7 +612,7 @@ esac
 
     def test_search_q_is_input_and_escape_cancels(self):
         self.enable_node()
-        code, output = self.run_ui([(b"Choose agents", b"q"), (b"Search: q", b"\x1b")])
+        code, output = self.run_ui([(b"Installation scope", b"\r"), (b"Choose agents", b"q"), (b"Search: q", b"\x1b")])
         self.assertEqual(code, 0, output)
         self.assertIn("Cancelled", output)
         self.assertFalse(self.codex.exists())
@@ -619,7 +620,7 @@ esac
 
     def test_node_ui_requires_one_agent_and_yes_bypasses_it(self):
         self.enable_node()
-        code, output = self.run_ui([(b"Choose agents", b" \x1b[B \r"), (b"Selected: (none)", b" \r"), (b"Installation scope", b"\r"), (b"Proceed with", b"\r")])
+        code, output = self.run_ui([(b"Installation scope", b"\r"), (b"Choose agents", b" \x1b[B \r"), (b"Selected: (none)", b" \r"), (b"Proceed with", b"\r")])
         self.assertEqual(code, 0, output)
         self.assertFalse(self.codex.exists())
         self.assertIn(START, (self.claude / "CLAUDE.md").read_bytes())
@@ -630,17 +631,17 @@ esac
 
     def test_node_agent_paths_and_project_only_scope(self):
         self.enable_node()
-        code, output = self.run_ui([(b"Choose agents", b"cursor"), (b"project only", b"\r"), (b"Installation scope", b"\r"), (b"Project folder", b"\r"), (b"Proceed with", b"\r")], args=("--interactive", "--agent", "cursor"))
+        code, output = self.run_ui([(b"Installation scope", b"\r"), (b"Choose agents", b"cursor\r"), (b"Project folder", b"\r"), (b"Proceed with", b"\r")], args=("--interactive", "--agent", "cursor"))
         self.assertEqual(code, 0, output)
-        self.assertIn("AGENTS.md / project only", output)
-        self.assertIn("Selected agents require project instructions", output)
-        self.assertNotIn("Install in home directory", output)
+        self.assertIn("Cursor", output)
+        self.assertIn("Shared instructions (AGENTS.md)", output)
+        self.assertNotIn("AGENTS.md / project only", output)
         self.assertNotIn("AstrBot", output)
         self.assertIn(START, (self.project / "AGENTS.md").read_bytes())
         self.assertFalse(self.codex.exists())
 
     def test_bash_agent_menu_scrolls_to_new_agents(self):
-        code, output = self.run_ui([(b"Choose agents", b"\x1b[B" * 21), (b"Zed", b"q")])
+        code, output = self.run_ui([(b"Installation scope", b"\n"), (b"Choose agents", b"\x1b[B" * 17), (b"Zed", b"q")])
         self.assertEqual(code, 0, output)
         self.assertIn("Zed", output)
         self.assertIn("Cancelled", output)
@@ -648,7 +649,7 @@ esac
 
     def test_node_ui_honors_project_and_agent_preselection(self):
         self.enable_node()
-        code, output = self.run_ui([(b"Choose agents", b"\n"), (b"Installation scope", b"\n"), (b"Project folder", b"\n"), (b"Proceed with", b"\n")], args=("--interactive", "--scope", "project", "--project-dir", str(self.project), "--agent", "grok"))
+        code, output = self.run_ui([(b"Installation scope", b"\n"), (b"Choose agents", b"\n"), (b"Project folder", b"\n"), (b"Proceed with", b"\n")], args=("--interactive", "--scope", "project", "--project-dir", str(self.project), "--agent", "grok"))
         self.assertEqual(code, 0, output)
         self.assertIn("coding principles", output)
         self.assertEqual((self.project / "AGENTS.md").read_bytes().count(START), 1)
@@ -656,13 +657,75 @@ esac
         self.assertFalse(self.codex.exists())
         self.assertFalse(self.home.joinpath(".grok").exists())
 
+    def test_node_project_group_selects_shared_targets_once_and_can_remove_them(self):
+        self.enable_node()
+        for action in ("install", "uninstall"):
+            with self.subTest(action=action):
+                code, output = self.run_ui([
+                    (b"Installation scope", b"\r"),
+                    (b"Choose agents", b" \r"),
+                    (b"Project folder", b"\r"),
+                    (b"Proceed with", b"\r"),
+                ], args=(action, "--interactive", "--scope", "project", "--agent", "grok"))
+                self.assertEqual(code, 0, output)
+                self.assertIn("22 agents", output)
+                self.assertIn("Shared instructions (AGENTS.md)", output)
+                self.assertNotIn("always included", output)
+                if action == "install":
+                    self.assertEqual((self.project / "AGENTS.md").read_bytes().count(START), 1)
+                else:
+                    self.assertFalse((self.project / "AGENTS.md").exists())
+                self.assertEqual(sorted(path.name for path in self.home.iterdir()), [])
+                self.assertFalse((self.project / "CLAUDE.md").exists())
+                self.assertFalse(self.codex.exists())
+                self.assertFalse(self.pi.exists())
+
+    def test_project_separate_file_selection_does_not_force_shared_install(self):
+        for node in (False, True):
+            with self.subTest(node=node):
+                if node:
+                    self.enable_node()
+                code, output = self.run_ui([
+                    (b"Installation scope", b"\r"),
+                    (b"Choose agents", b"\r"),
+                    (b"Project folder", b"\r"),
+                    (b"Proceed with", b"\r"),
+                ], args=("--interactive", "--scope", "project", "--agent", "claude"))
+                self.assertEqual(code, 0, output)
+                self.assertIn("Shared instructions (AGENTS.md)", output)
+                self.assertIn(START, (self.project / "CLAUDE.md").read_bytes())
+                self.assertFalse((self.project / "AGENTS.md").exists())
+                self.assert_success(self.run_installer("uninstall", "project", "claude"))
+
+    def test_node_groups_collapse_and_global_selection_omits_project_only_tools(self):
+        self.enable_node()
+        code, output = self.run_ui([
+            (b"Installation scope", b"\r"),
+            (b"Choose agents", b"\x1b[D"),
+            (b"Separate instruction files", b"\x1b"),
+        ], args=("--interactive", "--scope", "project"))
+        self.assertEqual(code, 0, output)
+        self.assertEqual(list(self.project.iterdir()), [])
+        self.assertNotIn("always included", output)
+        code, output = self.run_ui([
+            (b"Installation scope", b"\r"),
+            (b"Choose agents", b"cursor"),
+            (b"No matches found", b"\x1b"),
+        ])
+        self.assertEqual(code, 0, output)
+        self.assertIn("18 agents", output)
+        self.assertIn("~/.codex/AGENTS.md", output)
+        self.assertNotIn("Shared instructions", output)
+        self.assertNotIn("(AGENTS.md /", output)
+        self.assertFalse(self.codex.exists())
+
     def test_node_piped_ui_and_failed_download_fallback(self):
         self.enable_node()
         env, temporary = self.remote_environment()
         for fail in (False, True):
             with self.subTest(fail_ui_download=fail):
                 run_env = dict(env, FAIL_UI="1" if fail else "")
-                code, output = self.run_ui([(b"Choose agents", b"\n"), (b"Installation scope", b"\x1b[B\n"), (b"Project folder", b"\n"), (b"Proceed with", b"\n")], env=run_env, piped=True)
+                code, output = self.run_ui([(b"Installation scope", b"\x1b[A\n"), (b"Choose agents", b"\n"), (b"Project folder", b"\n"), (b"Proceed with", b"\n")], env=run_env, piped=True)
                 self.assertEqual(code, 0, output)
                 self.assertIn("Bash UI" if fail else "coding principles", output)
                 for name in ("AGENTS.md", "CLAUDE.md"):
@@ -676,7 +739,7 @@ esac
         self.codex.mkdir()
         agents = self.codex / "AGENTS.md"
         agents.write_bytes(b"Existing instructions\n")
-        for steps, expected in (([(b"Choose agents", b"\x1b")], 0), ([(b"Choose agents", b"\x03")], 130), ([(b"Choose agents", b"\n"), (b"Installation scope", b"q")], 0), ([(b"Choose agents", b"\n"), (b"Installation scope", b"\x1b")], 0), ([(b"Choose agents", b"\n"), (b"Installation scope", b"\n"), (b"Proceed with", b"\x1b[B\n")], 0)):
+        for steps, expected in (([(b"Installation scope", b"\x1b")], 0), ([(b"Installation scope", b"\x03")], 130), ([(b"Installation scope", b"q")], 0), ([(b"Installation scope", b"\r"), (b"Choose agents", b"\x1b")], 0), ([(b"Installation scope", b"\r"), (b"Choose agents", b"\x03")], 130), ([(b"Installation scope", b"\r"), (b"Choose agents", b"\r"), (b"Proceed with", b"\x1b[B\r")], 0)):
             with self.subTest(steps=steps):
                 code, output = self.run_ui(steps)
                 self.assertEqual(code, expected, output)
@@ -684,7 +747,7 @@ esac
                 self.assertEqual(agents.read_bytes(), b"Existing instructions\n")
                 self.assertFalse(self.claude.exists())
         env, temporary = self.remote_environment()
-        code, output = self.run_ui([(b"Choose agents", b"\x1b")], env=env, piped=True)
+        code, output = self.run_ui([(b"Installation scope", b"\x1b")], env=env, piped=True)
         self.assertEqual(code, 0, output)
         self.assertEqual(list(temporary.iterdir()), [])
         self.assertEqual(Path(env["DOWNLOAD_LOG"]).read_text().splitlines(), ["https://raw.githubusercontent.com/mabyko/AgentSkills/main/scripts/coding-principles-ui.cjs"])
@@ -697,7 +760,7 @@ esac
             with self.subTest(shim=body):
                 shim.write_text("#!/bin/bash\n" + body + "\n")
                 shim.chmod(0o755)
-                code, output = self.run_ui([(b"Choose agents", b"q")], env=dict(self.env, REAL_NODE=node))
+                code, output = self.run_ui([(b"Installation scope", b"q")], env=dict(self.env, REAL_NODE=node))
                 self.assertEqual(code, 0, output)
                 self.assertIn("Bash UI", output)
                 self.assertFalse(self.codex.exists())
