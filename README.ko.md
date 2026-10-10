@@ -4,7 +4,7 @@
 
 Codex, Claude Code, OpenCode, 그리고 open agent skills 형식을 지원하는 다른 에이전트에서 재사용할 수 있는 스킬 모음입니다.
 
-이 저장소의 canonical skill source는 최상위 `skills/` 디렉터리입니다. 플러그인 manifest와 marketplace 파일도 같은 source를 가리키므로, 여러 에이전트 생태계에서 동일한 스킬을 설치할 수 있습니다.
+스킬은 최상위 `skills/`에서 관리하고 `skills` CLI로 필요한 것만 선택 설치합니다. 플러그인은 개별 훅 또는 모든 스킬·훅을 포함한 전체 묶음을 제공합니다. Codex와 Claude Code에서 같은 두 가지 플러그인을 선택할 수 있습니다.
 
 ## 스킬
 
@@ -96,63 +96,113 @@ npx skills@latest add mabyko/AgentSkills --global
 
 참고: `skills` CLI는 스킬만 설치합니다. 이 저장소의 [훅](#훅)은 `skills/` 바깥에 있어서 플러그인 설치 경로로만 배포됩니다. 훅이 필요하면 아래 플러그인 설치 방법을 사용하세요.
 
+## 플러그인 선택
+
+같은 `mabyko` marketplace에서 전체 묶음이나 필요한 플러그인을 선택하세요.
+
+| 플러그인 | 포함하는 기능 |
+| --- | --- |
+| `agent-skills` | 전체 묶음: 스킬 9개 + Git 안전 훅 |
+| `git-hooks` | Git 안전 훅(`PreToolUse`)만 포함. 스킬 없음 |
+
+필요한 스킬은 `skills` CLI에서 이름으로 선택하세요. 예를 들어 Git과 GitHub 스킬만 설치하려면:
+
+```bash
+npx skills@latest add mabyko/AgentSkills --skill git-workflow github-workflow
+```
+
+모든 스킬과 훅을 한 번에 설치하려면 `agent-skills` 하나를 선택하세요. 전체 묶음과 개별 스킬·훅을 함께 설치하면 중복 등록될 수 있습니다.
+
+자동 실행 알림은 `git-hooks` 플러그인으로 별도 설치합니다. 스킬 없이도 동작하며 독립적으로 제거할 수 있습니다. 아래 명령의 `agent-skills`를 `git-hooks`로 바꾸면 됩니다.
+
+### 스킬과 훅의 역할
+
+모든 스킬은 단독으로 사용할 수 있습니다. 다음 분류는 설치 의존성이 아니라 훅이 보완하는 역할을 나타냅니다.
+
+| 스킬 | 분류 | 판단 근거 |
+| --- | --- | --- |
+| `git-workflow` | 스킬 + 선택 훅 | 스킬은 Git 작업·복구 절차를 안내하고, Git 훅은 Bash 명령 직전에 핵심 안전 규칙을 상기시킵니다. |
+| `github-workflow` | 스킬만으로 충분 | PR·리뷰·CI·릴리스는 작업 맥락이 필요합니다. Git 훅은 직접 실행하는 gh/API 작업을 다루지 않습니다. |
+| `apple-app-icon-generator` | 스킬만으로 충분 | 앱 식별, 디자인 선택, 생성·설치·확인은 요청별 절차입니다. |
+| `apple-bundle-id-guardrails` | 스킬만으로 충분 | 번들 ID와 서명 팀의 소유권·설정은 프로젝트 맥락으로 판단합니다. |
+| `macos-dev-app-cleanup` | 스킬만으로 충분 | 승인된 삭제 범위와 정확한 앱 경로를 먼저 확인해야 합니다. |
+| `flutter-flavors` | 스킬만으로 충분 | flavor 의도와 플랫폼 설정을 함께 점검하는 작업입니다. |
+| `docs-sync` | 스킬만으로 충분 | 변경사항과 문서가 약속한 동작을 비교해야 합니다. |
+| `css-typography-ko` | 스킬만으로 충분 | 텍스트 위계와 화면 가독성을 실제 UI에서 확인해야 합니다. |
+| `break-it-down` | 스킬만으로 충분 | 독자의 질문과 설명할 관계에 따라 절차·형식을 선택합니다. |
+
+스킬 설치는 내용을 매 세션에 전부 넣는 방식이 아닙니다. 호출하거나 설명에 맞는 작업을 만났을 때 스킬을 읽습니다. 훅은 지정한 이벤트에 실행됩니다. Git 훅은 Bash 명령 일부를 감지하는 알림이며 모든 위험 작업을 차단하는 장치는 아닙니다.
+
 ## Codex 플러그인
 
-Codex marketplace에서 이 저장소를 플러그인으로 설치하려면 이 방법을 사용하세요.
+개인 전역 설치:
 
 ```bash
 codex plugin marketplace add mabyko/AgentSkills
+codex plugin add agent-skills@mabyko
 ```
 
-그 다음 Codex에서 `/plugins`로 이동해 `agent-skills`를 검색하고 설치합니다.
+`/plugins`에서도 설치할 수 있습니다. 훅을 포함한 플러그인은 설치 후 `/hooks`에서 훅을 검토하고 신뢰하도록 설정하세요. 설치만으로 훅이 신뢰되지는 않으며, 훅 정의가 추가·변경되면 재검토가 필요할 수 있습니다. [Codex 훅 문서](https://learn.chatgpt.com/docs/hooks)를 참고하세요.
 
-Codex는 이 저장소를 다음 경로로 해석합니다.
+특정 프로젝트에서만 쓰려면 설치본은 유지하고 사용자 설정(`$CODEX_HOME/config.toml`, 기본 `~/.codex/config.toml`)에 다음을 설정합니다.
 
-```text
-.agents/plugins/marketplace.json
-  └── source.path: "./"
-      └── .codex-plugin/plugin.json
-          └── skills: "./skills/"
+```toml
+[plugins."agent-skills@mabyko"]
+enabled = false
 ```
 
-marketplace 파일은 catalog entry이고, `.codex-plugin/plugin.json`은 플러그인 manifest입니다. 실제 스킬은 계속 `skills/`에 있습니다.
+사용할 프로젝트의 `.codex/config.toml`에는 같은 항목을 `enabled = true`로 설정하세요. 프로젝트 설정은 신뢰한 프로젝트에서만 적용됩니다. 해당 프로젝트에서 끄려면 값을 다시 `false`로 바꾸세요. 이 설정은 스킬과 다른 훅을 포함한 플러그인 전체에 적용됩니다. [Codex 설정 우선순위](https://developers.openai.com/codex/config-basic/)를 참고하세요.
+
+개인 전역 설치 제거:
+
+```bash
+codex plugin remove agent-skills@mabyko
+```
+
+Codex는 `.agents/plugins/marketplace.json`과 선택한 플러그인의 `.codex-plugin/plugin.json`을 읽습니다. `agent-skills`의 루트는 저장소 루트이고, 선택 플러그인의 루트는 `plugins/<이름>/`입니다. 각 플러그인은 자신에게 등록된 스킬과 훅을 로드합니다.
 
 ## Claude Code 플러그인
 
-Claude Code에서 이 저장소를 플러그인으로 설치하려면 이 방법을 사용하세요.
+marketplace 등록 후 개인 전역 설치:
 
 ```bash
-/plugin marketplace add mabyko/AgentSkills
-/plugin install agent-skills@mabyko
+claude plugin marketplace add mabyko/AgentSkills
+claude plugin install agent-skills@mabyko --scope user
 ```
 
-Claude Code는 `.claude-plugin/marketplace.json`(marketplace 이름 `mabyko`)으로 저장소를 resolve하고, `.claude-plugin/plugin.json`을 플러그인 manifest로 읽고, 저장소의 최상위 `skills/` 디렉터리를 skill source로 사용합니다.
+프로젝트 범위로 설치하려면 해당 프로젝트 폴더에서 실행하세요.
 
-참고: 플러그인 설치본은 사용하는 도구에서 cache될 수 있습니다. 최신 스킬이 필요하면 해당 도구의 플러그인 manager에서 refresh, update, reinstall을 실행하세요.
-
-`CLAUDE.md`에는 다음 내용이 있습니다.
-
-```md
-@AGENTS.md
+```bash
+claude plugin install agent-skills@mabyko --scope project
 ```
 
-이를 통해 Claude Code의 저장소 지침이 canonical instruction인 `AGENTS.md`와 맞춰집니다.
+설치한 범위와 같은 범위를 지정해 제거합니다.
+
+```bash
+claude plugin uninstall agent-skills@mabyko --scope user
+# 또는 해당 프로젝트 폴더에서:
+claude plugin uninstall agent-skills@mabyko --scope project
+```
+
+두 범위에 설치했다면 각각 제거하세요. 프로젝트 설치는 팀과 공유하는 프로젝트 설정에 기록됩니다. 자신의 프로젝트 사본에만 적용하려면 `--scope local`을 사용하세요. [Claude Code 플러그인 CLI 문서](https://code.claude.com/docs/en/plugins/cli-reference)를 참고하세요.
+
+Claude Code는 `.claude-plugin/marketplace.json`(marketplace 이름 `mabyko`)과 선택한 플러그인의 `.claude-plugin/plugin.json`을 읽습니다. 스킬과 `hooks/hooks.json`은 해당 플러그인의 루트 안에서 찾습니다.
+
+플러그인 설치본은 도구에서 캐시될 수 있으므로 최신 버전은 플러그인 관리자에서 갱신하거나 재설치하세요. 이 저장소의 `CLAUDE.md`는 `@AGENTS.md`를 가져와 작성 지침을 공유합니다.
 
 ## 훅
 
-이 저장소를 플러그인으로 설치하면 `PreToolUse` 훅도 함께 설치됩니다. Bash로 실행되는 위험한 Git 명령 앞에서 `git-workflow` 스킬의 안전 규칙을 알려줍니다. 카테고리별로 세션당 한 번씩 알리므로, 세션 초반의 `git checkout`이 나중에 필요한 `git commit` 알림을 삼키지 않습니다.
+`agent-skills`와 `git-hooks`는 기존 `PreToolUse` 훅을 설치합니다. Bash로 실행되는 위험한 Git 명령 앞에서 `git-workflow` 스킬의 안전 규칙을 알려줍니다. 카테고리별로 세션당 한 번씩 알리므로, 세션 초반의 `git checkout`이 나중에 필요한 `git commit` 알림을 삼키지 않습니다.
 
 | 카테고리 | 트리거 | 알리는 내용 |
 | --- | --- | --- |
 | History | `commit`, `rebase`, `merge`, `cherry-pick`, `revert`, `tag`, `push`, `reflog`, `am` | DCO sign-off를 포함한 서명 커밋, atomic commit, 커밋 본문 작성, `--no-verify` / `--no-gpg-sign` 금지, `--force-with-lease`만 사용 |
 | Discard | `reset`, `clean`, `restore`, `checkout`, `switch`, `stash`, `worktree remove`, `branch -d/-D` | 먼저 `git status` 확인, 커밋 안 된 작업을 버리거나 ref를 지우기 전 확인, `stash`와 `revert` 우선 |
 
-두 호스트가 읽는 필드가 달라서 동작도 다릅니다.
+이 `PreToolUse` 훅은 두 도구가 읽는 필드가 달라서 동작도 다릅니다.
 
 - Claude Code는 실행을 막지 않는 `additionalContext` 힌트를 받습니다.
 - Codex는 첫 매칭 명령을 한 번 deny해서 이유를 보여주고, 재시도는 허용합니다.
-
-훅은 스킬 단위가 아니라 저장소 단위라서, `npx skills add`가 아니라 위의 Codex/Claude Code 플러그인 설치 경로로만 설치됩니다.
 
 ## 저장소 구조
 
@@ -181,8 +231,15 @@ templates/
 └── skill/
 scripts/
 ├── new-skill.sh
+├── build-plugin-bundles.py
 ├── validate-skills.sh
 └── hooks/
+plugins/
+└── git-hooks/            # PreToolUse only
+tests/
+├── test_coding_principles_hook.py
+├── test_git_hooks.py
+└── test_plugin_bundles.py
 AGENTS.md
 CLAUDE.md
 ```
@@ -204,6 +261,14 @@ skills/my-skill/
 ├── SKILL.md
 └── agents/openai.yaml
 ```
+
+훅 플러그인에는 설치 후 독립적으로 동작하도록 생성한 배포본이 들어갑니다. 원본 스킬은 `skills/`, 공통 훅은 `scripts/hooks/`에서 수정한 뒤 배포본을 갱신하세요.
+
+```bash
+python3 scripts/build-plugin-bundles.py
+```
+
+작성 환경에는 Python 3.9 이상이 필요합니다. 삭제된 파일이나 실행 권한을 포함해 원본과 배포본이 다르면 검증에 실패합니다. 내용이 바뀌면 전체 묶음과 영향을 받은 훅 플러그인의 두 호스트 버전을 함께 올리세요.
 
 Pull request를 열기 전에:
 

@@ -4,7 +4,7 @@
 
 Reusable agent skills for Codex, Claude Code, OpenCode, and other agents that support the open agent skills format.
 
-The canonical skill source is the top-level `skills/` directory. Plugin manifests and marketplace files point at the same source so the repository can be installed through multiple agent ecosystems.
+Skills are maintained in the top-level `skills/` directory and selected individually through the skills CLI. Plugins provide optional hooks or the complete bundle of all skills and hooks. Codex and Claude Code expose the same two plugin choices.
 
 ## Skills
 
@@ -96,63 +96,113 @@ The `skills` CLI discovers this repository's top-level `skills/` directory and i
 
 Note: the `skills` CLI installs skills only. The repository's [hooks](#hooks) live outside `skills/` and ship through a plugin install instead. Use one of the plugin paths below if you want them.
 
+## Plugins
+
+Choose the complete bundle or selected plugins from the same `mabyko` marketplace:
+
+| Plugin | Includes |
+| --- | --- |
+| `agent-skills` | Complete bundle: all 9 skills and Git safety hooks |
+| `git-hooks` | Git safety hook (`PreToolUse`) only; no skills |
+
+Select individual skills by name through the skills CLI. For example, to install just the Git and GitHub skills:
+
+```bash
+npx skills@latest add mabyko/AgentSkills --skill git-workflow github-workflow
+```
+
+For every skill and hook in one install, choose `agent-skills` alone. Combining it with individual skills or hook plugins can register duplicates.
+
+For automatic reminders, install `git-hooks` separately. It works without skills and can be removed independently. Replace `agent-skills` in the commands below with `git-hooks`.
+
+### Skill and hook roles
+
+Every skill works independently. This classification describes complementary behavior, not installation dependencies.
+
+| Skill | Classification | Reason |
+| --- | --- | --- |
+| `git-workflow` | Skill + optional hook | The skill guides workflows and recovery; the Git hook reminds key safety rules immediately before Bash commands. |
+| `github-workflow` | Skill alone | PRs, reviews, CI, and releases require task context. The Git hook does not cover direct gh/API operations. |
+| `apple-app-icon-generator` | Skill alone | App identity, design choices, generation, installation, and verification are task-specific steps. |
+| `apple-bundle-id-guardrails` | Skill alone | Bundle identity ownership and signing configuration require project context. |
+| `macos-dev-app-cleanup` | Skill alone | First establish the authorized deletion scope and exact app paths. |
+| `flutter-flavors` | Skill alone | Reconcile flavor intent with platform configuration. |
+| `docs-sync` | Skill alone | Compare changes with the behavior promised by documentation. |
+| `css-typography-ko` | Skill alone | Check text hierarchy and readability in the actual UI. |
+| `break-it-down` | Skill alone | Choose a procedure and medium for the reader's question and the relationships being explained. |
+
+Installing a skill does not load its entire content into every session. The agent reads it when invoked or when its description matches the task. Hooks execute on their configured events. The Git hook detects selected Bash commands; it is a reminder, not comprehensive protection against unsafe operations.
+
 ## Codex Plugin
 
-Use this path when you want Codex to install the repository as a plugin from a marketplace.
+Install for your user account:
 
 ```bash
 codex plugin marketplace add mabyko/AgentSkills
+codex plugin add agent-skills@mabyko
 ```
 
-Then open Codex, go to `/plugins`, search for `agent-skills`, and install it.
+You can also install through `/plugins`. For plugins containing hooks, review and trust them in `/hooks` before using them; installing a plugin does not automatically trust its hooks. New or changed hook definitions can require another review. See the [Codex hooks documentation](https://learn.chatgpt.com/docs/hooks).
 
-Codex resolves this repository through:
+For use only in selected projects, keep the package installed but set this in your user configuration (`$CODEX_HOME/config.toml`, default `~/.codex/config.toml`):
 
-```text
-.agents/plugins/marketplace.json
-  └── source.path: "./"
-      └── .codex-plugin/plugin.json
-          └── skills: "./skills/"
+```toml
+[plugins."agent-skills@mabyko"]
+enabled = false
 ```
 
-The marketplace file is the catalog entry. `.codex-plugin/plugin.json` is the plugin manifest. Skills remain in `skills/`.
+Then enable it in each selected project's `.codex/config.toml` with the same table and `enabled = true`. Project settings apply only in trusted projects. To stop using it in that project, set its value back to `false`. This controls the whole plugin, including its skills and other hooks. See [Codex configuration precedence](https://developers.openai.com/codex/config-basic/).
+
+Remove the installed plugin from your user account:
+
+```bash
+codex plugin remove agent-skills@mabyko
+```
+
+Codex reads `.agents/plugins/marketplace.json` and the selected plugin's `.codex-plugin/plugin.json`. `agent-skills` uses the repository root; selected plugins use `plugins/<name>/`. Each plugin loads its own registered skills and hooks.
 
 ## Claude Code Plugin
 
-Use this path when you want Claude Code to install the repository as a plugin.
+Register the marketplace, then install for your user account:
 
 ```bash
-/plugin marketplace add mabyko/AgentSkills
-/plugin install agent-skills@mabyko
+claude plugin marketplace add mabyko/AgentSkills
+claude plugin install agent-skills@mabyko --scope user
 ```
 
-Claude Code resolves the repository through `.claude-plugin/marketplace.json` (marketplace name `mabyko`), reads `.claude-plugin/plugin.json` as the plugin manifest, and uses the repository's top-level `skills/` directory as the skill source.
+For project installation, run from the project directory instead:
 
-Note: Plugin installs may be cached by the host tool. If you need the latest skills, refresh, update, or reinstall the plugin through that tool's plugin manager.
-
-`CLAUDE.md` contains:
-
-```md
-@AGENTS.md
+```bash
+claude plugin install agent-skills@mabyko --scope project
 ```
 
-This keeps Claude Code's repository guidance aligned with canonical instructions in `AGENTS.md`.
+Remove using the same scope as installation:
+
+```bash
+claude plugin uninstall agent-skills@mabyko --scope user
+# Or, from the project directory:
+claude plugin uninstall agent-skills@mabyko --scope project
+```
+
+If installed in both scopes, remove each separately. Project installation records shared project settings; use `--scope local` for settings limited to your copy of that project. See the [Claude Code plugin CLI reference](https://code.claude.com/docs/en/plugins/cli-reference).
+
+Claude Code reads `.claude-plugin/marketplace.json` (marketplace `mabyko`) and the selected plugin's `.claude-plugin/plugin.json`. Skills and `hooks/hooks.json` are discovered inside that plugin's root.
+
+Plugin installs may be cached by the host. Refresh, update, or reinstall through its plugin manager to get a newer version. This repository's `CLAUDE.md` imports `@AGENTS.md` to share authoring guidance.
 
 ## Hooks
 
-Installing this repository as a plugin also installs a `PreToolUse` hook that surfaces the `git-workflow` skill's safety rules before risky Bash-invoked Git commands. It reminds once per session per category, so a `git checkout` early in a session does not consume the reminder a later `git commit` needs:
+Both `agent-skills` and `git-hooks` provide the existing `PreToolUse` hook, which surfaces the `git-workflow` skill's safety rules before risky Bash-invoked Git commands. It reminds once per session per category, so a `git checkout` early in a session does not consume the reminder a later `git commit` needs:
 
 | Category | Triggers on | Reminds about |
 | --- | --- | --- |
 | History | `commit`, `rebase`, `merge`, `cherry-pick`, `revert`, `tag`, `push`, `reflog`, `am` | Signed commits with DCO sign-off, atomic commits, writing a commit body, no `--no-verify` / `--no-gpg-sign`, `--force-with-lease` only |
 | Discard | `reset`, `clean`, `restore`, `checkout`, `switch`, `stash`, `worktree remove`, `branch -d/-D` | Checking `git status` first, asking before discarding uncommitted work or deleting refs, preferring `stash` and `revert` |
 
-Client behavior differs because the two hosts read different fields:
+For this `PreToolUse` hook, client behavior differs because the hosts read different fields:
 
 - Claude Code receives a non-blocking `additionalContext` hint.
 - Codex denies the first matching command so the reason is displayed, then allows the retry.
-
-Hooks are repository-level rather than per-skill, so they are installed only through the Codex or Claude Code plugin paths above, not through `npx skills add`.
 
 ## Repository Layout
 
@@ -181,8 +231,15 @@ templates/
 └── skill/
 scripts/
 ├── new-skill.sh
+├── build-plugin-bundles.py
 ├── validate-skills.sh
 └── hooks/
+plugins/
+└── git-hooks/            # PreToolUse only
+tests/
+├── test_coding_principles_hook.py
+├── test_git_hooks.py
+└── test_plugin_bundles.py
 AGENTS.md
 CLAUDE.md
 ```
@@ -204,6 +261,14 @@ skills/my-skill/
 ├── SKILL.md
 └── agents/openai.yaml
 ```
+
+The hook plugins contain generated copies so cached installs are self-contained. Edit canonical skills in `skills/` and shared hooks in `scripts/hooks/`, then refresh their bundles:
+
+```bash
+python3 scripts/build-plugin-bundles.py
+```
+
+Authoring requires Python 3.9 or later. Validation fails if the generated copies differ, including deleted files or executable permissions. Bump both host versions of the complete bundle and each affected hook plugin when its content changes.
 
 Before opening a pull request:
 

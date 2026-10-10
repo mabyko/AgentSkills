@@ -1,0 +1,24 @@
+{
+  "name": "git-hooks",
+  "version": "0.1.0",
+  "description": "Optional Git safety reminders before Bash commands; works without skills.",
+  "author": {
+    "name": "mabyko",
+    "url": "https://github.com/mabyko"
+  },
+  "homepage": "https://github.com/mabyko/AgentSkills",
+  "repository": "https://github.com/mabyko/AgentSkills",
+  "license": "MIT",
+  "keywords": [
+    "hooks",
+    "git-hooks"
+  ],
+  "hooks": "./codex-hooks/hooks.json",
+  "interface": {
+    "displayName": "Git Hooks",
+    "shortDescription": "Optional Git safety reminders before Bash commands; works without skills.",
+    "longDescription": "Optional Git safety reminders before Bash commands; works without skills.",
+    "developerName": "mabyko",
+    "category": "Productivity"
+  }
+}

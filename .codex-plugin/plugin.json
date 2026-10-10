@@ -1,7 +1,7 @@
 {
   "name": "agent-skills",
-  "version": "0.3.15",
-  "description": "Reusable agent skills for Codex workflows.",
+  "version": "0.4.1",
+  "description": "Complete bundle: all 9 skills and Git safety hooks.",
   "author": {
     "name": "mabyko",
     "url": "https://github.com/mabyko"
@@ -9,13 +9,14 @@
   "homepage": "https://github.com/mabyko/AgentSkills",
   "repository": "https://github.com/mabyko/AgentSkills",
   "license": "MIT",
-  "keywords": ["git", "github", "documentation", "flutter", "xcode", "workflow"],
-  "skills": "./skills/",
-  "hooks": "./codex-hooks/hooks.json",
+  "keywords": [
+    "skills",
+    "agent-skills"
+  ],
   "interface": {
     "displayName": "Agent Skills",
-    "shortDescription": "Git, GitHub, docs, Flutter flavor, and Apple identity workflows.",
-    "longDescription": "Reusable agent skills for safe local Git workflows, GitHub pull requests and releases, documentation sync, Flutter flavor setup, Apple bundle ID guardrails, and fork upstream sync. Includes a PreToolUse hook that surfaces Git safety rules before history-affecting commands.",
+    "shortDescription": "Complete bundle: all 9 skills and Git safety hooks.",
+    "longDescription": "Complete bundle: all 9 skills and Git safety hooks.",
     "developerName": "mabyko",
     "category": "Productivity",
     "brandColor": "#2563EB",
@@ -25,5 +26,7 @@
       "Review this PR's checks and merge readiness.",
       "Check whether the docs need updates for this diff."
     ]
-  }
+  },
+  "skills": "./skills/",
+  "hooks": "./codex-hooks/hooks.json"
 }
