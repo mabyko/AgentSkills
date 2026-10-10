@@ -7,7 +7,13 @@
     {
       "name": "agent-skills",
       "source": "./",
-      "description": "Reusable agent skills for Codex, Claude Code, and other agents.",
+      "description": "Complete bundle: all 9 skills and Git safety hooks.",
+      "category": "productivity"
+    },
+    {
+      "name": "git-hooks",
+      "source": "./plugins/git-hooks",
+      "description": "Optional Git safety reminders before Bash commands; works without skills.",
       "category": "productivity"
     }
   ]

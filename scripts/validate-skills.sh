@@ -11,6 +11,10 @@ if [ ! -d "$skills_dir" ]; then
   exit 1
 fi
 
+if ! python3 "$repo_root/scripts/build-plugin-bundles.py" --check; then
+  failed=1
+fi
+
 readme_skills_section() {
   awk '/^## /{f=0} $0=="## Skills" || $0=="## 스킬"{f=1; next} f' "$1"
 }
@@ -129,37 +133,47 @@ done
 manifest_version() {
   grep -oE '"version"[[:space:]]*:[[:space:]]*"[^"]*"' "$1" | head -1 | sed -E 's/.*"([^"]*)"$/\1/'
 }
-claude_version="$(manifest_version "$repo_root/.claude-plugin/plugin.json")"
-codex_version="$(manifest_version "$repo_root/.codex-plugin/plugin.json")"
-if [ -z "$claude_version" ] || [ "$claude_version" != "$codex_version" ]; then
-  echo "plugin.json versions must match and be non-empty (claude: '$claude_version', codex: '$codex_version')" >&2
-  failed=1
-fi
-
-# Hook commands run with the session's cwd, not the plugin root, so every command
-# must anchor itself to a plugin-root variable.
-for hooks_file in "$repo_root/hooks/hooks.json" "$repo_root/codex-hooks/hooks.json"; do
-  [ -f "$hooks_file" ] || continue
-  while IFS= read -r hook_command; do
-    case "$hook_command" in
-      *PLUGIN_ROOT*) ;;
-      *)
-        echo "Hook command must use \${CLAUDE_PLUGIN_ROOT}/\${CODEX_PLUGIN_ROOT}: $hooks_file ($hook_command)" >&2
-        failed=1
-        ;;
-    esac
-  done < <(grep -oE '"command"[[:space:]]*:[[:space:]]*"([^"\\]|\\.)*"' "$hooks_file" | sed -E 's/^"command"[[:space:]]*:[[:space:]]*//')
-done
-
-while IFS= read -r hook_script; do
-  if [ ! -x "$hook_script" ]; then
-    echo "Hook script is not executable: $hook_script" >&2
+plugin_count=0
+for plugin_root in "$repo_root" "$repo_root"/plugins/*; do
+  [ -d "$plugin_root" ] || continue
+  plugin_count=$((plugin_count + 1))
+  if [ ! -f "$plugin_root/.claude-plugin/plugin.json" ] || [ ! -f "$plugin_root/.codex-plugin/plugin.json" ]; then
+    echo "Missing host plugin manifest: $plugin_root" >&2
+    failed=1
+    continue
+  fi
+  claude_version="$(manifest_version "$plugin_root/.claude-plugin/plugin.json")"
+  codex_version="$(manifest_version "$plugin_root/.codex-plugin/plugin.json")"
+  if [ -z "$claude_version" ] || [ "$claude_version" != "$codex_version" ]; then
+    echo "plugin.json versions must match and be non-empty: $plugin_root (claude: '$claude_version', codex: '$codex_version')" >&2
     failed=1
   fi
-done < <(find "$repo_root/scripts/hooks" -type f -name '*.sh' 2>/dev/null)
+
+  # Hook commands run with the session's cwd, not the plugin root, so every command
+  # must anchor itself to a plugin-root variable.
+  for hooks_file in "$plugin_root/hooks/hooks.json" "$plugin_root/codex-hooks/hooks.json"; do
+    [ -f "$hooks_file" ] || continue
+    while IFS= read -r hook_command; do
+      case "$hook_command" in
+        *PLUGIN_ROOT*) ;;
+        *)
+          echo "Hook command must use \${CLAUDE_PLUGIN_ROOT}/\${CODEX_PLUGIN_ROOT}: $hooks_file ($hook_command)" >&2
+          failed=1
+          ;;
+      esac
+    done < <(grep -oE '"command"[[:space:]]*:[[:space:]]*"([^"\\]|\\.)*"' "$hooks_file" | sed -E 's/^"command"[[:space:]]*:[[:space:]]*//')
+  done
+
+  while IFS= read -r hook_script; do
+    if [ ! -x "$hook_script" ]; then
+      echo "Hook script is not executable: $hook_script" >&2
+      failed=1
+    fi
+  done < <(find "$plugin_root/scripts/hooks" -type f -name '*.sh' 2>/dev/null)
+done
 
 if [ "$failed" -ne 0 ]; then
   exit 1
 fi
 
-echo "Validated $count skill(s)."
+echo "Validated $count skill(s) and $plugin_count plugin(s)."

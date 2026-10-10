@@ -1,7 +1,7 @@
 {
-  "name": "agent-skills",
-  "version": "0.5.1",
-  "description": "Complete bundle: all 9 skills and Git safety hooks.",
+  "name": "git-hooks",
+  "version": "0.1.0",
+  "description": "Optional Git safety reminders before Bash commands; works without skills.",
   "author": {
     "name": "mabyko",
     "url": "https://github.com/mabyko"
@@ -10,7 +10,7 @@
   "repository": "https://github.com/mabyko/AgentSkills",
   "license": "MIT",
   "keywords": [
-    "skills",
-    "agent-skills"
+    "hooks",
+    "git-hooks"
   ]
 }
