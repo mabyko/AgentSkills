@@ -502,6 +502,8 @@ esac
                     data = b""
                 output.extend(data)
                 pending.extend(data)
+                # Match visible text while retaining raw output for color assertions.
+                pending[:] = re.sub(rb"\x1b\[[0-9;]*m", b"", pending)
 
         try:
             for expected, keys in steps:
@@ -612,8 +614,11 @@ esac
 
     def test_search_q_is_input_and_escape_cancels(self):
         self.enable_node()
-        code, output = self.run_ui([(b"Installation scope", b"\r"), (b"Choose agents", b"q"), (b"Search: q", b"\x1b")])
+        env = dict(self.env, FORCE_COLOR="1")
+        env.pop("NO_COLOR", None)
+        code, output = self.run_ui([(b"Installation scope", b"\r"), (b"Choose agents", b"q"), (b"Search: q", b"\x1b")], env=env)
         self.assertEqual(code, 0, output)
+        self.assertIn("\x1b[32m", output)
         self.assertIn("Cancelled", output)
         self.assertFalse(self.codex.exists())
         self.assertFalse(self.claude.exists())
