@@ -13,6 +13,7 @@ class PluginBundleTests(unittest.TestCase):
     def test_marketplaces_select_expected_skills_and_hooks(self):
         expected = {
             "git-hooks": (set(), {"PreToolUse"}),
+            "github-hooks": (set(), {"PreToolUse"}),
             "apple-dev-hooks": (set(), {"PreToolUse"}),
         }
         for catalog_path, host in ((".claude-plugin/marketplace.json", "claude"), (".agents/plugins/marketplace.json", "codex")):
@@ -49,7 +50,7 @@ class PluginBundleTests(unittest.TestCase):
     def test_bundler_refreshes_changes_and_removes_stale_files(self):
         with tempfile.TemporaryDirectory() as temporary:
             checkout = self.copy_checkout(temporary)
-            for name, script in (("git-hooks", "git-workflow-trigger.sh"), ("apple-dev-hooks", "apple-dev-trigger.sh")):
+            for name, script in (("git-hooks", "git-workflow-trigger.sh"), ("github-hooks", "github-workflow-trigger.sh"), ("apple-dev-hooks", "apple-dev-trigger.sh")):
                 with self.subTest(plugin=name):
                     source = checkout / "scripts/hooks" / script
                     source.write_text(source.read_text() + "\n# Updated canonical hook\n")

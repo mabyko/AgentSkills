@@ -11,6 +11,12 @@
       "category": "productivity"
     },
     {
+      "name": "github-hooks",
+      "source": "./plugins/github-hooks",
+      "description": "GitHub PR, stacked PR, and release safety reminders; works without skills.",
+      "category": "productivity"
+    },
+    {
       "name": "apple-dev-hooks",
       "source": "./plugins/apple-dev-hooks",
       "description": "Apple identity/signing and macOS development app cleanup reminders; works without skills.",
