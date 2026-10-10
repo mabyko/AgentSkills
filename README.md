@@ -52,13 +52,15 @@ By default, `npx skills add` installs per project. Use `--global` only when you 
 
 ## Install Coding Principles
 
-Requires Bash 3.2 or later and standard Unix commands; remote installation also needs curl. Python and Node are not required. Once the installer is published on `main`, teammates can install with one command:
+Requires Bash 3.2 or later and standard Unix commands; remote installation also needs curl. Python and Node are not required. With Node.js 22.20 or later, the installer automatically uses Clack, the prompt library used by skills CLI. Otherwise, it uses the Bash UI. Teammates can install with one command:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/mabyko/AgentSkills/main/scripts/install-coding-principles.sh | bash
 ```
 
 In an existing checkout, run `./scripts/install-coding-principles.sh` now. In a terminal, it opens a selection UI: choose personal or project scope, select agents with Space, then review the instruction paths and apply. Use Up/Down to move and Enter to continue; q, Esc, or Ctrl-C cancels.
+
+The Clack UI ships as a self-contained file; no npm installation is needed to run it. Remote execution downloads that optional UI before selection and removes it afterward. If it cannot be downloaded or loaded, the installer uses Bash. Both UIs use the same Bash installation and removal logic.
 
 Select any combination of Codex, Claude Code, Grok Build, Antigravity, OpenCode, and Pi. Personal scope and Codex + Claude Code are preselected. Shared project instruction files receive the block once.
 
@@ -272,6 +274,9 @@ templates/
 scripts/
 ├── new-skill.sh
 ├── install-coding-principles.sh
+├── coding-principles-ui.mjs
+├── coding-principles-ui.cjs      # Bundled Clack UI; no runtime npm install
+├── build-coding-principles-ui.mjs
 ├── build-plugin-bundles.py
 ├── validate-skills.sh
 └── hooks/
@@ -310,6 +315,13 @@ python3 scripts/build-plugin-bundles.py
 ```
 
 Authoring requires Python 3.9 or later. Validation fails if the generated copies differ, including deleted files or executable permissions. Bump both host versions of the complete bundle and each affected hook plugin when its content changes.
+
+To change the optional Node UI, edit `scripts/coding-principles-ui.mjs`, then rebuild its committed bundle with dependency licenses included. This authoring step requires Node.js 22.20 or later and npm:
+
+```bash
+npm ci --ignore-scripts
+npm run build:coding-principles-ui
+```
 
 Before opening a pull request:
 

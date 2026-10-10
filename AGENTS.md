@@ -57,7 +57,7 @@ Register each plugin in both `.claude-plugin/marketplace.json` and `.agents/plug
 
 ## Coding principles installer
 
-Maintain the native instruction block in `docs/coding-principles.md` and its local/remote Bash installer in `scripts/install-coding-principles.sh`. Keep it separate from skills and plugin hooks. Support Bash 3.2 with standard Unix commands and no Python or Node runtime. Read TUI input from `/dev/tty` so piped installation remains interactive; preserve the option-based automation path. Installation and removal must preserve all content outside the block, existing permissions, and symlinks. Test with temporary instruction directories and a PATH without other language runtimes; use PTY tests for selection, cancellation, and terminal restoration. Verify new agent paths against the sources linked in the installation guide.
+Maintain the native instruction block in `docs/coding-principles.md` and its local/remote Bash installer in `scripts/install-coding-principles.sh`. Keep it separate from skills and plugin hooks. Support Bash 3.2 with standard Unix commands; Python and Node remain optional. Use the bundled Clack UI when Node.js 22.20+ is available, and the Bash UI otherwise or when the optional UI cannot be loaded. Edit `scripts/coding-principles-ui.mjs` and rebuild the self-contained `scripts/coding-principles-ui.cjs` with `npm ci --ignore-scripts` and `npm run build:coding-principles-ui`; npm is only needed for authoring. Read TUI input from `/dev/tty` so piped installation remains interactive; preserve the option-based automation path. Installation and removal must preserve all content outside the block, existing permissions, and symlinks. Test with temporary instruction directories and a PATH without other language runtimes; use PTY tests for both UIs, selection, cancellation, and terminal restoration. Verify new agent paths against the sources linked in the installation guide.
 
 ## Hooks
 
@@ -84,4 +84,4 @@ Run this before committing skill changes:
 scripts/validate-skills.sh
 ```
 
-`.github/workflows/validate.yml` runs the same script and `python3 -B -m unittest discover -s tests` on every push and pull request. Validation also checks bundle copies against canonical sources, each plugin's matching host versions, plugin-root hook commands, and executable hook scripts. Tests check marketplace selection, bundle refresh, and independently cached hook execution.
+`.github/workflows/validate.yml` rebuilds the Node UI and rejects stale bundle copies, then runs the same validation script and `python3 -B -m unittest discover -s tests` on every push and pull request. Validation also checks bundle copies against canonical sources, each plugin's matching host versions, plugin-root hook commands, and executable hook scripts. Tests check marketplace selection, bundle refresh, and independently cached hook execution.

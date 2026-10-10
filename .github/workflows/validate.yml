@@ -13,5 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run build:coding-principles-ui
+      - run: git diff --exit-code -- scripts/coding-principles-ui.cjs
       - run: scripts/validate-skills.sh
       - run: python3 -B -m unittest discover -s tests

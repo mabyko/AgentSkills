@@ -52,13 +52,15 @@ npx skills@latest add mabyko/AgentSkills
 
 ## 코딩 원칙 설치
 
-Bash 3.2 이상과 기본 Unix 명령으로 동작하며, 원격 설치에는 curl이 필요합니다. Python·Node는 필요하지 않습니다. 설치기를 `main`에 게시하면 팀원은 저장소를 내려받지 않고 한 줄로 설치할 수 있습니다.
+Bash 3.2 이상과 기본 Unix 명령으로 동작하며, 원격 설치에는 curl이 필요합니다. Python·Node는 필수가 아닙니다. Node.js 22.20 이상이 있으면 skills CLI가 쓰는 프롬프트 라이브러리인 Clack으로 선택 화면을 열고, 없으면 Bash 화면을 사용합니다. 팀원은 저장소를 내려받지 않고 한 줄로 설치할 수 있습니다.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/mabyko/AgentSkills/main/scripts/install-coding-principles.sh | bash
 ```
 
 이미 내려받은 저장소에서는 지금 `./scripts/install-coding-principles.sh`로 실행할 수 있습니다. 터미널에서는 선택 화면이 열립니다. 전역·프로젝트 범위를 고르고, Space로 에이전트를 선택한 뒤, 지침 파일 경로를 확인하고 적용하세요. 방향키로 이동하고 Enter로 진행합니다. q·Esc·Ctrl-C로 취소할 수 있습니다.
+
+Clack 화면은 필요한 라이브러리를 포함한 파일로 배포하므로 실행할 때 npm으로 설치할 필요가 없습니다. 원격 실행에서는 선택 전에 이 파일을 내려받고 종료 시 지웁니다. 다운로드나 로딩에 실패하면 Bash 화면을 사용합니다. 두 화면 모두 같은 Bash 코드로 설치·제거합니다.
 
 Codex·Claude Code·Grok Build·Antigravity·OpenCode·Pi 중 여러 도구를 고를 수 있습니다. 처음에는 개인 전역 범위와 Codex·Claude Code가 선택돼 있습니다. 프로젝트에서 같은 지침 파일을 쓰는 도구들은 원칙 블록을 한 번만 추가합니다.
 
@@ -272,6 +274,9 @@ templates/
 scripts/
 ├── new-skill.sh
 ├── install-coding-principles.sh
+├── coding-principles-ui.mjs
+├── coding-principles-ui.cjs      # Clack 배포본; 실행 시 npm 설치 불필요
+├── build-coding-principles-ui.mjs
 ├── build-plugin-bundles.py
 ├── validate-skills.sh
 └── hooks/
@@ -310,6 +315,13 @@ python3 scripts/build-plugin-bundles.py
 ```
 
 작성 환경에는 Python 3.9 이상이 필요합니다. 삭제된 파일이나 실행 권한을 포함해 원본과 배포본이 다르면 검증에 실패합니다. 내용이 바뀌면 전체 묶음과 영향을 받은 훅 플러그인의 두 호스트 버전을 함께 올리세요.
+
+선택형 Node 화면을 바꾸려면 `scripts/coding-principles-ui.mjs`를 수정한 뒤 의존성 라이선스를 포함한 배포본을 다시 생성하세요. 이 작성 단계에는 Node.js 22.20 이상과 npm이 필요합니다.
+
+```bash
+npm ci --ignore-scripts
+npm run build:coding-principles-ui
+```
 
 Pull request를 열기 전에:
 

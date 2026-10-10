@@ -19,6 +19,7 @@ usage() {
     'Without selection options, a terminal opens the UI. Explicit --scope,' \
     '--agent, or --project-dir skips it unless --interactive is supplied.' \
     'Without a terminal, the defaults apply unless options override them.' \
+    'The UI uses Clack with Node.js 22.20+; otherwise it uses Bash. No npm install is needed.' \
     '' \
     'Examples:' \
     '  ./scripts/install-coding-principles.sh' \
@@ -83,12 +84,50 @@ normalize_agents() {
 normalize_agents
 
 terminal_state=
+node_ui=
+ui_temporary=
 restore_terminal() { if [[ -n "$terminal_state" ]]; then stty "$terminal_state" <&3; fi; }
+cleanup_ui() { restore_terminal; if [[ -n "$ui_temporary" ]]; then rm -rf -- "$ui_temporary"; fi; }
 cancel() { printf '\nCancelled. No files changed.\n' >&3; exit 0; }
+prepare_node_ui() {
+  command -v node >/dev/null 2>&1 || return 0
+  # Match the supported Node baseline of skills CLI before downloading its UI library.
+  node -e 'const [major, minor] = process.versions.node.split(".").map(Number); process.exit(major > 22 || (major === 22 && minor >= 20) ? 0 : 1)' >/dev/null 2>&1 || return 0
+  local directory
+  if [[ -n "${BASH_SOURCE[0]:-}" && -f "${BASH_SOURCE[0]}" ]]; then
+    directory=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+    node_ui="$directory/coding-principles-ui.cjs"
+  fi
+  if [[ ! -f "$node_ui" ]]; then
+    if command -v curl >/dev/null 2>&1; then
+      ui_temporary=$(mktemp -d)
+      node_ui="$ui_temporary/coding-principles-ui.cjs"
+      if ! curl -fsSL https://raw.githubusercontent.com/mabyko/AgentSkills/main/scripts/coding-principles-ui.cjs -o "$node_ui" --connect-timeout 5 --max-time 15 2>/dev/null; then node_ui=; fi
+    else node_ui=; fi
+  fi
+  if [[ -n "$node_ui" ]] && node "$node_ui" --check >/dev/null 2>&1; then return; fi
+  node_ui=
+  printf 'Node UI unavailable; using Bash UI.\n' >&3
+}
 menu() {
-  local title=$1 mode=$2 initial=$3 cursor=0 key sequence mark pointer i message=
+  local title=$1 mode=$2 initial=$3 cursor=0 key sequence mark pointer i message= result status
   shift 3
   local labels=("$@") checked=()
+  if [[ -n "$node_ui" ]]; then
+    if result=$(node "$node_ui" "$title" "$mode" "$initial" "${labels[@]}" <&3 2>&3); then
+      [[ -n "$result" && "$result" != *[!0-9\ ]* ]] || die 'Invalid Node UI selection'
+      IFS=' ' read -r -a choices <<< "$result"
+      [[ "$mode" == multiple || ${#choices[@]} -eq 1 ]] || die 'Invalid Node UI selection'
+      for i in "${choices[@]}"; do [[ $i -lt ${#labels[@]} ]] || die 'Invalid Node UI selection'; done
+      restore_terminal
+      return
+    else
+      status=$?
+      if [[ $status -eq 2 ]]; then cancel; fi
+      if [[ $status -eq 130 ]]; then printf '\nCancelled. No files changed.\n' >&3; exit 130; fi
+      die 'Node selection failed; no files changed'
+    fi
+  fi
   for ((i=0; i<${#labels[@]}; i++)); do checked[i]=false; done
   for i in $initial; do checked[i]=true; done
   if [[ "$mode" == single ]]; then cursor=$initial; fi
@@ -147,8 +186,10 @@ fi
 if $interactive; then
   terminal_state=$(stty -g <&3)
   # Bash 3.2 can exit during a key read before restoring its terminal settings.
-  trap restore_terminal EXIT
+  trap cleanup_ui EXIT
   trap 'printf "\nCancelled. No files changed.\n" >&3; exit 130' INT TERM
+  prepare_node_ui
+  if [[ -n "$node_ui" ]]; then printf 'UI: Clack (Node)\n' >&3; else printf 'UI: Bash\n' >&3; fi
   printf '\nAgentSkills / Coding principles / %s\n\n' "$action" >&3
   initial=0
   if [[ "$scope" == project ]]; then initial=1; fi
@@ -259,7 +300,7 @@ if $interactive; then
   done
   menu 'Apply these choices?' single 0 "$action principles" 'Cancel'
   [[ "${choices[0]}" == 0 ]] || cancel
-  restore_terminal
+  cleanup_ui
   terminal_state=
   exec 3>&-
   trap - EXIT INT TERM

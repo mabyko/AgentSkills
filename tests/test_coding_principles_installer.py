@@ -1,8 +1,10 @@
 import os
+import fcntl
 import pty
 import select
 import signal
 import shutil
+import struct
 from pathlib import Path
 import subprocess
 import tempfile
@@ -32,7 +34,7 @@ class CodingPrinciplesInstallerTests(unittest.TestCase):
         self.project.mkdir()
         self.binaries = self.directory / "bin"
         self.binaries.mkdir()
-        # Every installer test runs without Python, Node, or other interpreters on PATH.
+        # Bash coverage excludes interpreters; Node UI tests opt in explicitly.
         for command in ("bash", "basename", "dirname", "readlink", "mktemp", "cp", "mkdir", "rm", "mv", "stat", "chmod", "stty"):
             self.binaries.joinpath(command).symlink_to("/bin/bash" if command == "bash" else shutil.which(command))
         self.env = dict(os.environ, PATH=str(self.binaries), HOME=str(self.home), XDG_CONFIG_HOME=str(self.xdg), OPENCODE_CONFIG_DIR=str(self.xdg / "opencode"), OPENCODE_DISABLE_CLAUDE_CODE="", OPENCODE_DISABLE_CLAUDE_CODE_PROMPT="", PI_CODING_AGENT_DIR=str(self.pi), CODEX_HOME=str(self.codex), CLAUDE_CONFIG_DIR=str(self.claude))
@@ -223,10 +225,16 @@ class CodingPrinciplesInstallerTests(unittest.TestCase):
         curl.write_text('''#!/bin/bash
 set -e
 [[ "$1" == -fsSL && "$3" == -o ]]
-[[ "$2" == https://raw.githubusercontent.com/mabyko/AgentSkills/main/docs/coding-principles.md ]]
 printf '%s\\n' "$2" >> "$DOWNLOAD_LOG"
-if [[ -n "${FAIL_DOCUMENT:-}" ]]; then exit 22; fi
-cp "$FIXTURE_ROOT/docs/coding-principles.md" "$4"
+case "$2" in
+  https://raw.githubusercontent.com/mabyko/AgentSkills/main/docs/coding-principles.md)
+    [[ -z "${FAIL_DOCUMENT:-}" ]] || exit 22
+    cp "$FIXTURE_ROOT/docs/coding-principles.md" "$4" ;;
+  https://raw.githubusercontent.com/mabyko/AgentSkills/main/scripts/coding-principles-ui.cjs)
+    [[ -z "${FAIL_UI:-}" ]] || exit 22
+    cp "$FIXTURE_ROOT/scripts/coding-principles-ui.cjs" "$4" ;;
+  *) exit 22 ;;
+esac
 ''')
         curl.chmod(0o755)
         temporary = self.directory / "downloads"
@@ -363,6 +371,7 @@ cp "$FIXTURE_ROOT/docs/coding-principles.md" "$4"
         env = dict(env or self.env, TERM="xterm", UI_SCRIPT=str(SCRIPT))
         pid, terminal = pty.fork()
         if pid == 0:
+            fcntl.ioctl(1, termios.TIOCSWINSZ, struct.pack("HHHH", 24, 80, 0, 0))
             signal.signal(signal.SIGINT, signal.SIG_DFL)
             signal.signal(signal.SIGTERM, signal.SIG_DFL)
             os.chdir(self.project)
@@ -391,7 +400,7 @@ cp "$FIXTURE_ROOT/docs/coding-principles.md" "$4"
                 while expected not in pending:
                     receive()
                 del pending[:pending.index(expected) + len(expected)]
-                os.write(terminal, keys)
+                os.write(terminal, keys.replace(b"\n", b"\r"))
             while status is None:
                 receive()
                 finished, wait_status = os.waitpid(pid, os.WNOHANG)
@@ -401,7 +410,7 @@ cp "$FIXTURE_ROOT/docs/coding-principles.md" "$4"
             return os.waitstatus_to_exitcode(status), output.decode(errors="replace")
         finally:
             if status is None:
-                os.kill(pid, signal.SIGKILL)
+                os.killpg(pid, signal.SIGKILL)
                 os.waitpid(pid, 0)
             os.close(terminal)
 
@@ -449,7 +458,7 @@ cp "$FIXTURE_ROOT/docs/coding-principles.md" "$4"
         self.assertEqual(list(temporary.iterdir()), [])
 
     def test_ui_requires_one_agent_and_yes_skips_the_ui(self):
-        code, output = self.run_ui([(b"Installation scope", b"\n"), (b"Choose agents", b" \x1b[B \n"), (b"Select at least one agent.", b" \n"), (b"Apply these choices?", b"\n")])
+        code, output = self.run_ui([(b"Installation scope", b"\n"), (b"Choose agents", b" \x1b[B \n"), (b"at least one", b" \n"), (b"Apply these choices?", b"\n")])
         self.assertEqual(code, 0, output)
         self.assertFalse(self.codex.exists())
         self.assertIn(START, (self.claude / "CLAUDE.md").read_bytes())
@@ -464,6 +473,104 @@ cp "$FIXTURE_ROOT/docs/coding-principles.md" "$4"
         self.assertIn("requires a controlling terminal", result.stderr)
         self.assertFalse(self.codex.exists())
         self.assertFalse(self.claude.exists())
+
+    def enable_node(self):
+        node = shutil.which("node")
+        if not node or subprocess.run([node, str(ROOT / "scripts/coding-principles-ui.cjs"), "--check"], capture_output=True).returncode:
+            self.skipTest("Node.js 22.20+ is required for Clack UI coverage")
+        self.binaries.joinpath("node").symlink_to(node)
+        return node
+
+    def test_node_ui_selects_and_removes_only_grok(self):
+        self.enable_node()
+        self.test_ui_selects_only_grok_globally()
+
+    def test_node_ui_requires_one_agent_and_yes_bypasses_it(self):
+        self.enable_node()
+        self.test_ui_requires_one_agent_and_yes_skips_the_ui()
+
+    def test_node_ui_honors_project_and_agent_preselection(self):
+        self.enable_node()
+        code, output = self.run_ui([(b"Installation scope", b"\n"), (b"Project folder", b"\n"), (b"Choose agents", b"\n"), (b"Apply these choices?", b"\n")], args=("--interactive", "--scope", "project", "--project-dir", str(self.project), "--agent", "grok"))
+        self.assertEqual(code, 0, output)
+        self.assertIn("UI: Clack (Node)", output)
+        self.assertEqual((self.project / "AGENTS.md").read_bytes().count(START), 1)
+        self.assertFalse((self.project / "CLAUDE.md").exists())
+        self.assertFalse(self.codex.exists())
+        self.assertFalse(self.home.joinpath(".grok").exists())
+
+    def test_node_piped_ui_and_failed_download_fallback(self):
+        self.enable_node()
+        env, temporary = self.remote_environment()
+        for fail in (False, True):
+            with self.subTest(fail_ui_download=fail):
+                run_env = dict(env, FAIL_UI="1" if fail else "")
+                code, output = self.run_ui([(b"Installation scope", b"\x1b[B\n"), (b"Project folder", b"\n"), (b"Choose agents", b"\n"), (b"Apply these choices?", b"\n")], env=run_env, piped=True)
+                self.assertEqual(code, 0, output)
+                self.assertIn("UI: Bash" if fail else "UI: Clack (Node)", output)
+                for name in ("AGENTS.md", "CLAUDE.md"):
+                    self.assertEqual((self.project / name).read_bytes().count(START), 1)
+                self.assertEqual(list(temporary.iterdir()), [])
+                self.assert_success(self.run_installer("uninstall", "project"))
+        self.assertEqual(len(Path(env["DOWNLOAD_LOG"]).read_text().splitlines()), 4)
+
+    def test_node_ui_cancel_restores_terminal_without_changing_files(self):
+        self.enable_node()
+        self.codex.mkdir()
+        agents = self.codex / "AGENTS.md"
+        agents.write_bytes(b"Existing instructions\n")
+        for steps, expected in (([(b"Installation scope", b"q")], 0), ([(b"Installation scope", b"\x1b")], 0), ([(b"Installation scope", b"\x03")], 130), ([(b"Installation scope", b"\n"), (b"Choose agents", b"q")], 0), ([(b"Installation scope", b"\n"), (b"Choose agents", b"\n"), (b"Apply these choices?", b"\x1b[B\n")], 0)):
+            with self.subTest(steps=steps):
+                code, output = self.run_ui(steps)
+                self.assertEqual(code, expected, output)
+                self.assertIn("Cancelled", output)
+                self.assertEqual(agents.read_bytes(), b"Existing instructions\n")
+                self.assertFalse(self.claude.exists())
+        env, temporary = self.remote_environment()
+        code, output = self.run_ui([(b"Installation scope", b"q")], env=env, piped=True)
+        self.assertEqual(code, 0, output)
+        self.assertEqual(list(temporary.iterdir()), [])
+        self.assertEqual(Path(env["DOWNLOAD_LOG"]).read_text().splitlines(), ["https://raw.githubusercontent.com/mabyko/AgentSkills/main/scripts/coding-principles-ui.cjs"])
+
+    def test_unsupported_or_unloadable_node_uses_bash_ui(self):
+        node = self.enable_node()
+        self.binaries.joinpath("node").unlink()
+        shim = self.binaries / "node"
+        for body in ("exit 1", '[[ "$1" == -e ]] || exit 1\nexec "$REAL_NODE" "$@"'):
+            with self.subTest(shim=body):
+                shim.write_text("#!/bin/bash\n" + body + "\n")
+                shim.chmod(0o755)
+                code, output = self.run_ui([(b"Installation scope", b"q")], env=dict(self.env, REAL_NODE=node))
+                self.assertEqual(code, 0, output)
+                self.assertIn("UI: Bash", output)
+                self.assertFalse(self.codex.exists())
+                self.assertFalse(self.claude.exists())
+
+    def test_explicit_options_and_help_never_invoke_node(self):
+        shim = self.binaries / "node"
+        shim.write_text('#!/bin/bash\nprintf "invoked\\n" >> "$NODE_CALL_LOG"\nexit 1\n')
+        shim.chmod(0o755)
+        log = self.directory / "node.log"
+        env = dict(self.env, NODE_CALL_LOG=str(log))
+        for args in (("--help",), ("--yes",), ("--scope", "global", "--agent", "codex")):
+            code, output = self.run_ui([], args=args, env=env)
+            self.assertEqual(code, 0, output)
+            self.assertNotIn("UI:", output)
+            self.assertFalse(log.exists())
+
+    def test_node_ui_failure_or_invalid_result_stops_before_writing(self):
+        node = self.enable_node()
+        self.binaries.joinpath("node").unlink()
+        shim = self.binaries / "node"
+        for body in ("exit 7", 'printf "99\\n"', 'printf "0 1\\n"', 'printf "unexpected text\\n"'):
+            with self.subTest(result=body):
+                shim.write_text('#!/bin/bash\nif [[ "$1" == -e || "$2" == --check ]]; then exec "$REAL_NODE" "$@"; fi\n' + body + "\n")
+                shim.chmod(0o755)
+                code, output = self.run_ui([], env=dict(self.env, REAL_NODE=node))
+                self.assertNotEqual(code, 0, output)
+                self.assertIn("Error:", output)
+                self.assertFalse(self.codex.exists())
+                self.assertFalse(self.claude.exists())
 
 
 if __name__ == "__main__":

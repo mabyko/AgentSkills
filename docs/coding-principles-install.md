@@ -2,15 +2,15 @@
 
 Use the installer to add the [coding principles](coding-principles.md) to native agent instruction files. It manages one marked block, keeping existing instructions outside it intact. Skill and plugin installation do not activate these principles.
 
-Requires Bash 3.2 or later and standard Unix commands (`dirname`, `basename`, `readlink`, `mktemp`, `mkdir`, `rm`, `mv`, `stat`, and `chmod`; the TUI also uses `stty`). Remote installation also needs curl. No Python or Node runtime is needed. Use Bash on macOS or Linux; on Windows, use a Unix environment such as WSL rather than PowerShell or CMD directly.
+Requires Bash 3.2 or later and standard Unix commands (`dirname`, `basename`, `readlink`, `mktemp`, `mkdir`, `rm`, `mv`, `stat`, and `chmod`; the TUI also uses `stty`). Remote installation also needs curl. Python and Node are optional. Use Bash on macOS or Linux; on Windows, use a Unix environment such as WSL rather than PowerShell or CMD directly.
 
-Once this installer is published on the repository's `main` branch, install without cloning:
+Install from the repository's `main` branch without cloning:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/mabyko/AgentSkills/main/scripts/install-coding-principles.sh | bash
 ```
 
-The command opens the terminal selection UI, then downloads the principles from `main` after you review and apply your choices. It reads selection input from `/dev/tty`, so piping the program into Bash also supports interaction. The downloaded principles file is removed after execution. Until published, use the local checkout commands below.
+The command opens the terminal selection UI, then downloads the principles from `main` after you review and apply your choices. It reads selection input from `/dev/tty`, so piping the program into Bash also supports interaction. Downloaded files are removed after execution. Use a local checkout to try changes that have not reached `main`.
 
 If you already have a checkout, run `./scripts/install-coding-principles.sh` from its root. Otherwise, clone it first:
 
@@ -33,6 +33,8 @@ Run without options in a terminal:
 4. Review the instruction paths and apply, or cancel. q, Esc, and Ctrl-C cancel before any files change.
 
 Personal scope and Codex + Claude Code are preselected. `uninstall` opens the same UI for removal. The UI requires a controlling terminal; `--interactive` reports an error when none is available.
+
+With Node.js 22.20 or later, menus use [Clack](https://github.com/bombshell-dev/clack), the prompt library used by skills CLI. The bundled `scripts/coding-principles-ui.cjs` includes its dependencies and licenses, so running it requires neither npm nor `node_modules`. A local checkout uses that bundle; remote execution downloads it from `main` before opening the UI. If Node is absent, older, or the bundle cannot be downloaded or loaded, menus use the Bash UI. Explicit options, `--yes`, and `--help` do not load or download the optional UI. Both interfaces return selections to the same Bash code; instruction paths and managed-block handling are identical.
 
 ## Agent instruction files
 

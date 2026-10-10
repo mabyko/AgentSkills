@@ -1,0 +1,11 @@
+{
+  "name": "agent-skills-authoring",
+  "private": true,
+  "scripts": {
+    "build:coding-principles-ui": "node scripts/build-coding-principles-ui.mjs"
+  },
+  "devDependencies": {
+    "@clack/prompts": "1.2.0",
+    "esbuild": "0.28.2"
+  }
+}
