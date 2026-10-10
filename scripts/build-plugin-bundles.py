@@ -11,6 +11,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 HOOKS = {
     "git-hooks": "git-workflow-trigger.sh",
+    "github-hooks": "github-workflow-trigger.sh",
     "apple-dev-hooks": "apple-dev-trigger.sh",
 }
 
