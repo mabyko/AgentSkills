@@ -14,6 +14,7 @@ Codex, Claude Code, OpenCode, 그리고 open agent skills 형식을 지원하는
 - `flutter-flavors`: Flutter flavor, `flutter_flavorizr` / `flavorizr.yaml`, 플랫폼 앱 identity, launch config, build mode 경계를 설정하거나 점검합니다.
 - `git-workflow`: staging, commit, branch, merge, rebase, tag, recovery 같은 안전한 로컬 Git workflow를 안내합니다. 기본값으로 DCO sign-off를 포함한 서명 커밋(`git commit -S --signoff`)을 사용하며, 서명이 불가능하면 명시적인 fallback을 따릅니다.
 - `github-workflow`: PR, 선택적 gh-stack을 통한 stacked PR, review, check, release, fork upstream 동기화 workflow를 안내합니다. CLI 도구가 없으면 설치 방법과 사용 가능한 연동 도구·브라우저 경로를 안내합니다.
+- `prepare-release-github`: 저장소의 릴리스 규칙에 따라 버전·릴리스 PR·정확한 커밋의 CI 결과·배포 인계 자료를 준비합니다. 실제 게시와 배포 실행 전까지 담당합니다.
 - `macos-dev-app-cleanup`: 프로젝트의 macOS Debug·Dev·QA 앱을 정확한 경로로 식별해 정리하거나 삭제 여부를 확인하고, Release·사용자 데이터·공유 설정은 보존합니다.
 - `css-typography-ko`: CSS로 한국어 웹 UI의 가독성을 개선합니다. 텍스트 위계, 글꼴과 간격, 어절 단위 줄바꿈, 줄 길이 조정, 긴 텍스트의 넘침 처리를 함께 다룹니다.
 - `break-it-down`: 독자가 막히는 질문에서 출발해 원리와 관계를 설명합니다. 구체적인 사례·도해·인터랙티브 모델·설명 영상으로 변화의 이유와 적용 조건을 이해하게 돕습니다.
@@ -28,6 +29,7 @@ Codex, Claude Code, OpenCode, 그리고 open agent skills 형식을 지원하는
 - `$github-workflow 이 PR의 check와 merge 가능 상태를 검토해줘.`
 - `$github-workflow 이 기능을 의존하는 PR 여러 개로 나눠줘. gh-stack이 없으면 설치 없이 진행해줘.`
 - `$github-workflow 내 저장소의 main 브랜치를 upstream main과 매일 4시에 동기화하는 workflow 만들어줘.`
+- `$prepare-release-github 다음 릴리스의 버전 변경, 대상 커밋의 CI 결과, 배포 인계 자료를 준비해줘. 배포 실행은 운영자에게 남겨줘.`
 - `$macos-dev-app-cleanup 이 프로젝트의 macOS 테스트 앱을 정리해줘. 설치된 Release와 공유 설정은 남겨줘.`
 - `$css-typography-ko 이 한국어 웹 UI의 기존 디자인을 유지하면서 가독성, 텍스트 위계, 행간과 줄바꿈을 다듬어줘.`
 - `$break-it-down 지금 이야기한 내용을 이해하기 쉽게 만들어줘. 효과적인 형식을 골라 실제 결과물까지 보여줘.`
@@ -146,7 +148,7 @@ npx skills@latest add mabyko/AgentSkills --global
 
 | 플러그인 | 포함하는 기능 |
 | --- | --- |
-| `agent-skills` | 전체 묶음: 스킬 9개 + Git 안전 훅 |
+| `agent-skills` | 전체 묶음: 스킬 10개 + Git 안전 훅 |
 | `git-hooks` | Git 안전 훅(`PreToolUse`)만 포함. 스킬 없음 |
 
 필요한 스킬은 `skills` CLI에서 이름으로 선택하세요. 예를 들어 Git과 GitHub 스킬만 설치하려면:
@@ -167,6 +169,7 @@ npx skills@latest add mabyko/AgentSkills --skill git-workflow github-workflow
 | --- | --- | --- |
 | `git-workflow` | 스킬 + 선택 훅 | 스킬은 Git 작업·복구 절차를 안내하고, Git 훅은 Bash 명령 직전에 핵심 안전 규칙을 상기시킵니다. |
 | `github-workflow` | 스킬만으로 충분 | PR·리뷰·CI·릴리스는 작업 맥락이 필요합니다. Git 훅은 직접 실행하는 gh/API 작업을 다루지 않습니다. |
+| `prepare-release-github` | 스킬만으로 충분 | 버전 규칙·대상 SHA·CI 결과·배포 준비 조건을 저장소 맥락에 맞춰 확인합니다. |
 | `apple-app-icon-generator` | 스킬만으로 충분 | 앱 식별, 디자인 선택, 생성·설치·확인은 요청별 절차입니다. |
 | `apple-bundle-id-guardrails` | 스킬만으로 충분 | 번들 ID와 서명 팀의 소유권·설정은 프로젝트 맥락으로 판단합니다. |
 | `macos-dev-app-cleanup` | 스킬만으로 충분 | 승인된 삭제 범위와 정확한 앱 경로를 먼저 확인해야 합니다. |

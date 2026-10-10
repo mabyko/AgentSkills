@@ -1,7 +1,7 @@
 {
   "name": "agent-skills",
-  "version": "0.7.1",
-  "description": "Complete bundle: all 9 skills and Git safety hooks.",
+  "version": "0.8.0",
+  "description": "Complete bundle: all 10 skills and Git safety hooks.",
   "author": {
     "name": "mabyko",
     "url": "https://github.com/mabyko"
@@ -15,8 +15,8 @@
   ],
   "interface": {
     "displayName": "Agent Skills",
-    "shortDescription": "Complete bundle: all 9 skills and Git safety hooks.",
-    "longDescription": "Complete bundle: all 9 skills and Git safety hooks.",
+    "shortDescription": "Complete bundle: all 10 skills and Git safety hooks.",
+    "longDescription": "Complete bundle: all 10 skills and Git safety hooks.",
     "developerName": "mabyko",
     "category": "Productivity",
     "brandColor": "#2563EB",

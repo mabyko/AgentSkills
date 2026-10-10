@@ -14,6 +14,7 @@ Skills are maintained in the top-level `skills/` directory and selected individu
 - `flutter-flavors`: Set up or audit Flutter flavors, `flutter_flavorizr` / `flavorizr.yaml`, platform app identities, launch configs, and build-mode boundaries.
 - `git-workflow`: Guide safe local Git workflows such as staging, commits, branches, merges, rebases, tags, and recovery. Defaults to signed commits with DCO sign-off (`git commit -S --signoff`) and falls back explicitly when signing is unavailable.
 - `github-workflow`: Guide GitHub pull requests, stacked PRs with optional gh-stack, reviews, checks, releases, and fork upstream-sync workflows. Offers installation guidance and available tool or browser alternatives when CLI tools are missing.
+- `prepare-release-github`: Prepare versions, release PRs, exact-commit CI evidence, and deployment handoffs using repository release rules. Preparation ends before publishing or deploying.
 - `macos-dev-app-cleanup`: Remove or verify removal of a project's macOS Debug, Dev, and QA apps by exact path, preserving Release apps, user data, and shared settings.
 - `css-typography-ko`: Improve Korean web UI readability with CSS typography, covering text hierarchy, fonts, spacing, word boundaries, balanced wrapping, and overflow handling.
 - `break-it-down`: Build explanations around the reader's question and the underlying mechanism. Use worked examples, diagrams, interactive models, or narrated animation to make relationships, changes, and limits understandable.
@@ -28,6 +29,7 @@ Skills are maintained in the top-level `skills/` directory and selected individu
 - `$github-workflow Review this PR's checks and merge readiness.`
 - `$github-workflow Split this feature into dependent PR layers; continue without installing gh-stack if it is unavailable.`
 - `$github-workflow Create a workflow that syncs my repository's main branch from upstream main every day at 4:00.`
+- `$prepare-release-github Prepare the next release with version changes, candidate CI evidence, and a deployment handoff; leave deployment to the operator.`
 - `$macos-dev-app-cleanup Remove this project's macOS test apps, keeping the installed Release and shared settings.`
 - `$css-typography-ko Improve this Korean web UI's readability, hierarchy, spacing, and wrapping while preserving its visual identity.`
 - `$break-it-down Help me understand the current topic; choose an effective format and make the result.`
@@ -146,7 +148,7 @@ Choose the complete bundle or selected plugins from the same `mabyko` marketplac
 
 | Plugin | Includes |
 | --- | --- |
-| `agent-skills` | Complete bundle: all 9 skills and Git safety hooks |
+| `agent-skills` | Complete bundle: all 10 skills and Git safety hooks |
 | `git-hooks` | Git safety hook (`PreToolUse`) only; no skills |
 
 Select individual skills by name through the skills CLI. For example, to install just the Git and GitHub skills:
@@ -167,6 +169,7 @@ Every skill works independently. This classification describes complementary beh
 | --- | --- | --- |
 | `git-workflow` | Skill + optional hook | The skill guides workflows and recovery; the Git hook reminds key safety rules immediately before Bash commands. |
 | `github-workflow` | Skill alone | PRs, reviews, CI, and releases require task context. The Git hook does not cover direct gh/API operations. |
+| `prepare-release-github` | Skill alone | Version policy, candidate SHA, CI evidence, and delivery prerequisites depend on the repository. |
 | `apple-app-icon-generator` | Skill alone | App identity, design choices, generation, installation, and verification are task-specific steps. |
 | `apple-bundle-id-guardrails` | Skill alone | Bundle identity ownership and signing configuration require project context. |
 | `macos-dev-app-cleanup` | Skill alone | First establish the authorized deletion scope and exact app paths. |

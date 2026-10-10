@@ -7,6 +7,8 @@ description: "Use when working with GitHub workflows: pull requests, stacked PRs
 
 Use for GitHub-hosted collaboration and publishing. Use `git-workflow` for local staging, commits, rebases, conflicts, branch cleanup, Git tag safety, or history rewrites.
 
+For version changes, release candidate verification, and deployment handoff, use `prepare-release-github` when available. This skill handles the GitHub PR, check, and publishing operations within that process.
+
 ## Rules
 
 1. Read repository-specific GitHub guidance first: `.github/`, PR templates, release workflows, branch protection notes, `CONTRIBUTING.md`, and `README.md`.

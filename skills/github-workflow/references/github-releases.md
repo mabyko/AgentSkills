@@ -6,6 +6,8 @@ If the target tag already exists and the user only asked to create, edit, publis
 
 Before GitHub release work, search the repository for release guidance rather than assuming a generic process. Look for release docs, changelog conventions, package/version metadata, `.github/` release workflows, and GitHub release configuration. Follow repository-specific rules over this reference.
 
+When the request is to prepare a version, release PR, candidate, or deployment handoff, use `prepare-release-github` when available. Publishing a GitHub Release remains a separate operation covered here; preparation does not imply permission to publish or deploy.
+
 Example quick search:
 
 ```bash
