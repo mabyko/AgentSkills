@@ -6,12 +6,26 @@ die() { printf 'Error: %s\n' "$*" >&2; exit 1; }
 usage() {
   printf '%s\n' \
     'Usage: install-coding-principles.sh [install|uninstall] [options]' \
+    'Default action: install; reinstall updates the managed block.' \
+    '' \
     '  --scope global|project   Installation scope (default: global)' \
     '  --agent NAMES           Comma-separated agents; repeatable (default: codex,claude)' \
     '                          codex, claude, grok, antigravity, opencode, pi, both, all' \
-    '  --project-dir PATH      Project folder (default: current folder)' \
-    '  --interactive           Open the terminal selection UI' \
-    '  --yes, -y               Use options/defaults without the selection UI'
+    '  --project-dir PATH      Project folder; requires --scope project (default: current folder)' \
+    '  --interactive           Open the terminal UI with options preselected; requires a terminal' \
+    '  --yes, -y               Use options/defaults without the selection UI' \
+    '  --help, -h              Show this help without changing files' \
+    '' \
+    'Without selection options, a terminal opens the UI. Explicit --scope,' \
+    '--agent, or --project-dir skips it unless --interactive is supplied.' \
+    'Without a terminal, the defaults apply unless options override them.' \
+    '' \
+    'Examples:' \
+    '  ./scripts/install-coding-principles.sh' \
+    '  ./scripts/install-coding-principles.sh --scope global --agent codex' \
+    '  ./scripts/install-coding-principles.sh --scope project --agent codex --project-dir /path/to/project' \
+    '  ./scripts/install-coding-principles.sh --interactive --scope global --agent codex' \
+    '  ./scripts/install-coding-principles.sh uninstall --scope global --agent codex'
 }
 
 action=install

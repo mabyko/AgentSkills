@@ -66,7 +66,7 @@ From the AgentSkills checkout, specify the project folder:
 ./scripts/install-coding-principles.sh --scope project --project-dir /path/to/project
 ```
 
-This example uses the default Codex + Claude Code selection. Add `--agent` for other agents. Without `--project-dir`, project scope uses the current folder. Existing symlinks are followed and kept intact.
+This example uses the default Codex + Claude Code selection. Add `--agent` for other agents. `--project-dir` requires `--scope project`; without it, project scope uses the current folder. Existing symlinks are followed and kept intact.
 
 If the project already has `AGENTS.md` and the installer creates a new `CLAUDE.md`, the new file imports `AGENTS.md` to retain existing project instructions. Review and commit the project instruction changes so teammates receive them through the normal repository checkout.
 

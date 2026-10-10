@@ -62,13 +62,23 @@ curl -fsSL https://raw.githubusercontent.com/mabyko/AgentSkills/main/scripts/ins
 
 Codex·Claude Code·Grok Build·Antigravity·OpenCode·Pi 중 여러 도구를 고를 수 있습니다. 처음에는 개인 전역 범위와 Codex·Claude Code가 선택돼 있습니다. 프로젝트에서 같은 지침 파일을 쓰는 도구들은 원칙 블록을 한 번만 추가합니다.
 
-자동화에서는 `--yes`로 기본값을 바로 적용하세요. 범위·에이전트 옵션을 지정해도 선택 화면을 건너뜁니다. 지정한 옵션을 선택 화면에서 바꾸려면 `--interactive`를 붙이세요. `--agent codex,opencode,pi`처럼 여러 도구를 쉼표로 구분하거나, `--agent all`로 여섯 도구를 모두 지정할 수 있습니다. 터미널이 없으면 옵션으로 바꾸지 않는 한 개인 전역 범위에 Codex·Claude Code를 설치합니다.
+자동화에서는 `--yes`로 기본값을 바로 적용하세요. `--scope`·`--agent`·`--project-dir`를 지정해도 선택 화면을 건너뜁니다. 지정한 옵션을 선택 화면에서 바꾸려면 `--interactive`를 붙이세요. `--agent codex,opencode,pi`처럼 여러 도구를 쉼표로 구분하거나, `--agent all`로 여섯 도구를 모두 지정할 수 있습니다. 터미널이 없으면 옵션으로 바꾸지 않는 한 개인 전역 범위에 Codex·Claude Code를 설치합니다.
+
+전체 옵션과 예시를 보거나, Codex에 전역 설치하거나, 그 선택을 화면에서 확인하려면:
+
+```bash
+./scripts/install-coding-principles.sh --help
+./scripts/install-coding-principles.sh --scope global --agent codex
+./scripts/install-coding-principles.sh --interactive --scope global --agent codex
+```
 
 프로젝트에 설치해 팀과 공유하려면:
 
 ```bash
 ./scripts/install-coding-principles.sh --scope project --project-dir /path/to/project
 ```
+
+`--project-dir`는 `--scope project`와 함께 써야 합니다. 생략하면 현재 폴더를 사용합니다. Codex만 설치하려면 `--agent codex`를 추가하세요.
 
 프로젝트의 `AGENTS.md`·`CLAUDE.md` 변경을 검토하고 커밋하면 팀원은 프로젝트를 내려받아 같은 원칙을 사용합니다.
 

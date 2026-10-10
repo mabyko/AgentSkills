@@ -62,13 +62,23 @@ In an existing checkout, run `./scripts/install-coding-principles.sh` now. In a 
 
 Select any combination of Codex, Claude Code, Grok Build, Antigravity, OpenCode, and Pi. Personal scope and Codex + Claude Code are preselected. Shared project instruction files receive the block once.
 
-For automation, `--yes` uses the defaults without the UI. Explicit scope or agent options also bypass it; use `--interactive` to open it with those options preselected. Multiple agents can be comma-separated, for example `--agent codex,opencode,pi`; `--agent all` selects all six. Without a terminal, the command uses personal scope and Codex + Claude Code unless options override them.
+For automation, `--yes` uses the defaults without the UI. Explicit `--scope`, `--agent`, or `--project-dir` options also bypass it; use `--interactive` to open it with those options preselected. Multiple agents can be comma-separated, for example `--agent codex,opencode,pi`; `--agent all` selects all six. Without a terminal, the command uses personal scope and Codex + Claude Code unless options override them.
+
+Show all options and examples, install for Codex globally, or review that selection in the UI:
+
+```bash
+./scripts/install-coding-principles.sh --help
+./scripts/install-coding-principles.sh --scope global --agent codex
+./scripts/install-coding-principles.sh --interactive --scope global --agent codex
+```
 
 Install into a project to share with teammates:
 
 ```bash
 ./scripts/install-coding-principles.sh --scope project --project-dir /path/to/project
 ```
+
+`--project-dir` requires `--scope project`. Omit it to use the current folder; add `--agent codex` to install only for Codex.
 
 Review and commit the project instruction changes so teammates receive the principles through their normal checkout.
 

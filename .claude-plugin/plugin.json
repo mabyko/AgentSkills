@@ -1,6 +1,6 @@
 {
   "name": "agent-skills",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Complete bundle: all 9 skills and Git safety hooks.",
   "author": {
     "name": "mabyko",
