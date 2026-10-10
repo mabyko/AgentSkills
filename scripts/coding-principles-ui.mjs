@@ -1,4 +1,6 @@
-import { isCancel, multiselect, select } from '@clack/prompts';
+import { confirm, intro, isCancel, note, select, text } from '@clack/prompts';
+import pc from 'picocolors';
+import { cancelSymbol, searchMultiselect } from './vendor/skills-search-multiselect.ts';
 
 // Only selection lives here; Bash resolves paths and performs every file change.
 async function main() {
@@ -7,7 +9,7 @@ async function main() {
   if (process.argv[2] === '--check') return;
 
   const [message, mode, initial, ...labels] = process.argv.slice(2);
-  if (!process.stdin.isTTY || !process.stderr.isTTY || !labels.length) {
+  if (!process.stdin.isTTY || !process.stderr.isTTY) {
     throw new Error('Selection requires a terminal and options');
   }
   const signal = new AbortController();
@@ -17,23 +19,40 @@ async function main() {
   process.on('SIGTERM', interrupt);
   process.stdin.on('keypress', (character, key) => {
     if (key?.ctrl && key.name === 'c') cancellationCode = 130;
-    if (character === 'q' || character === 'Q') signal.abort();
+    if (mode !== 'multiple' && mode !== 'text' && (character === 'q' || character === 'Q')) signal.abort();
   });
   process.stdin.on('end', () => signal.abort());
 
-  const values = initial.trim() ? initial.trim().split(/\s+/).map(Number) : [];
+  const terminal = { input: process.stdin, output: process.stderr, signal: signal.signal };
+  if (mode === 'note') {
+    note([initial, '', ...labels.map(path => pc.cyan(path))].join('\n'), message, terminal);
+    return;
+  }
+  if (mode === 'multiple') intro(pc.bgCyan(pc.black(' coding principles ')), terminal);
+  const values = mode === 'multiple' || mode === 'single'
+    ? initial.trim().split(/\s+/).filter(Boolean).map(Number) : [];
   const options = {
     message,
     options: labels.map((label, value) => ({ label, value })),
-    input: process.stdin,
-    output: process.stderr,
-    signal: signal.signal,
+    ...terminal,
   };
-  const result = mode === 'multiple'
-    ? await multiselect({ ...options, initialValues: values, cursorAt: 0, required: true })
-    : await select({ ...options, initialValue: values[0] });
-  if (isCancel(result)) process.exit(cancellationCode);
-  process.stdout.write((Array.isArray(result) ? result : [result]).join(' ') + '\n');
+  if (message === 'Installation scope') {
+    options.options[0].hint = 'Install in project directory (shared with your project)';
+    options.options[1].hint = 'Install in home directory (available across all projects)';
+  }
+  let result;
+  if (mode === 'multiple') {
+    result = await searchMultiselect({ ...terminal, message, items: options.options, initialSelected: values, required: true });
+  } else if (mode === 'confirm') {
+    result = await confirm({ ...terminal, message, initialValue: true });
+  } else if (mode === 'text') {
+    result = await text({ ...terminal, message, placeholder: initial, defaultValue: initial });
+  } else {
+    result = await select({ ...options, initialValue: values[0] });
+  }
+  if (isCancel(result) || result === cancelSymbol) process.exit(cancellationCode);
+  if (mode === 'confirm') result = result ? 0 : 1;
+  process.stdout.write((Array.isArray(result) ? result.join(' ') : String(result)) + '\n');
 }
 
 main().catch(error => {

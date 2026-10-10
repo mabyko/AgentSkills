@@ -27,14 +27,16 @@ Run without options in a terminal:
 ./scripts/install-coding-principles.sh
 ```
 
-1. Choose personal/global or project scope with Up/Down and Enter.
-2. For project scope, enter the project folder; Enter accepts the displayed folder.
-3. Move through agents with Up/Down, toggle them with Space, then press Enter. Select at least one agent.
-4. Review the instruction paths and apply, or cancel. q, Esc, and Ctrl-C cancel before any files change.
+1. Move through agents with Up/Down, toggle them with Space, then press Enter. Select at least one agent. In the Node UI, type to filter the list; selections persist while searching.
+2. Choose project or personal/global scope with Up/Down and Enter.
+3. For project scope, enter the project folder; Enter accepts the displayed folder.
+4. Review the instruction paths and apply, or cancel. Esc and Ctrl-C cancel before any files change. Bash also accepts q to cancel; in the Node agent list, q is search input.
 
 Personal scope and Codex + Claude Code are preselected. `uninstall` opens the same UI for removal. The UI requires a controlling terminal; `--interactive` reports an error when none is available.
 
-With Node.js 22.20 or later, menus use [Clack](https://github.com/bombshell-dev/clack), the prompt library used by skills CLI. The bundled `scripts/coding-principles-ui.cjs` includes its dependencies and licenses, so running it requires neither npm nor `node_modules`. A local checkout uses that bundle; remote execution downloads it from `main` before opening the UI. If Node is absent, older, or the bundle cannot be downloaded or loaded, menus use the Bash UI. Explicit options, `--yes`, and `--help` do not load or download the optional UI. Both interfaces return selections to the same Bash code; instruction paths and managed-block handling are identical.
+With Node.js 22.20 or later, agent selection uses the [original skills CLI search renderer](https://github.com/vercel-labs/skills/blob/13e4063a1cf913f5606d57d42ab83a86f5001e04/src/prompts/search-multiselect.ts), with its search input, selection markers, selected-item summary, colors, and redraw behavior. Scope and project-folder prompts, the summary box, and Yes/No confirmation use [Clack](https://github.com/bombshell-dev/clack). The vendored renderer retains its MIT license and only adds configurable terminal streams and an abort signal for the Bash bridge.
+
+The bundled `scripts/coding-principles-ui.cjs` includes dependencies and licenses, so running it requires neither npm nor `node_modules`. A local checkout uses that bundle; remote execution downloads it from `main` before opening the UI. If Node is absent, older, or the bundle cannot be downloaded or loaded, menus use the Bash UI. Explicit options, `--yes`, and `--help` do not load or download the optional UI. Both interfaces return selections to the same Bash code; instruction paths and managed-block handling are identical. Agent availability, default selections, and instruction-file installation remain specific to coding principles.
 
 ## Agent instruction files
 

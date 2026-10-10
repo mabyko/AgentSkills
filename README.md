@@ -52,13 +52,13 @@ By default, `npx skills add` installs per project. Use `--global` only when you 
 
 ## Install Coding Principles
 
-Requires Bash 3.2 or later and standard Unix commands; remote installation also needs curl. Python and Node are not required. With Node.js 22.20 or later, the installer automatically uses Clack, the prompt library used by skills CLI. Otherwise, it uses the Bash UI. Teammates can install with one command:
+Requires Bash 3.2 or later and standard Unix commands; remote installation also needs curl. Python and Node are not required. With Node.js 22.20 or later, the installer uses skills CLI's searchable agent chooser and Clack scope, summary, and confirmation prompts. Otherwise, it uses the Bash UI. Teammates can install with one command:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/mabyko/AgentSkills/main/scripts/install-coding-principles.sh | bash
 ```
 
-In an existing checkout, run `./scripts/install-coding-principles.sh` now. In a terminal, it opens a selection UI: choose personal or project scope, select agents with Space, then review the instruction paths and apply. Use Up/Down to move and Enter to continue; q, Esc, or Ctrl-C cancels.
+In an existing checkout, run `./scripts/install-coding-principles.sh` now. In a terminal, select agents with Space, choose personal or project scope, then review the instruction paths and apply. With Node, type to filter agents and see the selected-item summary. Use Up/Down to move and Enter to continue; Esc or Ctrl-C cancels. In the Bash UI, q also cancels; in the searchable Node list, q is search input.
 
 The Clack UI ships as a self-contained file; no npm installation is needed to run it. Remote execution downloads that optional UI before selection and removes it afterward. If it cannot be downloaded or loaded, the installer uses Bash. Both UIs use the same Bash installation and removal logic.
 
@@ -316,7 +316,7 @@ python3 scripts/build-plugin-bundles.py
 
 Authoring requires Python 3.9 or later. Validation fails if the generated copies differ, including deleted files or executable permissions. Bump both host versions of the complete bundle and each affected hook plugin when its content changes.
 
-To change the optional Node UI, edit `scripts/coding-principles-ui.mjs`, then rebuild its committed bundle with dependency licenses included. This authoring step requires Node.js 22.20 or later and npm:
+To change the optional Node UI, edit `scripts/coding-principles-ui.mjs`, then rebuild its committed bundle with dependency licenses included. The searchable chooser is adapted from a pinned skills CLI source in `scripts/vendor/skills-search-multiselect.ts`, retaining its MIT license; local changes only add terminal stream and cancellation support. This authoring step requires Node.js 22.20 or later and npm:
 
 ```bash
 npm ci --ignore-scripts

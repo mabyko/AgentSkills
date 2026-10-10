@@ -19,7 +19,9 @@ usage() {
     'Without selection options, a terminal opens the UI. Explicit --scope,' \
     '--agent, or --project-dir skips it unless --interactive is supplied.' \
     'Without a terminal, the defaults apply unless options override them.' \
-    'The UI uses Clack with Node.js 22.20+; otherwise it uses Bash. No npm install is needed.' \
+    'Node.js 22.20+ uses skills CLI search and Clack prompts; otherwise the UI uses Bash.' \
+    'Select agents first, then scope. Esc/Ctrl-C cancels; q searches in the Node agent list.' \
+    'No npm install is needed.' \
     '' \
     'Examples:' \
     '  ./scripts/install-coding-principles.sh' \
@@ -109,12 +111,20 @@ prepare_node_ui() {
   node_ui=
   printf 'Node UI unavailable; using Bash UI.\n' >&3
 }
+run_node_ui() {
+  # Selection results use stdout; retain terminal colors on the separate UI stream.
+  if [[ -z "${NO_COLOR+x}" && -z "${FORCE_COLOR+x}" && "${TERM:-dumb}" != dumb ]]; then
+    FORCE_COLOR=1 node "$node_ui" "$@" <&3 2>&3
+  else node "$node_ui" "$@" <&3 2>&3; fi
+}
 menu() {
   local title=$1 mode=$2 initial=$3 cursor=0 key sequence mark pointer i message= result status
   shift 3
   local labels=("$@") checked=()
   if [[ -n "$node_ui" ]]; then
-    if result=$(node "$node_ui" "$title" "$mode" "$initial" "${labels[@]}" <&3 2>&3); then
+    if result=$(run_node_ui "$title" "$mode" "$initial" "${labels[@]}"); then
+      if [[ "$mode" == note ]]; then return; fi
+      if [[ "$mode" == text ]]; then directory=$result; restore_terminal; return; fi
       [[ -n "$result" && "$result" != *[!0-9\ ]* ]] || die 'Invalid Node UI selection'
       IFS=' ' read -r -a choices <<< "$result"
       [[ "$mode" == multiple || ${#choices[@]} -eq 1 ]] || die 'Invalid Node UI selection'
@@ -128,6 +138,7 @@ menu() {
       die 'Node selection failed; no files changed'
     fi
   fi
+  if [[ "$mode" == confirm ]]; then mode=single; fi
   for ((i=0; i<${#labels[@]}; i++)); do checked[i]=false; done
   for i in $initial; do checked[i]=true; done
   if [[ "$mode" == single ]]; then cursor=$initial; fi
@@ -189,17 +200,7 @@ if $interactive; then
   trap cleanup_ui EXIT
   trap 'printf "\nCancelled. No files changed.\n" >&3; exit 130' INT TERM
   prepare_node_ui
-  if [[ -n "$node_ui" ]]; then printf 'UI: Clack (Node)\n' >&3; else printf 'UI: Bash\n' >&3; fi
-  printf '\nAgentSkills / Coding principles / %s\n\n' "$action" >&3
-  initial=0
-  if [[ "$scope" == project ]]; then initial=1; fi
-  menu 'Installation scope' single "$initial" 'Personal / global' 'Project'
-  if [[ "${choices[0]}" == 0 ]]; then scope=global; project_dir=; else
-    scope=project
-    printf 'Project folder [%s]: ' "${project_dir:-$PWD}" >&3
-    IFS= read -r directory <&3 || cancel
-    project_dir=${directory:-${project_dir:-$PWD}}
-  fi
+  if [[ -z "$node_ui" ]]; then printf '\nAgentSkills / Coding principles / %s / Bash UI\n\n' "$action" >&3; fi
   initial=
   for ((i=0; i<${#agent_ids[@]}; i++)); do
     for chosen in "${selected_agents[@]}"; do if [[ "$chosen" == "${agent_ids[i]}" ]]; then initial="$initial $i"; fi; done
@@ -207,6 +208,17 @@ if $interactive; then
   menu 'Choose agents' multiple "$initial" "${agent_labels[@]}"
   selected_agents=()
   for i in "${choices[@]}"; do selected_agents+=("${agent_ids[i]}"); done
+  initial=1
+  if [[ "$scope" == project ]]; then initial=0; fi
+  menu 'Installation scope' single "$initial" 'Project' 'Global'
+  if [[ "${choices[0]}" == 1 ]]; then scope=global; project_dir=; else
+    scope=project
+    if [[ -n "$node_ui" ]]; then menu 'Project folder' text "${project_dir:-$PWD}"; else
+      printf 'Project folder [%s]: ' "${project_dir:-$PWD}" >&3
+      IFS= read -r directory <&3 || cancel
+    fi
+    project_dir=${directory:-${project_dir:-$PWD}}
+  fi
 fi
 [[ "$scope" == project || -z "$project_dir" ]] || die '--project-dir requires --scope project'
 
@@ -290,15 +302,20 @@ for agent in "${selected_agents[@]}"; do
 done
 
 if $interactive; then
-  printf '\n%s / %s\nInstruction files to check:\n' "$action" "$scope" >&3
+  if [[ -z "$node_ui" ]]; then printf '\n%s / %s\nInstruction files to check:\n' "$action" "$scope" >&3; fi
   preview=()
   for target in "${targets[@]}"; do
     resolve_path "$target"
     duplicate=false
     for prior in "${preview[@]}"; do if [[ "$prior" == "$resolved" || "$prior" -ef "$resolved" ]]; then duplicate=true; fi; done
-    if ! $duplicate; then preview+=("$resolved"); printf '  %s\n' "$resolved" >&3; fi
+    if ! $duplicate; then
+      preview+=("$resolved")
+      if [[ -z "$node_ui" ]]; then printf '  %s\n' "$resolved" >&3; fi
+    fi
   done
-  menu 'Apply these choices?' single 0 "$action principles" 'Cancel'
+  if [[ -n "$node_ui" ]]; then menu 'Instruction Summary' note "$action / $scope" "${preview[@]}"; fi
+  if [[ "$action" == install ]]; then confirmation='Proceed with installation?'; else confirmation='Proceed with removal?'; fi
+  menu "$confirmation" confirm 0 "$action principles" 'Cancel'
   [[ "${choices[0]}" == 0 ]] || cancel
   cleanup_ui
   terminal_state=
