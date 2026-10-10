@@ -58,7 +58,11 @@ Bash 3.2 이상과 기본 Unix 명령으로 동작하며, 원격 설치에는 cu
 curl -fsSL https://raw.githubusercontent.com/mabyko/AgentSkills/main/scripts/install-coding-principles.sh | bash
 ```
 
-이미 내려받은 저장소에서는 지금 `./scripts/install-coding-principles.sh`로 실행할 수 있습니다. 기본값은 Codex와 Claude Code의 개인 전역 설치입니다. 한 도구만 쓰려면 `--agent codex` 또는 `--agent claude`를 붙이세요.
+이미 내려받은 저장소에서는 지금 `./scripts/install-coding-principles.sh`로 실행할 수 있습니다. 터미널에서는 선택 화면이 열립니다. 전역·프로젝트 범위를 고르고, Space로 에이전트를 선택한 뒤, 지침 파일 경로를 확인하고 적용하세요. 방향키로 이동하고 Enter로 진행합니다. q·Esc·Ctrl-C로 취소할 수 있습니다.
+
+Codex·Claude Code·Grok Build·Antigravity·OpenCode·Pi 중 여러 도구를 고를 수 있습니다. 처음에는 개인 전역 범위와 Codex·Claude Code가 선택돼 있습니다. 프로젝트에서 같은 지침 파일을 쓰는 도구들은 원칙 블록을 한 번만 추가합니다.
+
+자동화에서는 `--yes`로 기본값을 바로 적용하세요. 범위·에이전트 옵션을 지정해도 선택 화면을 건너뜁니다. 지정한 옵션을 선택 화면에서 바꾸려면 `--interactive`를 붙이세요. `--agent codex,opencode,pi`처럼 여러 도구를 쉼표로 구분하거나, `--agent all`로 여섯 도구를 모두 지정할 수 있습니다. 터미널이 없으면 옵션으로 바꾸지 않는 한 개인 전역 범위에 Codex·Claude Code를 설치합니다.
 
 프로젝트에 설치해 팀과 공유하려면:
 
@@ -68,7 +72,7 @@ curl -fsSL https://raw.githubusercontent.com/mabyko/AgentSkills/main/scripts/ins
 
 프로젝트의 `AGENTS.md`·`CLAUDE.md` 변경을 검토하고 커밋하면 팀원은 프로젝트를 내려받아 같은 원칙을 사용합니다.
 
-전역 설치 제거:
+같은 선택 화면에서 제거할 범위와 도구를 고르려면:
 
 ```bash
 ./scripts/install-coding-principles.sh uninstall

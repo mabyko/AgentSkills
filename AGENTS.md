@@ -57,7 +57,7 @@ Register each plugin in both `.claude-plugin/marketplace.json` and `.agents/plug
 
 ## Coding principles installer
 
-Maintain the native instruction block in `docs/coding-principles.md` and its local/remote Bash installer in `scripts/install-coding-principles.sh`. Keep it separate from skills and plugin hooks. Support Bash 3.2 with standard Unix commands and no Python or Node runtime. Installation and removal must preserve all content outside the block, existing permissions, and symlinks. Test with temporary instruction directories and a PATH without other language runtimes.
+Maintain the native instruction block in `docs/coding-principles.md` and its local/remote Bash installer in `scripts/install-coding-principles.sh`. Keep it separate from skills and plugin hooks. Support Bash 3.2 with standard Unix commands and no Python or Node runtime. Read TUI input from `/dev/tty` so piped installation remains interactive; preserve the option-based automation path. Installation and removal must preserve all content outside the block, existing permissions, and symlinks. Test with temporary instruction directories and a PATH without other language runtimes; use PTY tests for selection, cancellation, and terminal restoration. Verify new agent paths against the sources linked in the installation guide.
 
 ## Hooks
 

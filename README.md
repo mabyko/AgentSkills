@@ -58,7 +58,11 @@ Requires Bash 3.2 or later and standard Unix commands; remote installation also 
 curl -fsSL https://raw.githubusercontent.com/mabyko/AgentSkills/main/scripts/install-coding-principles.sh | bash
 ```
 
-In an existing checkout, run `./scripts/install-coding-principles.sh` now. The default selects both Codex and Claude Code in personal scope. Add `--agent codex` or `--agent claude` to select one.
+In an existing checkout, run `./scripts/install-coding-principles.sh` now. In a terminal, it opens a selection UI: choose personal or project scope, select agents with Space, then review the instruction paths and apply. Use Up/Down to move and Enter to continue; q, Esc, or Ctrl-C cancels.
+
+Select any combination of Codex, Claude Code, Grok Build, Antigravity, OpenCode, and Pi. Personal scope and Codex + Claude Code are preselected. Shared project instruction files receive the block once.
+
+For automation, `--yes` uses the defaults without the UI. Explicit scope or agent options also bypass it; use `--interactive` to open it with those options preselected. Multiple agents can be comma-separated, for example `--agent codex,opencode,pi`; `--agent all` selects all six. Without a terminal, the command uses personal scope and Codex + Claude Code unless options override them.
 
 Install into a project to share with teammates:
 
@@ -68,7 +72,7 @@ Install into a project to share with teammates:
 
 Review and commit the project instruction changes so teammates receive the principles through their normal checkout.
 
-Remove the personal installation:
+Choose which installation to remove through the same UI:
 
 ```bash
 ./scripts/install-coding-principles.sh uninstall

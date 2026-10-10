@@ -1,8 +1,13 @@
 import os
+import pty
+import select
+import signal
 import shutil
 from pathlib import Path
 import subprocess
 import tempfile
+import termios
+import time
 import unittest
 
 
@@ -19,14 +24,18 @@ class CodingPrinciplesInstallerTests(unittest.TestCase):
         self.directory = Path(temporary.name)
         self.codex = self.directory / "codex"
         self.claude = self.directory / "claude"
+        self.home = self.directory / "home"
+        self.home.mkdir()
+        self.xdg = self.directory / "xdg"
+        self.pi = self.directory / "pi"
         self.project = self.directory / "project with spaces"
         self.project.mkdir()
         self.binaries = self.directory / "bin"
         self.binaries.mkdir()
         # Every installer test runs without Python, Node, or other interpreters on PATH.
-        for command in ("bash", "basename", "dirname", "readlink", "mktemp", "cp", "mkdir", "rm", "mv", "stat", "chmod"):
+        for command in ("bash", "basename", "dirname", "readlink", "mktemp", "cp", "mkdir", "rm", "mv", "stat", "chmod", "stty"):
             self.binaries.joinpath(command).symlink_to("/bin/bash" if command == "bash" else shutil.which(command))
-        self.env = dict(os.environ, PATH=str(self.binaries), CODEX_HOME=str(self.codex), CLAUDE_CONFIG_DIR=str(self.claude))
+        self.env = dict(os.environ, PATH=str(self.binaries), HOME=str(self.home), XDG_CONFIG_HOME=str(self.xdg), OPENCODE_CONFIG_DIR=str(self.xdg / "opencode"), OPENCODE_DISABLE_CLAUDE_CODE="", OPENCODE_DISABLE_CLAUDE_CODE_PROMPT="", PI_CODING_AGENT_DIR=str(self.pi), CODEX_HOME=str(self.codex), CLAUDE_CONFIG_DIR=str(self.claude))
 
     def run_installer(self, action, scope="global", agent="both", *extra):
         return subprocess.run([str(SCRIPT), action, "--scope", scope, "--agent", agent, *extra], cwd=self.project, env=self.env, capture_output=True, text=True)
@@ -272,6 +281,189 @@ cp "$FIXTURE_ROOT/docs/coding-principles.md" "$4"
         self.assertNotEqual(self.run_installer("install").returncode, 0)
         self.assertEqual(agents.read_bytes(), b"Keep this\n")
         self.assertEqual(claude.read_bytes(), b"Before\x00after")
+
+    def test_all_global_agents_and_repeated_selection_round_trip(self):
+        paths = (self.codex / "AGENTS.md", self.claude / "CLAUDE.md", self.home / ".grok/AGENTS.md", self.home / ".gemini/GEMINI.md", self.xdg / "opencode/AGENTS.md", self.pi / "AGENTS.md")
+        for path in paths:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(b"Existing rules\r\n")
+        for action in ("install", "install", "uninstall"):
+            self.assert_success(self.run_installer(action, "global", "all", "--agent", "pi,opencode"))
+        for path in paths:
+            self.assertEqual(path.read_bytes(), b"Existing rules\r\n")
+
+    def test_shared_project_files_are_changed_only_once(self):
+        result = self.run_installer("install", "project", "all")
+        self.assert_success(result)
+        self.assertEqual(len(result.stdout.splitlines()), 2)
+        for name in ("AGENTS.md", "CLAUDE.md"):
+            self.assertEqual((self.project / name).read_bytes().count(START), 1)
+        self.assert_success(self.run_installer("uninstall", "project", "all"))
+        self.assertEqual(list(self.project.iterdir()), [])
+
+    def test_pi_honors_existing_context_filename_and_empty_override(self):
+        self.pi.mkdir()
+        claude = self.pi / "CLAUDE.md"
+        claude.write_bytes(b"Existing Pi rules\n")
+        self.assert_success(self.run_installer("install", "global", "pi"))
+        self.assertIn(START, claude.read_bytes())
+        self.assertFalse((self.pi / "AGENTS.md").exists())
+        override = self.pi / "AGENTS.override.md"
+        override.write_bytes(b"")
+        self.assert_success(self.run_installer("install", "global", "pi"))
+        self.assertIn(START, override.read_bytes())
+        self.assert_success(self.run_installer("uninstall", "global", "pi"))
+        self.assertEqual(override.read_bytes(), b"")
+        self.assertEqual(claude.read_bytes(), b"Existing Pi rules\n")
+
+    def test_opencode_config_override_and_project_claude_fallback(self):
+        config = self.directory / "custom OpenCode config"
+        self.env["OPENCODE_CONFIG_DIR"] = str(config)
+        self.assert_success(self.run_installer("install", "global", "opencode"))
+        self.assertIn(START, (config / "AGENTS.md").read_bytes())
+        self.assertFalse(self.xdg.exists())
+        self.assert_success(self.run_installer("uninstall", "global", "opencode"))
+        claude = self.project / "CLAUDE.md"
+        claude.write_bytes(b"Existing rules\n")
+        self.assert_success(self.run_installer("install", "project", "opencode"))
+        self.assertIn(START, claude.read_bytes())
+        self.assertFalse((self.project / "AGENTS.md").exists())
+        (self.project / "AGENTS.md").write_bytes(b"Later AGENTS rules\n")
+        self.assert_success(self.run_installer("uninstall", "project", "opencode"))
+        self.assertEqual(claude.read_bytes(), b"Existing rules\n")
+        self.assertEqual((self.project / "AGENTS.md").read_bytes(), b"Later AGENTS rules\n")
+
+    def test_opencode_retains_existing_global_fallback_guidance(self):
+        fallback = self.home / ".claude/CLAUDE.md"
+        fallback.parent.mkdir()
+        fallback.write_bytes(b"Existing shared global instructions\n")
+        agents = self.xdg / "opencode/AGENTS.md"
+        for _ in range(2):
+            self.assert_success(self.run_installer("install", "global", "opencode"))
+            self.assertIn(str(fallback).encode(), agents.read_bytes())
+        self.assert_success(self.run_installer("uninstall", "global", "opencode"))
+        self.assertFalse(agents.exists())
+        self.assertEqual(fallback.read_bytes(), b"Existing shared global instructions\n")
+        self.env["OPENCODE_DISABLE_CLAUDE_CODE_PROMPT"] = "1"
+        self.assert_success(self.run_installer("install", "global", "opencode"))
+        self.assertNotIn(str(fallback).encode(), agents.read_bytes())
+
+    def test_new_shared_agents_file_points_to_existing_project_guidance(self):
+        claude = self.project / "CLAUDE.md"
+        original = b"Existing project instructions\n"
+        claude.write_bytes(original)
+        for _ in range(2):
+            self.assert_success(self.run_installer("install", "project", "all"))
+            self.assertIn(b"Read and follow the project instructions in [CLAUDE.md](CLAUDE.md).", (self.project / "AGENTS.md").read_bytes())
+        self.assert_success(self.run_installer("uninstall", "project", "all"))
+        self.assertEqual(claude.read_bytes(), original)
+        self.assertFalse((self.project / "AGENTS.md").exists())
+
+    def run_ui(self, steps, args=(), env=None, piped=False):
+        env = dict(env or self.env, TERM="xterm", UI_SCRIPT=str(SCRIPT))
+        pid, terminal = pty.fork()
+        if pid == 0:
+            signal.signal(signal.SIGINT, signal.SIG_DFL)
+            signal.signal(signal.SIGTERM, signal.SIG_DFL)
+            os.chdir(self.project)
+            if piped:
+                command = 'printf "%s\\n" "$(<"$UI_SCRIPT")" | /bin/bash -s -- "$@"'
+                os.execve("/bin/bash", ["/bin/bash", "-c", command, "test-pipe", *args], env)
+            os.execve(str(SCRIPT), [str(SCRIPT), *args], env)
+        output = bytearray()
+        pending = bytearray()
+        status = None
+        deadline = time.monotonic() + 12
+
+        def receive():
+            if time.monotonic() >= deadline:
+                self.fail("Terminal UI timed out: " + output.decode(errors="replace"))
+            if select.select([terminal], [], [], 0.1)[0]:
+                try:
+                    data = os.read(terminal, 65536)
+                except OSError:
+                    data = b""
+                output.extend(data)
+                pending.extend(data)
+
+        try:
+            for expected, keys in steps:
+                while expected not in pending:
+                    receive()
+                del pending[:pending.index(expected) + len(expected)]
+                os.write(terminal, keys)
+            while status is None:
+                receive()
+                finished, wait_status = os.waitpid(pid, os.WNOHANG)
+                if finished:
+                    status = wait_status
+            self.assertEqual(termios.tcgetattr(terminal)[3] & (termios.ECHO | termios.ICANON), termios.ECHO | termios.ICANON, "Terminal echo/canonical mode was not restored")
+            return os.waitstatus_to_exitcode(status), output.decode(errors="replace")
+        finally:
+            if status is None:
+                os.kill(pid, signal.SIGKILL)
+                os.waitpid(pid, 0)
+            os.close(terminal)
+
+    def test_ui_selects_only_grok_globally(self):
+        grok = self.home / ".grok/AGENTS.md"
+        for args in ((), ("uninstall",)):
+            code, output = self.run_ui([(b"Installation scope", b"\n"), (b"Choose agents", b" \x1b[B \x1b[B \n"), (b"Apply these choices?", b"\n")], args=args)
+            self.assertEqual(code, 0, output)
+            self.assertIn(str(grok), output)
+            if not args:
+                self.assertIn(START, grok.read_bytes())
+            else:
+                self.assertFalse(grok.exists())
+            self.assertFalse(self.codex.exists())
+            self.assertFalse(self.claude.exists())
+
+    def test_piped_ui_selects_all_agents_in_current_project(self):
+        env, temporary = self.remote_environment()
+        code, output = self.run_ui([(b"Installation scope", b"\x1b[B\n"), (b"Project folder", b"\n"), (b"Choose agents", b"\x1b[B\x1b[B \x1b[B \x1b[B \x1b[B \n"), (b"Apply these choices?", b"\n")], env=env, piped=True)
+        self.assertEqual(code, 0, output)
+        self.assertEqual((self.project / "AGENTS.md").read_bytes().count(START), 1)
+        self.assertEqual((self.project / "CLAUDE.md").read_bytes().count(START), 1)
+        self.assertFalse(self.codex.exists())
+        self.assertFalse(self.claude.exists())
+        self.assertFalse(self.pi.exists())
+        self.assertEqual(list(temporary.iterdir()), [])
+        self.assertEqual(len(Path(env["DOWNLOAD_LOG"]).read_text().splitlines()), 1)
+
+    def test_ui_cancel_and_interrupt_leave_files_unchanged(self):
+        self.codex.mkdir()
+        agents = self.codex / "AGENTS.md"
+        agents.write_bytes(b"Existing instructions\n")
+        for steps, expected_code in (([(b"Installation scope", b"q")], 0), ([(b"Installation scope", b"\x1b")], 0), ([(b"Project\r\n  \r\n", b"\x03")], 130), ([(b"Installation scope", b"\n"), (b"Choose agents", b"q")], 0), ([(b"Installation scope", b"\n"), (b"Choose agents", b"\n"), (b"Apply these choices?", b"\x1b[B\n")], 0)):
+            with self.subTest(steps=steps):
+                code, output = self.run_ui(steps)
+                self.assertEqual(code, expected_code, output)
+                self.assertIn("Cancelled", output)
+                self.assertEqual(agents.read_bytes(), b"Existing instructions\n")
+                self.assertFalse(self.claude.exists())
+                self.assertEqual(list(self.project.iterdir()), [])
+        env, temporary = self.remote_environment()
+        code, output = self.run_ui([(b"Installation scope", b"\n"), (b"Choose agents", b"\n"), (b"Apply these choices?", b"q")], env=env, piped=True)
+        self.assertEqual(code, 0, output)
+        self.assertFalse(Path(env["DOWNLOAD_LOG"]).exists())
+        self.assertEqual(list(temporary.iterdir()), [])
+
+    def test_ui_requires_one_agent_and_yes_skips_the_ui(self):
+        code, output = self.run_ui([(b"Installation scope", b"\n"), (b"Choose agents", b" \x1b[B \n"), (b"Select at least one agent.", b" \n"), (b"Apply these choices?", b"\n")])
+        self.assertEqual(code, 0, output)
+        self.assertFalse(self.codex.exists())
+        self.assertIn(START, (self.claude / "CLAUDE.md").read_bytes())
+        code, output = self.run_ui([], args=("uninstall", "--yes"))
+        self.assertEqual(code, 0, output)
+        self.assertNotIn("Installation scope", output)
+        self.assertFalse((self.claude / "CLAUDE.md").exists())
+
+    def test_explicit_ui_without_a_terminal_fails_without_writing(self):
+        result = subprocess.run([str(SCRIPT), "--interactive"], env=self.env, start_new_session=True, capture_output=True, text=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("requires a controlling terminal", result.stderr)
+        self.assertFalse(self.codex.exists())
+        self.assertFalse(self.claude.exists())
 
 
 if __name__ == "__main__":
