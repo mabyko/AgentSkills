@@ -55,6 +55,10 @@ Register each plugin in both `.claude-plugin/marketplace.json` and `.agents/plug
 - Install individual skills through the skills CLI. The selected plugin is `plugins/git-hooks/`; it contains its hooks without bundled skills or required skill dependencies.
 - Edit skills only in canonical `skills/`, and edit shared hooks in `scripts/hooks/`. Run `python3 scripts/build-plugin-bundles.py` after changing these sources; generated script and hook copies in the selected plugins must match. Requires Python 3.9 or later for authoring. Bump both host versions for the complete plugin and each affected selection plugin.
 
+## Coding principles installer
+
+Maintain the native instruction block in `docs/coding-principles.md` and its local/remote Bash installer in `scripts/install-coding-principles.sh`. Keep it separate from skills and plugin hooks. Support Bash 3.2 with standard Unix commands and no Python or Node runtime. Installation and removal must preserve all content outside the block, existing permissions, and symlinks. Test with temporary instruction directories and a PATH without other language runtimes.
+
 ## Hooks
 
 Hooks belong to their plugin, not to individual skills. They ship only through a plugin install, so they are absent from `npx skills add` installs. Paths below are relative to each plugin root.

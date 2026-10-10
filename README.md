@@ -50,6 +50,32 @@ npx skills@latest add mabyko/AgentSkills
 
 By default, `npx skills add` installs per project. Use `--global` only when you want a user-level install.
 
+## Install Coding Principles
+
+Requires Bash 3.2 or later and standard Unix commands; remote installation also needs curl. Python and Node are not required. Once the installer is published on `main`, teammates can install with one command:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/mabyko/AgentSkills/main/scripts/install-coding-principles.sh | bash
+```
+
+In an existing checkout, run `./scripts/install-coding-principles.sh` now. The default selects both Codex and Claude Code in personal scope. Add `--agent codex` or `--agent claude` to select one.
+
+Install into a project to share with teammates:
+
+```bash
+./scripts/install-coding-principles.sh --scope project --project-dir /path/to/project
+```
+
+Review and commit the project instruction changes so teammates receive the principles through their normal checkout.
+
+Remove the personal installation:
+
+```bash
+./scripts/install-coding-principles.sh uninstall
+```
+
+Install updates only the managed block; uninstall removes it while preserving existing instructions. See the [principles](docs/coding-principles.md) and [installation, update, and removal guide](docs/coding-principles-install.md). Start a new session after changes.
+
 ## Updating Installed Skills
 
 For projects that already installed these skills with the `skills` CLI, use the update command:
@@ -231,13 +257,14 @@ templates/
 └── skill/
 scripts/
 ├── new-skill.sh
+├── install-coding-principles.sh
 ├── build-plugin-bundles.py
 ├── validate-skills.sh
 └── hooks/
 plugins/
 └── git-hooks/            # PreToolUse only
 tests/
-├── test_coding_principles_hook.py
+├── test_coding_principles_installer.py
 ├── test_git_hooks.py
 └── test_plugin_bundles.py
 AGENTS.md

@@ -50,6 +50,32 @@ npx skills@latest add mabyko/AgentSkills
 
 기본적으로 `npx skills add`는 프로젝트 단위로 설치합니다. 사용자 전역 설치가 필요할 때만 `--global`을 사용하세요.
 
+## 코딩 원칙 설치
+
+Bash 3.2 이상과 기본 Unix 명령으로 동작하며, 원격 설치에는 curl이 필요합니다. Python·Node는 필요하지 않습니다. 설치기를 `main`에 게시하면 팀원은 저장소를 내려받지 않고 한 줄로 설치할 수 있습니다.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/mabyko/AgentSkills/main/scripts/install-coding-principles.sh | bash
+```
+
+이미 내려받은 저장소에서는 지금 `./scripts/install-coding-principles.sh`로 실행할 수 있습니다. 기본값은 Codex와 Claude Code의 개인 전역 설치입니다. 한 도구만 쓰려면 `--agent codex` 또는 `--agent claude`를 붙이세요.
+
+프로젝트에 설치해 팀과 공유하려면:
+
+```bash
+./scripts/install-coding-principles.sh --scope project --project-dir /path/to/project
+```
+
+프로젝트의 `AGENTS.md`·`CLAUDE.md` 변경을 검토하고 커밋하면 팀원은 프로젝트를 내려받아 같은 원칙을 사용합니다.
+
+전역 설치 제거:
+
+```bash
+./scripts/install-coding-principles.sh uninstall
+```
+
+반복 설치는 원칙 블록만 갱신하고, 제거는 그 블록만 지웁니다. 기존 지침은 보존합니다. [원칙](docs/coding-principles.md)과 [설치·업데이트·프로젝트 제거 안내](docs/coding-principles-install.md)를 참고하세요. 적용 후 새 세션을 시작하세요.
+
 ## 설치된 스킬 업데이트
 
 이미 `skills` CLI로 이 스킬들을 설치한 프로젝트에서는 update 명령을 사용하세요.
@@ -231,13 +257,14 @@ templates/
 └── skill/
 scripts/
 ├── new-skill.sh
+├── install-coding-principles.sh
 ├── build-plugin-bundles.py
 ├── validate-skills.sh
 └── hooks/
 plugins/
 └── git-hooks/            # PreToolUse only
 tests/
-├── test_coding_principles_hook.py
+├── test_coding_principles_installer.py
 ├── test_git_hooks.py
 └── test_plugin_bundles.py
 AGENTS.md
