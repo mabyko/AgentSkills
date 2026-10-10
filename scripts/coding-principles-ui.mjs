@@ -33,12 +33,16 @@ async function main() {
     ? initial.trim().split(/\s+/).filter(Boolean).map(Number) : [];
   const options = {
     message,
-    options: labels.map((label, value) => ({ label, value })),
+    options: labels.map((entry, value) => {
+      const [label, hint] = entry.split('\t');
+      return { label, hint, value };
+    }),
     ...terminal,
   };
   if (message === 'Installation scope') {
     options.options[0].hint = 'Install in project directory (shared with your project)';
-    options.options[1].hint = 'Install in home directory (available across all projects)';
+    if (options.options[1]) options.options[1].hint = 'Install in home directory (available across all projects)';
+    else options.options[0].hint = 'Selected agents require project instructions';
   }
   let result;
   if (mode === 'multiple') {

@@ -60,11 +60,13 @@ curl -fsSL https://raw.githubusercontent.com/mabyko/AgentSkills/main/scripts/ins
 
 이미 내려받은 저장소에서는 지금 `./scripts/install-coding-principles.sh`로 실행할 수 있습니다. Space로 에이전트를 선택하고 전역·프로젝트 범위를 고른 뒤, 지침 파일 경로를 확인하고 적용하세요. Node 화면에서는 이름을 입력해 목록을 검색하고 선택한 도구를 요약해서 볼 수 있습니다. 방향키로 이동하고 Enter로 진행합니다. Esc·Ctrl-C로 취소할 수 있습니다. Bash 화면에서는 q로도 취소할 수 있지만, Node의 검색 목록에서는 q도 검색어로 입력됩니다.
 
+에이전트 목록은 지침 경로를 확인한 22개 도구로 구성하며, Cursor·Copilot·Cline·Gemini CLI·Amp·Zed 등을 포함합니다. 이름 옆에는 스킬 폴더 대신 기본 지침 파일 경로를 표시합니다. PC에 설치돼 있지 않아도 선택할 수 있고, 지침 경로를 확인하지 못한 도구는 표시하지 않습니다. Cursor·Junie·Kimi Code CLI·Warp는 이 설치기에서 프로젝트 범위만 지원합니다. [도구별 경로와 적용 조건](docs/coding-principles-install.md#agent-instruction-files)을 참고하세요.
+
 Clack 화면은 필요한 라이브러리를 포함한 파일로 배포하므로 실행할 때 npm으로 설치할 필요가 없습니다. 원격 실행에서는 선택 전에 이 파일을 내려받고 종료 시 지웁니다. 다운로드나 로딩에 실패하면 Bash 화면을 사용합니다. 두 화면 모두 같은 Bash 코드로 설치·제거합니다.
 
-Codex·Claude Code·Grok Build·Antigravity·OpenCode·Pi 중 여러 도구를 고를 수 있습니다. 처음에는 개인 전역 범위와 Codex·Claude Code가 선택돼 있습니다. 프로젝트에서 같은 지침 파일을 쓰는 도구들은 원칙 블록을 한 번만 추가합니다.
+처음에는 개인 전역 범위와 Codex·Claude Code가 선택돼 있습니다. 프로젝트에서 같은 지침 파일을 쓰는 도구들은 원칙 블록을 한 번만 추가합니다.
 
-자동화에서는 `--yes`로 기본값을 바로 적용하세요. `--scope`·`--agent`·`--project-dir`를 지정해도 선택 화면을 건너뜁니다. 지정한 옵션을 선택 화면에서 바꾸려면 `--interactive`를 붙이세요. `--agent codex,opencode,pi`처럼 여러 도구를 쉼표로 구분하거나, `--agent all`로 여섯 도구를 모두 지정할 수 있습니다. 터미널이 없으면 옵션으로 바꾸지 않는 한 개인 전역 범위에 Codex·Claude Code를 설치합니다.
+자동화에서는 `--yes`로 기본값을 바로 적용하세요. `--scope`·`--agent`·`--project-dir`를 지정해도 선택 화면을 건너뜁니다. 지정한 옵션을 선택 화면에서 바꾸려면 `--interactive`를 붙이세요. `--agent codex,opencode,pi`처럼 여러 도구를 쉼표로 구분하거나, `--agent all`로 해당 범위에 설치할 수 있는 도구를 모두 선택합니다(프로젝트 22개, 전역 18개). 터미널이 없으면 옵션으로 바꾸지 않는 한 개인 전역 범위에 Codex·Claude Code를 설치합니다.
 
 전체 옵션과 예시를 보거나, Codex에 전역 설치하거나, 그 선택을 화면에서 확인하려면:
 

@@ -38,7 +38,7 @@ class CodingPrinciplesInstallerTests(unittest.TestCase):
         # Bash coverage excludes interpreters; Node UI tests opt in explicitly.
         for command in ("bash", "basename", "dirname", "readlink", "mktemp", "cp", "mkdir", "rm", "mv", "stat", "chmod", "stty"):
             self.binaries.joinpath(command).symlink_to("/bin/bash" if command == "bash" else shutil.which(command))
-        self.env = dict(os.environ, PATH=str(self.binaries), HOME=str(self.home), XDG_CONFIG_HOME=str(self.xdg), OPENCODE_CONFIG_DIR=str(self.xdg / "opencode"), OPENCODE_DISABLE_CLAUDE_CODE="", OPENCODE_DISABLE_CLAUDE_CODE_PROMPT="", PI_CODING_AGENT_DIR=str(self.pi), CODEX_HOME=str(self.codex), CLAUDE_CONFIG_DIR=str(self.claude))
+        self.env = dict(os.environ, PATH=str(self.binaries), HOME=str(self.home), XDG_CONFIG_HOME=str(self.xdg), OPENCODE_CONFIG_DIR=str(self.xdg / "opencode"), OPENCODE_DISABLE_CLAUDE_CODE="", OPENCODE_DISABLE_CLAUDE_CODE_PROMPT="", PI_CODING_AGENT_DIR=str(self.pi), CODEX_HOME=str(self.codex), CLAUDE_CONFIG_DIR=str(self.claude), COPILOT_HOME=str(self.home / ".copilot"), VIBE_HOME=str(self.home / ".vibe"))
 
     def run_installer(self, action, scope="global", agent="both", *extra):
         return subprocess.run([str(SCRIPT), action, "--scope", scope, "--agent", agent, *extra], cwd=self.project, env=self.env, capture_output=True, text=True)
@@ -304,11 +304,118 @@ esac
     def test_shared_project_files_are_changed_only_once(self):
         result = self.run_installer("install", "project", "all")
         self.assert_success(result)
-        self.assertEqual(len(result.stdout.splitlines()), 2)
-        for name in ("AGENTS.md", "CLAUDE.md"):
+        self.assertEqual(len(result.stdout.splitlines()), 8)
+        for name in ("AGENTS.md", "CLAUDE.md", "GEMINI.md", "QWEN.md", ".github/copilot-instructions.md", ".goosehints", ".junie/guidelines.md", ".roo/rules/coding-principles.md"):
             self.assertEqual((self.project / name).read_bytes().count(START), 1)
         self.assert_success(self.run_installer("uninstall", "project", "all"))
-        self.assertEqual(list(self.project.iterdir()), [])
+        self.assertEqual([path for path in self.project.rglob("*") if path.is_file()], [])
+
+    def test_expanded_agents_preserve_existing_instructions_in_both_scopes(self):
+        cases = (
+            ("amp", ".config/amp/AGENTS.md", "AGENTS.md"),
+            ("cline", ".agents/AGENTS.md", "AGENTS.md"),
+            ("cursor", None, "AGENTS.md"),
+            ("droid", ".factory/AGENTS.md", "AGENTS.md"),
+            ("gemini-cli", ".gemini/GEMINI.md", "GEMINI.md"),
+            ("github-copilot", ".copilot/copilot-instructions.md", ".github/copilot-instructions.md"),
+            ("goose", ".config/goose/.goosehints", ".goosehints"),
+            ("junie", None, ".junie/guidelines.md"),
+            ("kimi-code-cli", None, "AGENTS.md"),
+            ("kiro-cli", ".kiro/steering/AGENTS.md", "AGENTS.md"),
+            ("mistral-vibe", ".vibe/AGENTS.md", "AGENTS.md"),
+            ("qwen-code", ".qwen/QWEN.md", "QWEN.md"),
+            ("roo", ".roo/rules/coding-principles.md", ".roo/rules/coding-principles.md"),
+            ("warp", None, "AGENTS.md"),
+            ("windsurf", ".codeium/windsurf/memories/global_rules.md", "AGENTS.md"),
+            ("zed", ".config/zed/AGENTS.md", "AGENTS.md"),
+        )
+        for agent, global_path, project_path in cases:
+            for scope, root, relative in (("global", self.home, global_path), ("project", self.project, project_path)):
+                if relative is None:
+                    continue
+                with self.subTest(agent=agent, scope=scope):
+                    path = root / relative
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    original = b"Existing instructions\r\n"
+                    path.write_bytes(original)
+                    path.chmod(0o640)
+                    for action in ("install", "install"):
+                        self.assert_success(self.run_installer(action, scope, agent))
+                        self.assertEqual(path.read_bytes().count(START), 1)
+                    self.assert_success(self.run_installer("uninstall", scope, agent))
+                    self.assertEqual(path.read_bytes(), original)
+                    self.assertEqual(path.stat().st_mode & 0o777, 0o640)
+                    path.unlink()
+
+    def test_project_only_agents_fail_globally_before_any_files_change(self):
+        for agent in ("cursor", "junie", "kimi-code-cli", "warp"):
+            result = self.run_installer("install", "global", "codex," + agent)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("--scope project", result.stderr)
+            self.assertFalse(self.codex.exists())
+        self.assert_success(self.run_installer("install", "project", "claude-code"))
+        self.assertIn(START, (self.project / "CLAUDE.md").read_bytes())
+
+    def test_zed_updates_active_legacy_file_and_ignores_rule_directories_on_removal(self):
+        rules = self.project / ".rules"
+        rules.write_bytes(b"Active Zed rules\n")
+        (self.project / ".clinerules").mkdir()
+        self.assert_success(self.run_installer("install", "project", "zed"))
+        self.assertIn(START, rules.read_bytes())
+        self.assertFalse((self.project / "AGENTS.md").exists())
+        self.assert_success(self.run_installer("uninstall", "project", "zed"))
+        self.assertEqual(rules.read_bytes(), b"Active Zed rules\n")
+        self.assertTrue((self.project / ".clinerules").is_dir())
+
+    def test_junie_updates_ide_guidelines_and_active_cli_context(self):
+        cli = self.project / ".junie/AGENTS.md"
+        cli.parent.mkdir()
+        cli.write_bytes(b"Existing CLI guidance\n")
+        self.assert_success(self.run_installer("install", "project", "junie"))
+        guidelines = self.project / ".junie/guidelines.md"
+        self.assertIn(START, cli.read_bytes())
+        self.assertIn(START, guidelines.read_bytes())
+        self.assert_success(self.run_installer("uninstall", "project", "junie"))
+        self.assertEqual(cli.read_bytes(), b"Existing CLI guidance\n")
+        self.assertFalse(guidelines.exists())
+
+    def test_roo_retains_legacy_workspace_guidance(self):
+        legacy = self.project / ".roorules"
+        original = b"Legacy workspace instructions\n"
+        legacy.write_bytes(original)
+        target = self.project / ".roo/rules/coding-principles.md"
+        for _ in range(2):
+            self.assert_success(self.run_installer("install", "project", "roo"))
+            self.assertIn(b"Read and follow the existing Roo rules", target.read_bytes())
+            self.assertEqual(legacy.read_bytes(), original)
+        self.assert_success(self.run_installer("uninstall", "project", "roo"))
+        self.assertFalse(target.exists())
+        self.assertEqual(legacy.read_bytes(), original)
+
+    def test_windsurf_size_limit_stops_before_other_agents_change(self):
+        rules = self.home / ".codeium/windsurf/memories/global_rules.md"
+        rules.parent.mkdir(parents=True)
+        original = b"x" * 5900
+        rules.write_bytes(original)
+        result = self.run_installer("install", "global", "codex,windsurf")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("6000", result.stderr)
+        self.assertEqual(rules.read_bytes(), original)
+        self.assertFalse(self.codex.exists())
+
+    def test_windsurf_limit_applies_to_shared_symlink_target(self):
+        rules = self.home / ".codeium/windsurf/memories/global_rules.md"
+        rules.parent.mkdir(parents=True)
+        self.codex.mkdir()
+        shared = self.codex / "AGENTS.md"
+        original = b"x" * 5900
+        shared.write_bytes(original)
+        rules.symlink_to(shared)
+        result = self.run_installer("install", "global", "codex,windsurf")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("6000", result.stderr)
+        self.assertEqual(shared.read_bytes(), original)
+        self.assertTrue(rules.is_symlink())
 
     def test_pi_honors_existing_context_filename_and_empty_override(self):
         self.pi.mkdir()
@@ -504,7 +611,7 @@ esac
 
     def test_search_q_is_input_and_escape_cancels(self):
         self.enable_node()
-        code, output = self.run_ui([(b"Choose agents", b"q"), (b"No matches found", b"\x1b")])
+        code, output = self.run_ui([(b"Choose agents", b"q"), (b"Search: q", b"\x1b")])
         self.assertEqual(code, 0, output)
         self.assertIn("Cancelled", output)
         self.assertFalse(self.codex.exists())
@@ -520,6 +627,24 @@ esac
         self.assertEqual(code, 0, output)
         self.assertNotIn("Search:", output)
         self.assertFalse((self.claude / "CLAUDE.md").exists())
+
+    def test_node_agent_paths_and_project_only_scope(self):
+        self.enable_node()
+        code, output = self.run_ui([(b"Choose agents", b"cursor"), (b"project only", b"\r"), (b"Installation scope", b"\r"), (b"Project folder", b"\r"), (b"Proceed with", b"\r")], args=("--interactive", "--agent", "cursor"))
+        self.assertEqual(code, 0, output)
+        self.assertIn("AGENTS.md / project only", output)
+        self.assertIn("Selected agents require project instructions", output)
+        self.assertNotIn("Install in home directory", output)
+        self.assertNotIn("AstrBot", output)
+        self.assertIn(START, (self.project / "AGENTS.md").read_bytes())
+        self.assertFalse(self.codex.exists())
+
+    def test_bash_agent_menu_scrolls_to_new_agents(self):
+        code, output = self.run_ui([(b"Choose agents", b"\x1b[B" * 21), (b"Zed", b"q")])
+        self.assertEqual(code, 0, output)
+        self.assertIn("Zed", output)
+        self.assertIn("Cancelled", output)
+        self.assertEqual(list(self.project.iterdir()), [])
 
     def test_node_ui_honors_project_and_agent_preselection(self):
         self.enable_node()

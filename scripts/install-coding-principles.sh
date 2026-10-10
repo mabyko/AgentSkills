@@ -10,7 +10,10 @@ usage() {
     '' \
     '  --scope global|project   Installation scope (default: global)' \
     '  --agent NAMES           Comma-separated agents; repeatable (default: codex,claude)' \
-    '                          codex, claude, grok, antigravity, opencode, pi, both, all' \
+    '                          codex, claude (claude-code), grok, antigravity, opencode, pi,' \
+    '                          amp, cline, cursor, droid, gemini-cli, github-copilot, goose,' \
+    '                          junie, kimi-code-cli, kiro-cli, mistral-vibe, qwen-code, roo,' \
+    '                          warp, windsurf, zed, both, all' \
     '  --project-dir PATH      Project folder; requires --scope project (default: current folder)' \
     '  --interactive           Open the terminal UI with options preselected; requires a terminal' \
     '  --yes, -y               Use options/defaults without the selection UI' \
@@ -21,6 +24,8 @@ usage() {
     'Without a terminal, the defaults apply unless options override them.' \
     'Node.js 22.20+ uses skills CLI search and Clack prompts; otherwise the UI uses Bash.' \
     'Select agents first, then scope. Esc/Ctrl-C cancels; q searches in the Node agent list.' \
+    'Cursor, Junie, Kimi Code CLI, and Warp support project scope in this installer.' \
+    '--agent all selects every supported agent for the chosen scope.' \
     'No npm install is needed.' \
     '' \
     'Examples:' \
@@ -64,20 +69,29 @@ while [[ $# -gt 0 ]]; do
 done
 [[ "$scope" == global || "$scope" == project ]] || die 'Scope must be global or project'
 
-agent_ids=(codex claude grok antigravity opencode pi)
-agent_labels=('Codex' 'Claude Code' 'Grok Build' 'Antigravity' 'OpenCode' 'Pi')
+agent_ids=(codex claude grok antigravity opencode pi amp cline cursor droid gemini-cli github-copilot goose junie kimi-code-cli kiro-cli mistral-vibe qwen-code roo warp windsurf zed)
+agent_labels=('Codex' 'Claude Code' 'Grok Build' 'Antigravity' 'OpenCode' 'Pi' 'Amp' 'Cline' 'Cursor' 'Droid' 'Gemini CLI' 'GitHub Copilot' 'Goose' 'Junie' 'Kimi Code CLI' 'Kiro CLI' 'Mistral Vibe' 'Qwen Code' 'Roo Code' 'Warp' 'Windsurf' 'Zed')
+# Default instruction paths, not skills directories; the final summary resolves overrides.
+agent_hints=('AGENTS.md / ~/.codex/AGENTS.md' 'CLAUDE.md / ~/.claude/CLAUDE.md' 'AGENTS.md / ~/.grok/AGENTS.md' 'AGENTS.md / ~/.gemini/GEMINI.md' 'AGENTS.md / ~/.config/opencode/AGENTS.md' 'AGENTS.md / ~/.pi/agent/AGENTS.md' 'AGENTS.md / ~/.config/amp/AGENTS.md' 'AGENTS.md / ~/.agents/AGENTS.md' 'AGENTS.md / project only' 'AGENTS.md / ~/.factory/AGENTS.md' 'GEMINI.md / ~/.gemini/GEMINI.md' '.github/copilot-instructions.md / ~/.copilot/copilot-instructions.md' '.goosehints / ~/.config/goose/.goosehints' '.junie/guidelines.md / project only' 'AGENTS.md / project only' 'AGENTS.md / ~/.kiro/steering/AGENTS.md' 'AGENTS.md / ~/.vibe/AGENTS.md' 'QWEN.md / ~/.qwen/QWEN.md' '.roo/rules/coding-principles.md / ~/.roo/rules/coding-principles.md' 'AGENTS.md / project only' 'AGENTS.md / ~/.codeium/windsurf/memories/global_rules.md' 'AGENTS.md / ~/.config/zed/AGENTS.md')
+project_only_agent() { case "$1" in cursor|junie|kimi-code-cli|warp) return 0 ;; *) return 1 ;; esac; }
 normalize_agents() {
-  local items item existing duplicate
+  local items item existing duplicate known
   [[ -n "$agent_spec" && "$agent_spec" != ,* && "$agent_spec" != *, && "$agent_spec" != *,,* ]] || die 'Select at least one agent; separate names with commas'
   IFS=, read -r -a items <<< "$agent_spec"
   selected_agents=()
   for item in "${items[@]}"; do
     case "$item" in
       both) selected_agents+=(codex claude); continue ;;
-      all) selected_agents+=("${agent_ids[@]}"); continue ;;
-      codex|claude|grok|antigravity|opencode|pi) ;;
-      *) die "Unknown agent: $item" ;;
+      all)
+        for existing in "${agent_ids[@]}"; do
+          if [[ "$scope" == project ]] || ! project_only_agent "$existing"; then selected_agents+=("$existing"); fi
+        done
+        continue ;;
+      claude-code) item=claude ;;
     esac
+    known=false
+    for existing in "${agent_ids[@]}"; do if [[ "$existing" == "$item" ]]; then known=true; fi; done
+    $known || die "Unknown or unverified agent: $item; see --help for supported instruction installs"
     duplicate=false
     for existing in "${selected_agents[@]}"; do if [[ "$existing" == "$item" ]]; then duplicate=true; fi; done
     if ! $duplicate; then selected_agents+=("$item"); fi
@@ -118,7 +132,7 @@ run_node_ui() {
   else node "$node_ui" "$@" <&3 2>&3; fi
 }
 menu() {
-  local title=$1 mode=$2 initial=$3 cursor=0 key sequence mark pointer i message= result status
+  local title=$1 mode=$2 initial=$3 cursor=0 key sequence mark pointer i message= result status start end height
   shift 3
   local labels=("$@") checked=()
   if [[ -n "$node_ui" ]]; then
@@ -144,19 +158,23 @@ menu() {
   if [[ "$mode" == single ]]; then cursor=$initial; fi
   stty -echo -icanon -isig min 1 time 0 <&3
   while :; do
+    start=$((cursor / 8 * 8))
+    end=$((start + 8))
+    if [[ $end -gt ${#labels[@]} ]]; then end=${#labels[@]}; fi
+    height=$((end - start + 3))
     printf '%s\n' "$title" >&3
     if [[ "$mode" == multiple ]]; then
       printf '  Up/Down: move  Space: toggle  Enter: continue  q/Esc: cancel\n' >&3
     else
       printf '  Up/Down: move  Enter: select  q/Esc: cancel\n' >&3
     fi
-    for ((i=0; i<${#labels[@]}; i++)); do
+    for ((i=start; i<end; i++)); do
       pointer=' '
       mark=' '
       if [[ $i -eq $cursor ]]; then pointer='>'; fi
       if [[ "$mode" == multiple && "${checked[i]}" == true ]]; then mark=x; fi
       if [[ "$mode" == multiple ]]; then
-        printf '  %s [%s] %s\n' "$pointer" "$mark" "${labels[i]}" >&3
+        printf '  %s [%s] %s\n' "$pointer" "$mark" "${labels[i]%%$'\t'*}" >&3
       else
         printf '  %s %s\n' "$pointer" "${labels[i]}" >&3
       fi
@@ -186,7 +204,7 @@ menu() {
       q|Q) cancel ;;
       $'\003') printf '\nCancelled. No files changed.\n' >&3; exit 130 ;;
     esac
-    printf '\033[%sA\033[J' "$((${#labels[@]} + 3))" >&3
+    printf '\033[%sA\033[J' "$height" >&3
   done
 }
 
@@ -202,15 +220,23 @@ if $interactive; then
   prepare_node_ui
   if [[ -z "$node_ui" ]]; then printf '\nAgentSkills / Coding principles / %s / Bash UI\n\n' "$action" >&3; fi
   initial=
+  ui_agents=()
   for ((i=0; i<${#agent_ids[@]}; i++)); do
+    ui_agents+=("${agent_labels[i]}"$'\t'"${agent_hints[i]}")
     for chosen in "${selected_agents[@]}"; do if [[ "$chosen" == "${agent_ids[i]}" ]]; then initial="$initial $i"; fi; done
   done
-  menu 'Choose agents' multiple "$initial" "${agent_labels[@]}"
+  menu 'Choose agents' multiple "$initial" "${ui_agents[@]}"
   selected_agents=()
   for i in "${choices[@]}"; do selected_agents+=("${agent_ids[i]}"); done
-  initial=1
-  if [[ "$scope" == project ]]; then initial=0; fi
-  menu 'Installation scope' single "$initial" 'Project' 'Global'
+  project_required=false
+  for chosen in "${selected_agents[@]}"; do if project_only_agent "$chosen"; then project_required=true; fi; done
+  if $project_required; then
+    menu 'Installation scope' single 0 'Project'
+  else
+    initial=1
+    if [[ "$scope" == project ]]; then initial=0; fi
+    menu 'Installation scope' single "$initial" 'Project' 'Global'
+  fi
   if [[ "${choices[0]}" == 1 ]]; then scope=global; project_dir=; else
     scope=project
     if [[ -n "$node_ui" ]]; then menu 'Project folder' text "${project_dir:-$PWD}"; else
@@ -221,6 +247,11 @@ if $interactive; then
   fi
 fi
 [[ "$scope" == project || -z "$project_dir" ]] || die '--project-dir requires --scope project'
+if [[ "$scope" == global ]]; then
+  for chosen in "${selected_agents[@]}"; do
+    if project_only_agent "$chosen"; then die "$chosen supports project instructions here; use --scope project"; fi
+  done
+fi
 
 expand_home() {
   case "$1" in
@@ -274,6 +305,18 @@ for agent in "${selected_agents[@]}"; do
       antigravity) directory=$HOME/.gemini ;;
       opencode) directory=${OPENCODE_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/opencode} ;;
       pi) directory=${PI_CODING_AGENT_DIR:-$HOME/.pi/agent} ;;
+      amp) directory=$HOME/.config/amp ;;
+      cline) directory=$HOME/.agents ;;
+      droid) directory=$HOME/.factory ;;
+      gemini-cli) directory=$HOME/.gemini ;;
+      github-copilot) directory=${COPILOT_HOME:-$HOME/.copilot} ;;
+      goose) directory=$HOME/.config/goose ;;
+      kiro-cli) directory=$HOME/.kiro/steering ;;
+      mistral-vibe) directory=${VIBE_HOME:-$HOME/.vibe} ;;
+      qwen-code) directory=$HOME/.qwen ;;
+      roo) directory=$HOME/.roo/rules ;;
+      windsurf) directory=$HOME/.codeium/windsurf/memories ;;
+      zed) directory=$HOME/.config/zed ;;
     esac
     expand_home "$directory"
     directory=$resolved
@@ -281,6 +324,33 @@ for agent in "${selected_agents[@]}"; do
   filename=AGENTS.md
   if [[ "$agent" == claude ]]; then filename=CLAUDE.md; fi
   if [[ "$agent" == antigravity && "$scope" == global ]]; then filename=GEMINI.md; fi
+  case "$agent" in
+    gemini-cli) filename=GEMINI.md ;;
+    qwen-code) filename=QWEN.md ;;
+    github-copilot)
+      filename=copilot-instructions.md
+      if [[ "$scope" == project ]]; then directory=$project_dir/.github; fi ;;
+    goose) filename=.goosehints ;;
+    roo)
+      filename=coding-principles.md
+      if [[ "$scope" == project ]]; then directory=$project_dir/.roo/rules; fi ;;
+    windsurf) if [[ "$scope" == global ]]; then filename=global_rules.md; windsurf_global_target="$directory/$filename"; fi ;;
+    junie)
+      directory=$project_dir/.junie
+      filename=guidelines.md
+      if [[ -f "$directory/AGENTS.md" ]]; then targets+=("$directory/AGENTS.md")
+      elif [[ -f "$project_dir/AGENTS.md" ]]; then targets+=("$project_dir/AGENTS.md"); fi
+      if [[ "$action" == uninstall ]]; then targets+=("$project_dir/.junie/guidelines.md" "$project_dir/.junie/AGENTS.md" "$project_dir/AGENTS.md"); continue; fi ;;
+    zed)
+      if [[ "$scope" == project ]]; then
+        for candidate in .rules .cursorrules .windsurfrules .clinerules .github/copilot-instructions.md AGENT.md AGENTS.md CLAUDE.md GEMINI.md; do
+          if [[ "$action" == uninstall ]]; then
+            if [[ ! -e "$directory/$candidate" || -f "$directory/$candidate" ]]; then targets+=("$directory/$candidate"); fi
+          elif [[ -f "$directory/$candidate" ]]; then filename=$candidate; break; fi
+        done
+        if [[ "$action" == uninstall ]]; then continue; fi
+      fi ;;
+  esac
   if [[ "$agent" == opencode && "$scope" == project ]]; then
     if [[ "$action" == uninstall ]]; then targets+=("$directory/AGENTS.md" "$directory/CLAUDE.md"); continue; fi
     if [[ ! -f "$directory/AGENTS.md" && -f "$directory/CLAUDE.md" ]]; then filename=CLAUDE.md; fi
@@ -353,6 +423,9 @@ START='<!-- AgentSkills:coding-principles:start -->'
 END='<!-- AgentSkills:coding-principles:end -->'
 CREATED='<!-- AgentSkills:coding-principles:created-file -->'
 GLOBAL_POINTER='Read and follow the existing global instructions in [CLAUDE.md]('
+ROO_POINTER='Read and follow the existing Roo rules in [.roorules]('
+windsurf_global_path=
+if [[ -n "${windsurf_global_target:-}" ]]; then resolve_path "$windsurf_global_target"; windsurf_global_path=$resolved; fi
 paths=()
 changes=()
 remove=()
@@ -370,6 +443,10 @@ for target in "${targets[@]}"; do
   before=$original
   after=
   import_text=
+  # Adding a Roo rules directory makes the legacy workspace fallback inactive.
+  if [[ "$scope" == project && "$target" == "$project_dir/.roo/rules/coding-principles.md" && ! -e "$path" && -f "$project_dir/.roorules" ]]; then
+    import_text="$ROO_POINTER<$project_dir/.roorules>)."$'\n\n'
+  fi
   if [[ "$scope" == global && "$target" == "$opencode_global_target" && ! -e "$path" && -f "$HOME/.claude/CLAUDE.md" ]]; then
     case "${OPENCODE_DISABLE_CLAUDE_CODE:-}:${OPENCODE_DISABLE_CLAUDE_CODE_PROMPT:-}" in
       1:*|true:*|*:1|*:true) ;;
@@ -377,7 +454,7 @@ for target in "${targets[@]}"; do
     esac
   fi
   if [[ "$scope" == project && "$target" == "$project_dir/AGENTS.md" && ! -e "$path" ]]; then
-    for candidate in AGENTS.MD CLAUDE.md CLAUDE.MD; do
+    for candidate in AGENT.md AGENTS.MD CLAUDE.md CLAUDE.MD; do
       if [[ -f "$project_dir/$candidate" ]]; then
         import_text="Read and follow the project instructions in [$candidate]($candidate)."$'\n\n'
         break
@@ -402,13 +479,17 @@ for target in "${targets[@]}"; do
     created=false
     if [[ "$body" == *"$CREATED"* ]]; then created=true; fi
     if [[ "$body" == *$'@AGENTS.md\n'* ]]; then import_text=$'@AGENTS.md\n'; fi
-    for candidate in AGENTS.MD CLAUDE.md CLAUDE.MD; do
+    for candidate in AGENT.md AGENTS.MD CLAUDE.md CLAUDE.MD; do
       pointer="Read and follow the project instructions in [$candidate]($candidate)."$'\n\n'
       if [[ "$body" == *"$pointer"* ]]; then import_text=$pointer; fi
     done
     if [[ "$body" == *"$GLOBAL_POINTER"* ]]; then
       pointer=${body#*"$GLOBAL_POINTER"}
       import_text="$GLOBAL_POINTER${pointer%%$'\n'*}"$'\n\n'
+    fi
+    if [[ "$body" == *"$ROO_POINTER"* ]]; then
+      pointer=${body#*"$ROO_POINTER"}
+      import_text="$ROO_POINTER${pointer%%$'\n'*}"$'\n\n'
     fi
   fi
   changed="$before$after"
@@ -418,6 +499,10 @@ for target in "${targets[@]}"; do
     changed="$before"$'\n\n'"$START"$'\n'"$metadata$import_text$principles"$'\n'"$END"$'\n'"$after"
   fi
   if [[ "$changed" != "$original" ]]; then
+    # shortcut: bytes conservatively bound UTF-8 characters; count characters if this blocks real rules.
+    if [[ "$action" == install && ${#changed} -gt 6000 ]] && { [[ "$path" == "$windsurf_global_path" ]] || [[ -n "$windsurf_global_path" && "$path" -ef "$windsurf_global_path" ]]; }; then
+      die 'Windsurf global rules would exceed 6000 bytes; use project scope or shorten existing rules'
+    fi
     paths+=("$path")
     changes+=("$changed")
     if [[ "$action" == uninstall && "$created" == true && -z "$changed" ]]; then remove+=(true); else remove+=(false); fi

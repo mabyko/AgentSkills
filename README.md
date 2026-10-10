@@ -60,11 +60,13 @@ curl -fsSL https://raw.githubusercontent.com/mabyko/AgentSkills/main/scripts/ins
 
 In an existing checkout, run `./scripts/install-coding-principles.sh` now. In a terminal, select agents with Space, choose personal or project scope, then review the instruction paths and apply. With Node, type to filter agents and see the selected-item summary. Use Up/Down to move and Enter to continue; Esc or Ctrl-C cancels. In the Bash UI, q also cancels; in the searchable Node list, q is search input.
 
+The agent chooser includes 22 tools with verified instruction targets, including Cursor, Copilot, Cline, Gemini CLI, Amp, and Zed. It shows default instruction paths rather than skill folders. Tools are selectable regardless of whether they are installed on this PC; unverified instruction targets are omitted. Cursor, Junie, Kimi Code CLI, and Warp are project-only in this installer. See the [agent paths and compatibility details](docs/coding-principles-install.md#agent-instruction-files).
+
 The Clack UI ships as a self-contained file; no npm installation is needed to run it. Remote execution downloads that optional UI before selection and removes it afterward. If it cannot be downloaded or loaded, the installer uses Bash. Both UIs use the same Bash installation and removal logic.
 
-Select any combination of Codex, Claude Code, Grok Build, Antigravity, OpenCode, and Pi. Personal scope and Codex + Claude Code are preselected. Shared project instruction files receive the block once.
+Personal scope and Codex + Claude Code are preselected. Shared project instruction files receive the block once.
 
-For automation, `--yes` uses the defaults without the UI. Explicit `--scope`, `--agent`, or `--project-dir` options also bypass it; use `--interactive` to open it with those options preselected. Multiple agents can be comma-separated, for example `--agent codex,opencode,pi`; `--agent all` selects all six. Without a terminal, the command uses personal scope and Codex + Claude Code unless options override them.
+For automation, `--yes` uses the defaults without the UI. Explicit `--scope`, `--agent`, or `--project-dir` options also bypass it; use `--interactive` to open it with those options preselected. Multiple agents can be comma-separated, for example `--agent codex,opencode,pi`; `--agent all` selects all verified agents for the chosen scope (22 project, 18 global). Without a terminal, the command uses personal scope and Codex + Claude Code unless options override them.
 
 Show all options and examples, install for Codex globally, or review that selection in the UI:
 
