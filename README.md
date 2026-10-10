@@ -4,7 +4,7 @@
 
 Reusable agent skills for Codex, Claude Code, OpenCode, and other agents that support the open agent skills format.
 
-Skills are maintained in the top-level `skills/` directory and selected individually through the skills CLI. Plugins provide optional hooks or the complete bundle of all skills and hooks. Codex and Claude Code expose the same two plugin choices.
+Skills are maintained in the top-level `skills/` directory and selected individually through the skills CLI. Codex and Claude Code offer two optional hook plugins: `git-hooks` and `apple-dev-hooks`.
 
 ## Skills
 
@@ -144,12 +144,12 @@ Note: the `skills` CLI installs skills only. The repository's [hooks](#hooks) li
 
 ## Plugins
 
-Choose the complete bundle or selected plugins from the same `mabyko` marketplace:
+Install skills through the skills CLI and choose optional hook plugins from the `mabyko` marketplace:
 
 | Plugin | Includes |
 | --- | --- |
-| `agent-skills` | Complete bundle: all 10 skills and Git safety hooks |
-| `git-hooks` | Git safety hook (`PreToolUse`) only; no skills |
+| `git-hooks` | Git safety reminders (`PreToolUse`); no skills |
+| `apple-dev-hooks` | Apple identity/signing and macOS development app cleanup reminders (`PreToolUse`), including Flutter Apple builds; no skills |
 
 Select individual skills by name through the skills CLI. For example, to install just the Git and GitHub skills:
 
@@ -157,9 +157,9 @@ Select individual skills by name through the skills CLI. For example, to install
 npx skills@latest add mabyko/AgentSkills --skill git-workflow github-workflow
 ```
 
-For every skill and hook in one install, choose `agent-skills` alone. Combining it with individual skills or hook plugins can register duplicates.
+Both hook plugins work without skills and can be installed or removed independently. The commands below use `git-hooks`; substitute `apple-dev-hooks` for Apple reminders, or install both. Plugins do not install skills.
 
-For automatic reminders, install `git-hooks` separately. It works without skills and can be removed independently. Replace `agent-skills` in the commands below with `git-hooks`.
+The former `agent-skills` bundle has been removed from the marketplace. Existing cached installs remain until you uninstall them with `codex plugin remove agent-skills@mabyko` or `claude plugin uninstall agent-skills@mabyko --scope user` (use the original installation scope). Then install the skills and hook plugins you need through their separate installation paths.
 
 ### Skill and hook roles
 
@@ -171,14 +171,14 @@ Every skill works independently. This classification describes complementary beh
 | `github-workflow` | Skill alone | PRs, reviews, CI, and releases require task context. The Git hook does not cover direct gh/API operations. |
 | `prepare-release-github` | Skill alone | Version policy, candidate SHA, CI evidence, and delivery prerequisites depend on the repository. |
 | `apple-app-icon-generator` | Skill alone | App identity, design choices, generation, installation, and verification are task-specific steps. |
-| `apple-bundle-id-guardrails` | Skill alone | Bundle identity ownership and signing configuration require project context. |
-| `macos-dev-app-cleanup` | Skill alone | First establish the authorized deletion scope and exact app paths. |
-| `flutter-flavors` | Skill alone | Reconcile flavor intent with platform configuration. |
+| `apple-bundle-id-guardrails` | Skill + optional Apple hook | The skill resolves identity ownership and signing; the hook reminds the checks before selected Apple commands. |
+| `macos-dev-app-cleanup` | Skill + optional Apple hook | The skill establishes exact targets and preservation; the hook reminds the checks before selected cleanup commands. |
+| `flutter-flavors` | Skill + optional Apple hook for iOS/macOS | The skill configures flavors across platforms; Apple commands receive the same identity reminders as native projects. |
 | `docs-sync` | Skill alone | Compare changes with the behavior promised by documentation. |
 | `css-typography-ko` | Skill alone | Check text hierarchy and readability in the actual UI. |
 | `break-it-down` | Skill alone | Choose a procedure and medium for the reader's question and the relationships being explained. |
 
-Installing a skill does not load its entire content into every session. The agent reads it when invoked or when its description matches the task. Hooks execute on their configured events. The Git hook detects selected Bash commands; it is a reminder, not comprehensive protection against unsafe operations.
+Installing a skill does not load its entire content into every session. The agent reads it when invoked or when its description matches the task. Hooks execute on their configured events. Both hook plugins detect selected Bash commands. They remind the agent; they do not validate identity ownership, enforce cleanup scope, or automatically run the skills. The Apple plugin does not generate icons or change flavor configuration.
 
 ## Codex Plugin
 
@@ -186,7 +186,7 @@ Install for your user account:
 
 ```bash
 codex plugin marketplace add mabyko/AgentSkills
-codex plugin add agent-skills@mabyko
+codex plugin add git-hooks@mabyko
 ```
 
 You can also install through `/plugins`. For plugins containing hooks, review and trust them in `/hooks` before using them; installing a plugin does not automatically trust its hooks. New or changed hook definitions can require another review. See the [Codex hooks documentation](https://learn.chatgpt.com/docs/hooks).
@@ -194,19 +194,19 @@ You can also install through `/plugins`. For plugins containing hooks, review an
 For use only in selected projects, keep the package installed but set this in your user configuration (`$CODEX_HOME/config.toml`, default `~/.codex/config.toml`):
 
 ```toml
-[plugins."agent-skills@mabyko"]
+[plugins."git-hooks@mabyko"]
 enabled = false
 ```
 
-Then enable it in each selected project's `.codex/config.toml` with the same table and `enabled = true`. Project settings apply only in trusted projects. To stop using it in that project, set its value back to `false`. This controls the whole plugin, including its skills and other hooks. See [Codex configuration precedence](https://developers.openai.com/codex/config-basic/).
+Then enable it in each selected project's `.codex/config.toml` with the same table and `enabled = true`. Project settings apply only in trusted projects. To stop using it in that project, set its value back to `false`. This controls the selected hook plugin. See [Codex configuration precedence](https://developers.openai.com/codex/config-basic/).
 
 Remove the installed plugin from your user account:
 
 ```bash
-codex plugin remove agent-skills@mabyko
+codex plugin remove git-hooks@mabyko
 ```
 
-Codex reads `.agents/plugins/marketplace.json` and the selected plugin's `.codex-plugin/plugin.json`. `agent-skills` uses the repository root; selected plugins use `plugins/<name>/`. Each plugin loads its own registered skills and hooks.
+Codex reads `.agents/plugins/marketplace.json` and the selected plugin's `.codex-plugin/plugin.json`. Each hook plugin loads its own hooks from `plugins/<name>/`; the repository root is the marketplace and skill source.
 
 ## Claude Code Plugin
 
@@ -214,39 +214,48 @@ Register the marketplace, then install for your user account:
 
 ```bash
 claude plugin marketplace add mabyko/AgentSkills
-claude plugin install agent-skills@mabyko --scope user
+claude plugin install git-hooks@mabyko --scope user
 ```
 
 For project installation, run from the project directory instead:
 
 ```bash
-claude plugin install agent-skills@mabyko --scope project
+claude plugin install git-hooks@mabyko --scope project
 ```
 
 Remove using the same scope as installation:
 
 ```bash
-claude plugin uninstall agent-skills@mabyko --scope user
+claude plugin uninstall git-hooks@mabyko --scope user
 # Or, from the project directory:
-claude plugin uninstall agent-skills@mabyko --scope project
+claude plugin uninstall git-hooks@mabyko --scope project
 ```
 
 If installed in both scopes, remove each separately. Project installation records shared project settings; use `--scope local` for settings limited to your copy of that project. See the [Claude Code plugin CLI reference](https://code.claude.com/docs/en/plugins/cli-reference).
 
-Claude Code reads `.claude-plugin/marketplace.json` (marketplace `mabyko`) and the selected plugin's `.claude-plugin/plugin.json`. Skills and `hooks/hooks.json` are discovered inside that plugin's root.
+Claude Code reads `.claude-plugin/marketplace.json` (marketplace `mabyko`) and the selected plugin's `.claude-plugin/plugin.json`. `hooks/hooks.json` is discovered inside that hook plugin's root.
 
 Plugin installs may be cached by the host. Refresh, update, or reinstall through its plugin manager to get a newer version. This repository's `CLAUDE.md` imports `@AGENTS.md` to share authoring guidance.
 
 ## Hooks
 
-Both `agent-skills` and `git-hooks` provide the existing `PreToolUse` hook, which surfaces the `git-workflow` skill's safety rules before risky Bash-invoked Git commands. It reminds once per session per category, so a `git checkout` early in a session does not consume the reminder a later `git commit` needs:
+`git-hooks` provides a `PreToolUse` hook that surfaces the `git-workflow` safety rules before selected Bash-invoked Git commands. It reminds once per session per category, so a `git checkout` early in a session does not consume the reminder a later `git commit` needs:
 
 | Category | Triggers on | Reminds about |
 | --- | --- | --- |
 | History | `commit`, `rebase`, `merge`, `cherry-pick`, `revert`, `tag`, `push`, `reflog`, `am` | Signed commits with DCO sign-off, atomic commits, writing a commit body, no `--no-verify` / `--no-gpg-sign`, `--force-with-lease` only |
 | Discard | `reset`, `clean`, `restore`, `checkout`, `switch`, `stash`, `worktree remove`, `branch -d/-D` | Checking `git status` first, asking before discarding uncommitted work or deleting refs, preferring `stash` and `revert` |
 
-For this `PreToolUse` hook, client behavior differs because the hosts read different fields:
+`apple-dev-hooks` provides a separate `PreToolUse` hook with two reminder categories:
+
+| Category | Triggers on | Reminds about |
+| --- | --- | --- |
+| Apple identity | `xcodebuild`, `codesign` signing, selected `xcrun simctl`/`devicectl` install/launch commands, `flutter build ios/ipa/macos`, and `flutter run` explicitly targeting `ios`/`macos` | Effective bundle ID and signing team for every target, registered organization IDs, personal identity isolation, and Flutter flavor-to-Xcode mappings |
+| macOS cleanup | `rm` mentioning `.app`, `DerivedData`, or `build/macos`; selected `find` app deletions; `lsregister -u`; `defaults delete` | Existing authorization, exact app provenance/paths, preserving Release apps and shared data, normal quit, scoped unregistering, and verification |
+
+Each Apple category reminds once per session, independently. The hook includes key rules without requiring skills; if the matching skill is available, it recommends reading it. It never executes the intercepted command itself. Matching uses raw hook text: quoted examples can trigger a reminder, and wrappers, scripts, variables, or Flutter device IDs that do not identify the Apple platform can escape detection. `xcodebuild` queries can also trigger the identity reminder; it permits requested read-only checks and does not require new approval for them. A reminder is not a safety gate for every command. If session state cannot be saved, the Apple hook reports that on stderr and lets the command proceed so Codex retries remain possible.
+
+For both plugins, client behavior differs because the hosts read different fields:
 
 - Claude Code receives a non-blocking `additionalContext` hint.
 - Codex denies the first matching command so the reason is displayed, then allows the retry.
@@ -261,19 +270,12 @@ skills/
     ├── references/
     ├── scripts/
     └── assets/
-.codex-plugin/
-└── plugin.json
 .claude-plugin/
-├── marketplace.json
-└── plugin.json
+└── marketplace.json
 .agents/
 └── plugins/marketplace.json
 .github/
 └── workflows/validate.yml
-hooks/
-└── hooks.json
-codex-hooks/
-└── hooks.json
 templates/
 └── skill/
 scripts/
@@ -286,10 +288,12 @@ scripts/
 ├── validate-skills.sh
 └── hooks/
 plugins/
-└── git-hooks/            # PreToolUse only
+├── git-hooks/            # Hooks only, both host manifests and runtime resources
+└── apple-dev-hooks/      # Hooks only, both host manifests and runtime resources
 tests/
 ├── test_coding_principles_installer.py
 ├── test_git_hooks.py
+├── test_apple_dev_hooks.py
 └── test_plugin_bundles.py
 AGENTS.md
 CLAUDE.md
@@ -313,13 +317,13 @@ skills/my-skill/
 └── agents/openai.yaml
 ```
 
-The hook plugins contain generated copies so cached installs are self-contained. Edit canonical skills in `skills/` and shared hooks in `scripts/hooks/`, then refresh their bundles:
+The hook plugins contain generated copies so cached installs are self-contained. Edit canonical skills in `skills/` and shared hooks in `scripts/hooks/`. Hook registration is generated from the mapping in `scripts/build-plugin-bundles.py`. After changing hook sources or that mapping, refresh the bundles:
 
 ```bash
 python3 scripts/build-plugin-bundles.py
 ```
 
-Authoring requires Python 3.9 or later. Validation fails if the generated copies differ, including deleted files or executable permissions. Bump both host versions of the complete bundle and each affected hook plugin when its content changes.
+Authoring requires Python 3.9 or later. Validation fails if the generated copies differ, including deleted files or executable permissions. Bump both host versions of each affected hook plugin when its content changes. Skill-only changes do not require a plugin version bump.
 
 To change the optional Node UI, edit `scripts/coding-principles-ui.mjs`, then rebuild its committed bundle with dependency licenses included. The searchable chooser is adapted from a pinned skills CLI source in `scripts/vendor/skills-search-multiselect.ts`, retaining its MIT license; local changes only add terminal stream and cancellation support. This authoring step requires Node.js 22.20 or later and npm:
 

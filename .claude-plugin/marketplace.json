@@ -5,15 +5,15 @@
   },
   "plugins": [
     {
-      "name": "agent-skills",
-      "source": "./",
-      "description": "Complete bundle: all 10 skills and Git safety hooks.",
-      "category": "productivity"
-    },
-    {
       "name": "git-hooks",
       "source": "./plugins/git-hooks",
       "description": "Optional Git safety reminders before Bash commands; works without skills.",
+      "category": "productivity"
+    },
+    {
+      "name": "apple-dev-hooks",
+      "source": "./plugins/apple-dev-hooks",
+      "description": "Apple identity/signing and macOS development app cleanup reminders; works without skills.",
       "category": "productivity"
     }
   ]
