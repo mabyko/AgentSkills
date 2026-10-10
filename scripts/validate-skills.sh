@@ -134,7 +134,7 @@ manifest_version() {
   grep -oE '"version"[[:space:]]*:[[:space:]]*"[^"]*"' "$1" | head -1 | sed -E 's/.*"([^"]*)"$/\1/'
 }
 plugin_count=0
-for plugin_root in "$repo_root" "$repo_root"/plugins/*; do
+for plugin_root in "$repo_root"/plugins/*; do
   [ -d "$plugin_root" ] || continue
   plugin_count=$((plugin_count + 1))
   if [ ! -f "$plugin_root/.claude-plugin/plugin.json" ] || [ ! -f "$plugin_root/.codex-plugin/plugin.json" ]; then

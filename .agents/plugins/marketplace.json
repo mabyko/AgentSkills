@@ -2,10 +2,10 @@
   "name": "mabyko",
   "plugins": [
     {
-      "name": "agent-skills",
+      "name": "git-hooks",
       "source": {
         "source": "local",
-        "path": "./"
+        "path": "./plugins/git-hooks"
       },
       "category": "Productivity",
       "policy": {
@@ -14,10 +14,10 @@
       }
     },
     {
-      "name": "git-hooks",
+      "name": "apple-dev-hooks",
       "source": {
         "source": "local",
-        "path": "./plugins/git-hooks"
+        "path": "./plugins/apple-dev-hooks"
       },
       "category": "Productivity",
       "policy": {

@@ -4,7 +4,7 @@
 
 Codex, Claude Code, OpenCode, 그리고 open agent skills 형식을 지원하는 다른 에이전트에서 재사용할 수 있는 스킬 모음입니다.
 
-스킬은 최상위 `skills/`에서 관리하고 `skills` CLI로 필요한 것만 선택 설치합니다. 플러그인은 개별 훅 또는 모든 스킬·훅을 포함한 전체 묶음을 제공합니다. Codex와 Claude Code에서 같은 두 가지 플러그인을 선택할 수 있습니다.
+스킬은 최상위 `skills/`에서 관리하고 Skills CLI로 필요한 것만 선택 설치합니다. Codex와 Claude Code에서는 선택형 훅 플러그인인 `git-hooks`와 `apple-dev-hooks`를 제공합니다.
 
 ## 스킬
 
@@ -144,12 +144,12 @@ npx skills@latest add mabyko/AgentSkills --global
 
 ## 플러그인 선택
 
-같은 `mabyko` marketplace에서 전체 묶음이나 필요한 플러그인을 선택하세요.
+스킬은 Skills CLI로 설치하고, 필요한 훅은 `mabyko` marketplace에서 플러그인으로 선택하세요.
 
 | 플러그인 | 포함하는 기능 |
 | --- | --- |
-| `agent-skills` | 전체 묶음: 스킬 10개 + Git 안전 훅 |
-| `git-hooks` | Git 안전 훅(`PreToolUse`)만 포함. 스킬 없음 |
+| `git-hooks` | Git 안전 알림(`PreToolUse`). 스킬 없음 |
+| `apple-dev-hooks` | Flutter의 Apple 빌드를 포함한 Apple 식별자·서명 및 macOS 개발 앱 정리 알림(`PreToolUse`). 스킬 없음 |
 
 필요한 스킬은 `skills` CLI에서 이름으로 선택하세요. 예를 들어 Git과 GitHub 스킬만 설치하려면:
 
@@ -157,9 +157,9 @@ npx skills@latest add mabyko/AgentSkills --global
 npx skills@latest add mabyko/AgentSkills --skill git-workflow github-workflow
 ```
 
-모든 스킬과 훅을 한 번에 설치하려면 `agent-skills` 하나를 선택하세요. 전체 묶음과 개별 스킬·훅을 함께 설치하면 중복 등록될 수 있습니다.
+두 훅 플러그인은 스킬 없이도 동작하며 각각 설치하고 제거할 수 있습니다. 아래 명령은 `git-hooks` 예시입니다. Apple 알림은 이름을 `apple-dev-hooks`로 바꿔 설치하거나, 두 플러그인을 함께 설치하세요. 플러그인은 스킬을 설치하지 않습니다.
 
-자동 실행 알림은 `git-hooks` 플러그인으로 별도 설치합니다. 스킬 없이도 동작하며 독립적으로 제거할 수 있습니다. 아래 명령의 `agent-skills`를 `git-hooks`로 바꾸면 됩니다.
+기존 전체 묶음인 `agent-skills`는 marketplace에서 제거했습니다. 이미 설치한 캐시는 자동으로 제거되지 않습니다. `codex plugin remove agent-skills@mabyko` 또는 `claude plugin uninstall agent-skills@mabyko --scope user`로 제거한 뒤 필요한 스킬과 훅을 각각 설치하세요. Claude Code는 원래 설치한 범위를 지정해야 합니다.
 
 ### 스킬과 훅의 역할
 
@@ -171,14 +171,14 @@ npx skills@latest add mabyko/AgentSkills --skill git-workflow github-workflow
 | `github-workflow` | 스킬만으로 충분 | PR·리뷰·CI·릴리스는 작업 맥락이 필요합니다. Git 훅은 직접 실행하는 gh/API 작업을 다루지 않습니다. |
 | `prepare-release-github` | 스킬만으로 충분 | 버전 규칙·대상 SHA·CI 결과·배포 준비 조건을 저장소 맥락에 맞춰 확인합니다. |
 | `apple-app-icon-generator` | 스킬만으로 충분 | 앱 식별, 디자인 선택, 생성·설치·확인은 요청별 절차입니다. |
-| `apple-bundle-id-guardrails` | 스킬만으로 충분 | 번들 ID와 서명 팀의 소유권·설정은 프로젝트 맥락으로 판단합니다. |
-| `macos-dev-app-cleanup` | 스킬만으로 충분 | 승인된 삭제 범위와 정확한 앱 경로를 먼저 확인해야 합니다. |
-| `flutter-flavors` | 스킬만으로 충분 | flavor 의도와 플랫폼 설정을 함께 점검하는 작업입니다. |
+| `apple-bundle-id-guardrails` | 스킬 + 선택 Apple 훅 | 스킬은 식별자 소유권과 서명을 점검하고, 훅은 Apple 명령 직전에 핵심 확인 사항을 알립니다. |
+| `macos-dev-app-cleanup` | 스킬 + 선택 Apple 훅 | 스킬은 정확한 대상과 보존 범위를 정하고, 훅은 일부 정리 명령 직전에 확인 사항을 알립니다. |
+| `flutter-flavors` | 스킬 + iOS/macOS용 선택 Apple 훅 | 스킬은 플랫폼별 flavor를 구성하고, Apple 명령에는 네이티브 프로젝트와 같은 식별자 알림이 적용됩니다. |
 | `docs-sync` | 스킬만으로 충분 | 변경사항과 문서가 약속한 동작을 비교해야 합니다. |
 | `css-typography-ko` | 스킬만으로 충분 | 텍스트 위계와 화면 가독성을 실제 UI에서 확인해야 합니다. |
 | `break-it-down` | 스킬만으로 충분 | 독자의 질문과 설명할 관계에 따라 절차·형식을 선택합니다. |
 
-스킬 설치는 내용을 매 세션에 전부 넣는 방식이 아닙니다. 호출하거나 설명에 맞는 작업을 만났을 때 스킬을 읽습니다. 훅은 지정한 이벤트에 실행됩니다. Git 훅은 Bash 명령 일부를 감지하는 알림이며 모든 위험 작업을 차단하는 장치는 아닙니다.
+스킬 설치는 내용을 매 세션에 전부 넣는 방식이 아닙니다. 호출하거나 설명에 맞는 작업을 만났을 때 스킬을 읽습니다. 훅은 지정한 이벤트에 실행됩니다. 두 훅 플러그인은 Bash 명령 일부를 감지해 확인 사항을 알립니다. 식별자 소유권이나 삭제 범위를 자동 검증하거나 스킬을 자동 실행하지 않습니다. Apple 플러그인은 아이콘을 생성하거나 flavor 설정을 변경하지 않습니다.
 
 ## Codex 플러그인
 
@@ -186,7 +186,7 @@ npx skills@latest add mabyko/AgentSkills --skill git-workflow github-workflow
 
 ```bash
 codex plugin marketplace add mabyko/AgentSkills
-codex plugin add agent-skills@mabyko
+codex plugin add git-hooks@mabyko
 ```
 
 `/plugins`에서도 설치할 수 있습니다. 훅을 포함한 플러그인은 설치 후 `/hooks`에서 훅을 검토하고 신뢰하도록 설정하세요. 설치만으로 훅이 신뢰되지는 않으며, 훅 정의가 추가·변경되면 재검토가 필요할 수 있습니다. [Codex 훅 문서](https://learn.chatgpt.com/docs/hooks)를 참고하세요.
@@ -194,19 +194,19 @@ codex plugin add agent-skills@mabyko
 특정 프로젝트에서만 쓰려면 설치본은 유지하고 사용자 설정(`$CODEX_HOME/config.toml`, 기본 `~/.codex/config.toml`)에 다음을 설정합니다.
 
 ```toml
-[plugins."agent-skills@mabyko"]
+[plugins."git-hooks@mabyko"]
 enabled = false
 ```
 
-사용할 프로젝트의 `.codex/config.toml`에는 같은 항목을 `enabled = true`로 설정하세요. 프로젝트 설정은 신뢰한 프로젝트에서만 적용됩니다. 해당 프로젝트에서 끄려면 값을 다시 `false`로 바꾸세요. 이 설정은 스킬과 다른 훅을 포함한 플러그인 전체에 적용됩니다. [Codex 설정 우선순위](https://developers.openai.com/codex/config-basic/)를 참고하세요.
+사용할 프로젝트의 `.codex/config.toml`에는 같은 항목을 `enabled = true`로 설정하세요. 프로젝트 설정은 신뢰한 프로젝트에서만 적용됩니다. 해당 프로젝트에서 끄려면 값을 다시 `false`로 바꾸세요. 이 설정은 선택한 훅 플러그인에 적용됩니다. [Codex 설정 우선순위](https://developers.openai.com/codex/config-basic/)를 참고하세요.
 
 개인 전역 설치 제거:
 
 ```bash
-codex plugin remove agent-skills@mabyko
+codex plugin remove git-hooks@mabyko
 ```
 
-Codex는 `.agents/plugins/marketplace.json`과 선택한 플러그인의 `.codex-plugin/plugin.json`을 읽습니다. `agent-skills`의 루트는 저장소 루트이고, 선택 플러그인의 루트는 `plugins/<이름>/`입니다. 각 플러그인은 자신에게 등록된 스킬과 훅을 로드합니다.
+Codex는 `.agents/plugins/marketplace.json`과 선택한 플러그인의 `.codex-plugin/plugin.json`을 읽습니다. 각 훅 플러그인은 `plugins/<이름>/` 안의 훅을 로드합니다. 저장소 루트는 marketplace와 스킬 원본입니다.
 
 ## Claude Code 플러그인
 
@@ -214,39 +214,48 @@ marketplace 등록 후 개인 전역 설치:
 
 ```bash
 claude plugin marketplace add mabyko/AgentSkills
-claude plugin install agent-skills@mabyko --scope user
+claude plugin install git-hooks@mabyko --scope user
 ```
 
 프로젝트 범위로 설치하려면 해당 프로젝트 폴더에서 실행하세요.
 
 ```bash
-claude plugin install agent-skills@mabyko --scope project
+claude plugin install git-hooks@mabyko --scope project
 ```
 
 설치한 범위와 같은 범위를 지정해 제거합니다.
 
 ```bash
-claude plugin uninstall agent-skills@mabyko --scope user
+claude plugin uninstall git-hooks@mabyko --scope user
 # 또는 해당 프로젝트 폴더에서:
-claude plugin uninstall agent-skills@mabyko --scope project
+claude plugin uninstall git-hooks@mabyko --scope project
 ```
 
 두 범위에 설치했다면 각각 제거하세요. 프로젝트 설치는 팀과 공유하는 프로젝트 설정에 기록됩니다. 자신의 프로젝트 사본에만 적용하려면 `--scope local`을 사용하세요. [Claude Code 플러그인 CLI 문서](https://code.claude.com/docs/en/plugins/cli-reference)를 참고하세요.
 
-Claude Code는 `.claude-plugin/marketplace.json`(marketplace 이름 `mabyko`)과 선택한 플러그인의 `.claude-plugin/plugin.json`을 읽습니다. 스킬과 `hooks/hooks.json`은 해당 플러그인의 루트 안에서 찾습니다.
+Claude Code는 `.claude-plugin/marketplace.json`(marketplace 이름 `mabyko`)과 선택한 플러그인의 `.claude-plugin/plugin.json`을 읽습니다. `hooks/hooks.json`은 해당 훅 플러그인의 루트 안에서 찾습니다.
 
 플러그인 설치본은 도구에서 캐시될 수 있으므로 최신 버전은 플러그인 관리자에서 갱신하거나 재설치하세요. 이 저장소의 `CLAUDE.md`는 `@AGENTS.md`를 가져와 작성 지침을 공유합니다.
 
 ## 훅
 
-`agent-skills`와 `git-hooks`는 기존 `PreToolUse` 훅을 설치합니다. Bash로 실행되는 위험한 Git 명령 앞에서 `git-workflow` 스킬의 안전 규칙을 알려줍니다. 카테고리별로 세션당 한 번씩 알리므로, 세션 초반의 `git checkout`이 나중에 필요한 `git commit` 알림을 삼키지 않습니다.
+`git-hooks`는 `PreToolUse` 훅으로 Bash에서 실행하는 일부 Git 명령 앞에 `git-workflow`의 안전 규칙을 알려줍니다. 카테고리별로 세션당 한 번씩 알리므로, 세션 초반의 `git checkout`이 나중에 필요한 `git commit` 알림을 삼키지 않습니다.
 
 | 카테고리 | 트리거 | 알리는 내용 |
 | --- | --- | --- |
 | History | `commit`, `rebase`, `merge`, `cherry-pick`, `revert`, `tag`, `push`, `reflog`, `am` | DCO sign-off를 포함한 서명 커밋, atomic commit, 커밋 본문 작성, `--no-verify` / `--no-gpg-sign` 금지, `--force-with-lease`만 사용 |
 | Discard | `reset`, `clean`, `restore`, `checkout`, `switch`, `stash`, `worktree remove`, `branch -d/-D` | 먼저 `git status` 확인, 커밋 안 된 작업을 버리거나 ref를 지우기 전 확인, `stash`와 `revert` 우선 |
 
-이 `PreToolUse` 훅은 두 도구가 읽는 필드가 달라서 동작도 다릅니다.
+`apple-dev-hooks`는 별도의 `PreToolUse` 훅으로 두 종류의 확인 사항을 알립니다.
+
+| 카테고리 | 트리거 | 알리는 내용 |
+| --- | --- | --- |
+| Apple 식별자 | `xcodebuild`, `codesign` 서명, 일부 `xcrun simctl`/`devicectl` 설치·실행 명령, `flutter build ios/ipa/macos`, `ios`/`macos`를 명시한 `flutter run` | 각 타깃의 실제 bundle ID·서명 팀, 조직 ID 등록 여부, 개인 식별자 분리, Flutter flavor와 Xcode 설정의 연결 |
+| macOS 정리 | `.app`·`DerivedData`·`build/macos`가 포함된 `rm`, 일부 `find` 앱 삭제, `lsregister -u`, `defaults delete` | 기존 삭제 권한, 정확한 앱 출처·경로, Release 앱과 공유 데이터 보존, 정상 종료, 해당 경로만 등록 해제, 결과 확인 |
+
+Apple 알림도 종류별로 세션당 한 번씩 독립적으로 표시합니다. 핵심 규칙을 포함해 스킬 없이 동작하고, 해당 스킬이 있으면 읽도록 안내합니다. 훅이 감지한 명령을 직접 실행하지는 않습니다. 입력 텍스트를 기준으로 감지하므로 인용한 예시에도 반응할 수 있고, 래퍼·스크립트·변수나 Apple 플랫폼을 알 수 없는 Flutter 기기 ID는 놓칠 수 있습니다. `xcodebuild` 조회 명령도 식별자 알림을 띄울 수 있으며, 안내문은 요청한 조회를 허용하고 추가 승인을 요구하지 않습니다. 모든 명령에 대한 안전 검증은 아닙니다. 세션 상태를 기록하지 못하면 Apple 훅은 stderr에 알리고 명령을 허용해 Codex 재시도가 막히지 않도록 합니다.
+
+두 플러그인 모두 도구가 읽는 필드가 달라서 동작도 다릅니다.
 
 - Claude Code는 실행을 막지 않는 `additionalContext` 힌트를 받습니다.
 - Codex는 첫 매칭 명령을 한 번 deny해서 이유를 보여주고, 재시도는 허용합니다.
@@ -261,19 +270,12 @@ skills/
     ├── references/
     ├── scripts/
     └── assets/
-.codex-plugin/
-└── plugin.json
 .claude-plugin/
-├── marketplace.json
-└── plugin.json
+└── marketplace.json
 .agents/
 └── plugins/marketplace.json
 .github/
 └── workflows/validate.yml
-hooks/
-└── hooks.json
-codex-hooks/
-└── hooks.json
 templates/
 └── skill/
 scripts/
@@ -286,10 +288,12 @@ scripts/
 ├── validate-skills.sh
 └── hooks/
 plugins/
-└── git-hooks/            # PreToolUse only
+├── git-hooks/            # Hooks only, both host manifests and runtime resources
+└── apple-dev-hooks/      # Hooks only, both host manifests and runtime resources
 tests/
 ├── test_coding_principles_installer.py
 ├── test_git_hooks.py
+├── test_apple_dev_hooks.py
 └── test_plugin_bundles.py
 AGENTS.md
 CLAUDE.md
@@ -313,13 +317,13 @@ skills/my-skill/
 └── agents/openai.yaml
 ```
 
-훅 플러그인에는 설치 후 독립적으로 동작하도록 생성한 배포본이 들어갑니다. 원본 스킬은 `skills/`, 공통 훅은 `scripts/hooks/`에서 수정한 뒤 배포본을 갱신하세요.
+훅 플러그인에는 설치 후 독립적으로 동작하도록 생성한 배포본이 들어갑니다. 원본 스킬은 `skills/`, 공통 훅은 `scripts/hooks/`에서 수정하세요. 훅 등록은 `scripts/build-plugin-bundles.py`의 목록에서 생성합니다. 훅 원본이나 이 목록을 수정하면 배포본을 갱신하세요.
 
 ```bash
 python3 scripts/build-plugin-bundles.py
 ```
 
-작성 환경에는 Python 3.9 이상이 필요합니다. 삭제된 파일이나 실행 권한을 포함해 원본과 배포본이 다르면 검증에 실패합니다. 내용이 바뀌면 전체 묶음과 영향을 받은 훅 플러그인의 두 호스트 버전을 함께 올리세요.
+작성 환경에는 Python 3.9 이상이 필요합니다. 삭제된 파일이나 실행 권한을 포함해 원본과 배포본이 다르면 검증에 실패합니다. 내용이 바뀐 훅 플러그인은 두 호스트 버전을 함께 올리세요. 스킬만 바뀌면 플러그인 버전을 올릴 필요가 없습니다.
 
 선택형 Node 화면을 바꾸려면 `scripts/coding-principles-ui.mjs`를 수정한 뒤 의존성 라이선스를 포함한 배포본을 다시 생성하세요. 검색 선택 화면은 skills CLI의 특정 커밋에서 가져온 `scripts/vendor/skills-search-multiselect.ts`를 사용합니다. MIT 라이선스를 유지하며, 터미널 입출력과 취소 신호를 연결한 부분만 수정했습니다. 이 작성 단계에는 Node.js 22.20 이상과 npm이 필요합니다.
 

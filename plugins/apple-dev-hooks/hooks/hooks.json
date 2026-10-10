@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/git-workflow-trigger.sh\" --client=claude"
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/apple-dev-trigger.sh\" --client=claude"
           }
         ]
       }

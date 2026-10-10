@@ -42,6 +42,5 @@ Next:
   2. Fill in agents/openai.yaml (display name, short description, default_prompt
      mentioning \$$skill_name).
   3. Add "- \`$skill_name\`: ..." to the Skills section of README.md and README.ko.md.
-  4. Bump version in .claude-plugin/plugin.json and .codex-plugin/plugin.json.
-  5. Run scripts/validate-skills.sh
+  4. Run scripts/validate-skills.sh
 EOF

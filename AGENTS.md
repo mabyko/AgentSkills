@@ -50,10 +50,10 @@ Optional per-skill resources:
 
 Register each plugin in both `.claude-plugin/marketplace.json` and `.agents/plugins/marketplace.json`.
 
-- The repository root is the complete `agent-skills` plugin: all canonical skills and Git hooks. Hook scripts live in `scripts/hooks/`.
+- The repository root is a skill source and plugin marketplace, not an installable plugin. Canonical skills live in `skills/`; hook scripts live in `scripts/hooks/`.
 - Put independently installable plugins under `plugins/<plugin-name>/`, with both host manifests and all runtime resources inside that folder. Hosts cache the selected plugin directory; references to parent-directory resources will break.
-- Install individual skills through the skills CLI. The selected plugin is `plugins/git-hooks/`; it contains its hooks without bundled skills or required skill dependencies.
-- Edit skills only in canonical `skills/`, and edit shared hooks in `scripts/hooks/`. Run `python3 scripts/build-plugin-bundles.py` after changing these sources; generated script and hook copies in the selected plugins must match. Requires Python 3.9 or later for authoring. Bump both host versions for the complete plugin and each affected selection plugin.
+- Install individual skills through the skills CLI. `plugins/git-hooks/` and `plugins/apple-dev-hooks/` contain hooks without bundled skills or required skill dependencies.
+- Edit skills only in canonical `skills/`, and edit shared hooks in `scripts/hooks/`. Hook registration is generated from the mapping in `scripts/build-plugin-bundles.py`. Run `python3 scripts/build-plugin-bundles.py` after changing hook sources or that mapping; generated script and hook copies must match. Requires Python 3.9 or later for authoring. Bump both host versions of each affected hook plugin; skill-only changes need no plugin version bump.
 
 ## Coding principles installer
 

@@ -1,7 +1,7 @@
 {
-  "name": "agent-skills",
-  "version": "0.8.0",
-  "description": "Complete bundle: all 10 skills and Git safety hooks.",
+  "name": "apple-dev-hooks",
+  "version": "0.1.1",
+  "description": "Apple identity/signing and macOS development app cleanup reminders; works without skills.",
   "author": {
     "name": "mabyko",
     "url": "https://github.com/mabyko"
@@ -10,7 +10,7 @@
   "repository": "https://github.com/mabyko/AgentSkills",
   "license": "MIT",
   "keywords": [
-    "skills",
-    "agent-skills"
+    "hooks",
+    "apple-dev-hooks"
   ]
 }
