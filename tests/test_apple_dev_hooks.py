@@ -99,6 +99,30 @@ class AppleDevHooksTests(unittest.TestCase):
             self.assertIn("apple-bundle-id-guardrails", context)
             self.assertEqual(self.run_hook(host, command).stdout, "")
 
+    def test_underscore_session_ids_remind_independently_and_allow_retries(self):
+        for host in ("claude", "codex"):
+            for session in ("thr_123", "thr_456"):
+                with self.subTest(host=host, session=session):
+                    self.context(host, self.run_hook(host, "flutter build macos", session))
+                    retry = self.run_hook(host, "flutter build macos", session)
+                    self.assertEqual((retry.returncode, retry.stdout), (0, ""))
+
+    def test_symlink_marker_collision_recovers_without_modifying_target(self):
+        target = self.workspace / "existing directory"
+        target.mkdir()
+        original = target / "keep.txt"
+        original.write_text("Preserve this data")
+        for host in ("claude", "codex"):
+            marker = self.workspace / f"apple-dev-hook-identity-{host}-test"
+            marker.symlink_to(target, target_is_directory=True)
+            self.context(host, self.run_hook(host, "flutter build macos"))
+            retry = self.run_hook(host, "flutter build macos")
+            self.assertEqual((retry.returncode, retry.stdout), (0, ""))
+            self.assertTrue(marker.is_symlink())
+            self.assertEqual(marker.resolve(), target.resolve())
+            self.assertEqual(list(target.iterdir()), [original])
+            self.assertEqual(original.read_text(), "Preserve this data")
+
     def test_unrelated_commands_and_read_only_cleanup_inventory_are_quiet(self):
         for host in ("claude", "codex"):
             for command in (

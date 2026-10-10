@@ -9,12 +9,16 @@ case "${1:-}" in
 esac
 
 input=$(cat)
-sid=$(printf '%s' "$input" | grep -oE '"session_?[iI]d"[[:space:]]*:[[:space:]]*"[A-Za-z0-9-]+"' | head -1 | grep -oE '[A-Za-z0-9-]+"$' | tr -d '"') || sid=""
+sid=$(printf '%s' "$input" | grep -oE '"session_?[iI]d"[[:space:]]*:[[:space:]]*"[A-Za-z0-9_-]+"' | head -1 | grep -oE '[A-Za-z0-9_-]+"$' | tr -d '"') || sid=""
 context=""
 
 remind() {
   local marker="${TMPDIR:-/tmp}/apple-dev-hook-$1-${sid:-pid-$PPID}"
-  [ -d "$marker" ] && return 0
+  # Recover separately without following or replacing the colliding symlink.
+  if [ -L "$marker" ]; then
+    marker="${TMPDIR:-/tmp}/apple-dev-recovered-hook-$1-${sid:-pid-$PPID}"
+  fi
+  [ ! -L "$marker" ] && [ -d "$marker" ] && return 0
   # mkdir avoids writing through an existing marker symlink or file.
   if ! (umask 077; mkdir "$marker") 2>/dev/null; then
     echo "Apple development reminder could not save session state; skipping to keep retries available." >&2
