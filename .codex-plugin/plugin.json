@@ -1,6 +1,6 @@
 {
   "name": "agent-skills",
-  "version": "0.3.14",
+  "version": "0.3.15",
   "description": "Reusable agent skills for Codex workflows.",
   "author": {
     "name": "mabyko",

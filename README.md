@@ -16,7 +16,7 @@ The canonical skill source is the top-level `skills/` directory. Plugin manifest
 - `github-workflow`: Guide GitHub pull requests, stacked PRs with optional gh-stack, reviews, checks, releases, and fork upstream-sync workflows. Offers installation guidance and available tool or browser alternatives when CLI tools are missing.
 - `macos-dev-app-cleanup`: Remove or verify removal of a project's macOS Debug, Dev, and QA apps by exact path, preserving Release apps, user data, and shared settings.
 - `css-typography-ko`: Improve Korean web UI readability with CSS typography, covering text hierarchy, fonts, spacing, word boundaries, balanced wrapping, and overflow handling.
-- `break-it-down`: Unpack complex topics, systems, or model outputs so the reader can understand the reasoning and relationships, using clear prose, diagrams, interactive HTML, or explainer videos.
+- `break-it-down`: Build explanations around the reader's question and the underlying mechanism. Use worked examples, diagrams, interactive models, or narrated animation to make relationships, changes, and limits understandable.
 
 ## Usage Examples
 
@@ -38,7 +38,7 @@ The canonical skill source is the top-level `skills/` directory. Plugin manifest
 
 `break-it-down` replaces the former `explain` skill; invoke it as `$break-it-down`. It uses the current conversation when no topic is supplied. You can choose the format in ordinary language. It uses the environment's available production tools; it does not bundle a rendering or speech engine. English technical prose uses STE-informed drafting targets; Korean follows separate language guidance. Formal English STE review requires the official rules and dictionary.
 
-It works toward the reader's learning or decision goal and completes the requested stage: a script-only request ends with a checked script; a finished-video request includes rendering and playback checks. [Behavioral evaluation cases and recorded checks](docs/break-it-down/cases.md) live outside the installed skill.
+It models the question before composing the output, then checks the reasoning separately from rendering and interaction. Interactive explanations expose the affected relationships or process as well as the result. It completes the requested stage: a script-only request ends with a checked script; a finished-video request includes rendering and playback checks. [Behavioral evaluation cases and recorded checks](docs/break-it-down/cases.md) live outside the installed skill.
 
 ## Quick Install
 
