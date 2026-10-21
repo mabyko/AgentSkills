@@ -55,6 +55,7 @@ npx skills@latest update
 - `apple-app-icon-generator`: Apple 앱 아이콘을 생성하고 적용합니다. Debug와 Release의 bundle ID가 다르면 연결된 Debug 아이콘도 만듭니다.
 - `apple-bundle-id-guardrails`: 조직 App ID를 보호하고, 안전한 xcconfig 기본값으로 개인·추가 팀·조직의 Release/Debug 식별자를 분리합니다.
 - `macos-dev-app-cleanup`: 프로젝트의 macOS Debug·Dev·QA 앱을 정확한 경로로 제거하거나 제거 여부를 확인합니다. Release 앱, 사용자 데이터, 공유 설정은 보존합니다.
+- `macos-release-reinstall`: 프로젝트의 macOS Release 앱을 안전하게 재설치하고 사용자 설정·데이터를 보존합니다. 설치·실행·기본 동작·설정·데이터 검증이 모두 통과한 뒤 임시 백업을 삭제하며, 요청한 경우에만 계속 보관합니다.
 - `flutter-flavors`: Flutter flavor, `flutter_flavorizr`·`flavorizr.yaml`, 플랫폼별 앱 식별자, 실행 설정, 빌드 모드 경계를 구성하거나 점검합니다.
 
 ### 문서·UI·설명
@@ -72,11 +73,27 @@ $git-workflow 이 변경사항을 안전하게 커밋 단위로 나눠줘.
 $github-workflow 이 기능을 서로 의존하는 PR로 나눠줘.
 $prepare-release-github 다음 릴리스와 배포 인계를 준비해줘. 배포 실행은 담당자에게 맡겨줘.
 $apple-bundle-id-guardrails 이 Xcode 프로젝트의 bundle ID 보호 설정을 구성해줘.
+$macos-release-reinstall 이 프로젝트의 macOS Release 앱을 재설치해줘.
 $docs-sync 이 변경사항에 맞춰 문서도 수정해야 하는지 확인해줘.
 $break-it-down diagram: 이 과정의 관계와 분기를 보여줘.
 ```
 
 `break-it-down`은 기존 `explain`을 대체합니다. 주제를 생략하면 현재 대화를 바탕으로 설명하며, 글·다이어그램·인터랙티브 웹 모델·영상 중 원하는 형식을 자연어로 지정할 수 있습니다. 렌더링·음성 엔진을 포함하지 않고 실행 환경의 도구를 사용합니다. 대본을 요청하면 검토한 대본으로 끝내고, 완성 영상을 요청하면 렌더링과 재생까지 확인합니다. 형식별 안내, 언어 규칙, 검증 방법은 [스킬 지침](skills/break-it-down/SKILL.md)과 [행동 검증 사례](docs/break-it-down/cases.md)를 참고하세요.
+
+### macOS Release 앱 재설치
+
+설치된 앱을 프로젝트의 Release 빌드로 교체하려면 [`macos-release-reinstall`](skills/macos-release-reinstall/SKILL.md)을 사용하세요. 새 빌드를 준비·검증한 뒤 기존 설치본을 교체하고, 사용자 설정·데이터를 보존하며, 설치 경로에서 실행과 기본 동작을 확인합니다.
+
+재설치용 임시 백업은 설치·실행·기본 동작·설정·데이터 검증이 모두 통과한 뒤에만 삭제합니다. 성공 후에도 백업을 보관하려면 명시적으로 요청하세요. 검증이나 복구가 끝나지 않았다면 남은 임시 복구 경로와 막힌 이유를 보고하고, 기존 설치본의 복원이 검증되면 불필요한 사본을 삭제합니다. 이전 작업의 백업과 일반 Release 빌드 산출물은 자동 삭제 대상에서 제외합니다.
+
+개발·QA 앱 정리는 [`macos-dev-app-cleanup`](skills/macos-dev-app-cleanup/SKILL.md)이 담당합니다. 두 작업을 함께 요청하거나 필요한 경우 백업 보관을 지정할 수 있습니다.
+
+```text
+$macos-dev-app-cleanup 이 프로젝트의 개발 앱을 정리하고, 이어서 $macos-release-reinstall로 Release 앱을 재설치해줘.
+$macos-release-reinstall Release 앱을 재설치하고 이전 앱 백업은 ~/Backups/MyApp에 보관해줘.
+```
+
+로컬 ad-hoc 서명 빌드는 교체 후 권한 승인이 다시 필요할 수 있습니다. 스킬은 승인 창을 사용자에게 맡기고, 권한이 그대로 유효하다고 단정하는 대신 확인을 마치지 못한 항목을 보고합니다.
 
 ## 훅 플러그인
 
@@ -90,7 +107,7 @@ $break-it-down diagram: 이 과정의 관계와 분기를 보여줘.
 
 세 플러그인은 훅만 포함하며 스킬 없이도 동작합니다. 각 알림에 핵심 규칙을 넣고 관련 스킬이 있으면 읽도록 안내합니다. 플러그인이 스킬을 설치하거나 필수로 요구하거나 스킬의 절차를 자동 실행하지는 않습니다. 훅 규칙과 스킬 지침은 별도로 관리하며 실행 중에 자동 동기화되지 않습니다.
 
-전체 작업 절차는 Git의 `git-workflow`, PR·스택·릴리스의 `github-workflow`, Apple 식별자의 `apple-bundle-id-guardrails`, 앱 정리의 `macos-dev-app-cleanup`, flavor 구성의 `flutter-flavors`가 안내합니다. `github-workflow`는 자동 선택을 허용하지만, 선택했을 때 본문을 읽고 필요한 참고 문서만 추가로 읽습니다. 훅은 감지한 명령 직전에 확인 사항을 알려주며 모든 확인이 수행됐음을 보장하지는 않습니다. Apple 플러그인이 아이콘을 생성하거나 flavor 설정을 바꾸지는 않습니다.
+전체 작업 절차는 Git의 `git-workflow`, PR·스택·릴리스의 `github-workflow`, Apple 식별자의 `apple-bundle-id-guardrails`, 개발 앱 정리의 `macos-dev-app-cleanup`, 로컬 Release 재설치의 `macos-release-reinstall`, flavor 구성의 `flutter-flavors`가 안내합니다. `github-workflow`는 자동 선택을 허용하지만, 선택했을 때 본문을 읽고 필요한 참고 문서만 추가로 읽습니다. 훅은 감지한 명령 직전에 확인 사항을 알려주며 모든 확인이 수행됐음을 보장하지는 않습니다. Apple 플러그인이 아이콘을 생성하거나 flavor 설정을 바꾸지는 않습니다.
 
 아래 명령은 `git-hooks` 예시입니다. 이름을 `github-hooks`나 `apple-dev-hooks`로 바꾸거나 필요한 플러그인을 각각 설치하세요.
 

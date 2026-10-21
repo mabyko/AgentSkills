@@ -1,0 +1,6 @@
+interface:
+  display_name: "macOS Release Reinstall"
+  short_description: "Reinstall Release safely and remove temporary backups"
+  default_prompt: "Use $macos-release-reinstall to reinstall this project's macOS Release app, preserve my settings and data, and delete temporary backups only after installation, launch/smoke, settings, and data checks all pass."
+policy:
+  allow_implicit_invocation: true

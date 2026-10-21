@@ -84,6 +84,22 @@ class PluginBundleTests(unittest.TestCase):
             self.assertEqual(bundled.read_bytes(), original)
 
 
+    def test_validator_accepts_large_readme_skill_sections(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            checkout = self.copy_checkout(temporary)
+            for filename, next_heading in (("README.md", "## Hook plugins"), ("README.ko.md", "## 훅 플러그인")):
+                path = checkout / filename
+                padding = "Additional usage guidance.\n" * 8192
+                path.write_text(path.read_text().replace(next_heading, padding + "\n" + next_heading, 1))
+            result = subprocess.run([str(checkout / "scripts/validate-skills.sh")], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+
+            readme = checkout / "README.md"
+            readme.write_text("\n".join(line for line in readme.read_text().splitlines() if not line.startswith("- `git-workflow`:")) + "\n")
+            result = subprocess.run([str(checkout / "scripts/validate-skills.sh")], capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("Skill not listed in README.md Skills section: git-workflow", result.stderr)
+
     def test_validator_checks_nested_plugin_invariants(self):
         with tempfile.TemporaryDirectory() as temporary:
             checkout = Path(temporary) / "checkout"
