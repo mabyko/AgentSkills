@@ -55,7 +55,7 @@ npx skills@latest update
 - `apple-app-icon-generator`: Apple 앱 아이콘을 생성하고 적용합니다. Debug와 Release의 bundle ID가 다르면 연결된 Debug 아이콘도 만듭니다.
 - `apple-bundle-id-guardrails`: 조직 App ID를 보호하고, 안전한 xcconfig 기본값으로 개인·추가 팀·조직의 Release/Debug 식별자를 분리합니다.
 - `macos-dev-app-cleanup`: 프로젝트의 macOS Debug·Dev·QA 앱을 정확한 경로로 제거하거나 제거 여부를 확인합니다. Release 앱, 사용자 데이터, 공유 설정은 보존합니다.
-- `macos-release-reinstall`: 프로젝트의 macOS Release 앱을 안전하게 재설치하고 사용자 설정·데이터를 보존합니다. 설치·실행 검증 후 임시 백업을 삭제하며, 요청한 경우에만 계속 보관합니다.
+- `macos-release-reinstall`: 프로젝트의 macOS Release 앱을 안전하게 재설치하고 사용자 설정·데이터를 보존합니다. 설치·실행·기본 동작·설정·데이터 검증이 모두 통과한 뒤 임시 백업을 삭제하며, 요청한 경우에만 계속 보관합니다.
 - `flutter-flavors`: Flutter flavor, `flutter_flavorizr`·`flavorizr.yaml`, 플랫폼별 앱 식별자, 실행 설정, 빌드 모드 경계를 구성하거나 점검합니다.
 
 ### 문서·UI·설명
@@ -84,7 +84,7 @@ $break-it-down diagram: 이 과정의 관계와 분기를 보여줘.
 
 설치된 앱을 프로젝트의 Release 빌드로 교체하려면 [`macos-release-reinstall`](skills/macos-release-reinstall/SKILL.md)을 사용하세요. 새 빌드를 준비·검증한 뒤 기존 설치본을 교체하고, 사용자 설정·데이터를 보존하며, 설치 경로에서 실행과 기본 동작을 확인합니다.
 
-재설치용 임시 백업은 설치·실행 검증이 성공하면 삭제합니다. 성공 후에도 백업을 보관하려면 명시적으로 요청하세요. 검증이나 복구가 끝나지 않았다면 남은 임시 복구 경로와 막힌 이유를 보고하고, 기존 설치본의 복원이 검증되면 불필요한 사본을 삭제합니다. 이전 작업의 백업과 일반 Release 빌드 산출물은 자동 삭제 대상에서 제외합니다.
+재설치용 임시 백업은 설치·실행·기본 동작·설정·데이터 검증이 모두 통과한 뒤에만 삭제합니다. 성공 후에도 백업을 보관하려면 명시적으로 요청하세요. 검증이나 복구가 끝나지 않았다면 남은 임시 복구 경로와 막힌 이유를 보고하고, 기존 설치본의 복원이 검증되면 불필요한 사본을 삭제합니다. 이전 작업의 백업과 일반 Release 빌드 산출물은 자동 삭제 대상에서 제외합니다.
 
 개발·QA 앱 정리는 [`macos-dev-app-cleanup`](skills/macos-dev-app-cleanup/SKILL.md)이 담당합니다. 두 작업을 함께 요청하거나 필요한 경우 백업 보관을 지정할 수 있습니다.
 

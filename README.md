@@ -55,7 +55,7 @@ npx skills@latest update
 - `apple-app-icon-generator`: Generate and install Apple app icons, adding a related Debug variant when Debug and Release use different bundle IDs.
 - `apple-bundle-id-guardrails`: Protect organization App IDs and configure separate personal, additional-team, and organization Release/Debug identities with safe xcconfig defaults.
 - `macos-dev-app-cleanup`: Remove or verify removal of a project's macOS Debug, Dev, and QA apps by exact path, preserving Release apps, user data, and shared settings.
-- `macos-release-reinstall`: Safely reinstall a project's macOS Release app, preserve user settings/data, and delete temporary rollback backups after installation and launch verification unless retention is requested.
+- `macos-release-reinstall`: Safely reinstall a project's macOS Release app, preserve user settings/data, and delete temporary rollback backups after installation, launch/smoke, settings, and data checks all pass unless retention is requested.
 - `flutter-flavors`: Set up or audit Flutter flavors, `flutter_flavorizr` / `flavorizr.yaml`, platform app identities, launch configs, and build-mode boundaries.
 
 ### Documentation, UI, and explanations
@@ -84,7 +84,7 @@ $break-it-down diagram: Show the relationships and branches in this process.
 
 Use [`macos-release-reinstall`](skills/macos-release-reinstall/SKILL.md) to replace an installed app with the project's Release build. It prepares and validates the candidate before replacing the existing installation, preserves user settings/data, and verifies launch and essential behavior from the installed path.
 
-Temporary rollback backups are deleted after installation and launch verification succeed. Keep them after success only when explicitly requested. If verification or recovery is incomplete, the skill reports the remaining temporary recovery paths and the blocker; redundant copies are deleted after verified restoration. Backups from earlier runs and ordinary Release build artifacts are outside automatic cleanup.
+Temporary rollback backups are deleted only after installation, launch/smoke, settings, and data checks all pass. Keep them after success only when explicitly requested. If verification or recovery is incomplete, the skill reports the remaining temporary recovery paths and the blocker; redundant copies are deleted after verified restoration. Backups from earlier runs and ordinary Release build artifacts are outside automatic cleanup.
 
 Development/QA app cleanup uses [`macos-dev-app-cleanup`](skills/macos-dev-app-cleanup/SKILL.md). Request both tasks to run them together, or specify backup retention when needed:
 
