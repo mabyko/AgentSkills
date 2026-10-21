@@ -102,7 +102,8 @@ while IFS= read -r -d '' skill_dir; do
   fi
 
   for readme in README.md README.ko.md; do
-    if ! readme_skills_section "$repo_root/$readme" | grep -Eq "^- \`$skill_name\`:"; then
+    # Consume the whole section so pipefail does not mistake SIGPIPE for a missing skill.
+    if ! readme_skills_section "$repo_root/$readme" | grep -E "^- \`$skill_name\`:" >/dev/null; then
       echo "Skill not listed in $readme Skills section: $skill_name" >&2
       failed=1
     fi
