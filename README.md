@@ -55,6 +55,7 @@ npx skills@latest update
 - `apple-app-icon-generator`: Generate and install Apple app icons, adding a related Debug variant when Debug and Release use different bundle IDs.
 - `apple-bundle-id-guardrails`: Protect organization App IDs and configure separate personal, additional-team, and organization Release/Debug identities with safe xcconfig defaults.
 - `macos-dev-app-cleanup`: Remove or verify removal of a project's macOS Debug, Dev, and QA apps by exact path, preserving Release apps, user data, and shared settings.
+- `macos-release-reinstall`: Safely reinstall a project's macOS Release app, preserve user settings/data, and delete temporary rollback backups after installation and launch verification unless retention is requested.
 - `flutter-flavors`: Set up or audit Flutter flavors, `flutter_flavorizr` / `flavorizr.yaml`, platform app identities, launch configs, and build-mode boundaries.
 
 ### Documentation, UI, and explanations
@@ -72,11 +73,27 @@ $git-workflow Help me split these changes into safe commits.
 $github-workflow Split this feature into dependent PR layers.
 $prepare-release-github Prepare the next release and deployment handoff; leave deployment to the operator.
 $apple-bundle-id-guardrails Set up bundle ID guardrails for this Xcode project.
+$macos-release-reinstall Reinstall this project's macOS Release app.
 $docs-sync Check whether the docs need updates for this diff.
 $break-it-down diagram: Show the relationships and branches in this process.
 ```
 
 `break-it-down` replaces the former `explain` skill. It uses the current conversation when no topic is supplied; choose prose, a diagram, an interactive web model, or video in ordinary language. It uses available production tools rather than bundling a rendering or speech engine. It completes the requested stage: a script request ends with a checked script; a finished-video request includes rendering and playback checks. See the [skill instructions](skills/break-it-down/SKILL.md) and [behavioral evaluation cases](docs/break-it-down/cases.md) for format guidance, language rules, and verification details.
+
+### macOS Release reinstallation
+
+Use [`macos-release-reinstall`](skills/macos-release-reinstall/SKILL.md) to replace an installed app with the project's Release build. It prepares and validates the candidate before replacing the existing installation, preserves user settings/data, and verifies launch and essential behavior from the installed path.
+
+Temporary rollback backups are deleted after installation and launch verification succeed. Keep them after success only when explicitly requested. If verification or recovery is incomplete, the skill reports the remaining temporary recovery paths and the blocker; redundant copies are deleted after verified restoration. Backups from earlier runs and ordinary Release build artifacts are outside automatic cleanup.
+
+Development/QA app cleanup uses [`macos-dev-app-cleanup`](skills/macos-dev-app-cleanup/SKILL.md). Request both tasks to run them together, or specify backup retention when needed:
+
+```text
+$macos-dev-app-cleanup Clean up this project's development apps, then use $macos-release-reinstall to reinstall the Release app.
+$macos-release-reinstall Reinstall the Release app and keep the previous app backup at ~/Backups/MyApp.
+```
+
+Locally ad-hoc signed builds may require permission authorization again after replacement. The skill leaves those prompts to the user and reports pending checks instead of claiming that permissions stayed effective.
 
 ## Hook plugins
 
@@ -90,7 +107,7 @@ Choose optional plugins from the `mabyko` marketplace:
 
 All three plugins contain hooks only and work without skills. Each reminder includes core rules and suggests reading the matching skill if available. Plugins do not install skills, require them, or automatically execute their procedures. Hook rules and skill instructions are maintained separately; they do not synchronize at runtime.
 
-Skills provide the detailed workflow: `git-workflow` for Git, `github-workflow` for PRs/stacks/releases, `apple-bundle-id-guardrails` for Apple identities, `macos-dev-app-cleanup` for cleanup, and `flutter-flavors` for flavor configuration. Automatic skill selection is allowed for `github-workflow`, but its full instructions and references are read only when selected and needed. A hook supplies reminders before matching commands; it does not guarantee every check was performed. The Apple plugin does not generate icons or change flavor settings.
+Skills provide the detailed workflow: `git-workflow` for Git, `github-workflow` for PRs/stacks/releases, `apple-bundle-id-guardrails` for Apple identities, `macos-dev-app-cleanup` for development app cleanup, `macos-release-reinstall` for local Release reinstallation, and `flutter-flavors` for flavor configuration. Automatic skill selection is allowed for `github-workflow`, but its full instructions and references are read only when selected and needed. A hook supplies reminders before matching commands; it does not guarantee every check was performed. The Apple plugin does not generate icons or change flavor settings.
 
 The commands below use `git-hooks`. Substitute `github-hooks` or `apple-dev-hooks`, or install the plugins you need separately.
 
