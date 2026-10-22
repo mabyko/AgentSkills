@@ -37,15 +37,19 @@ lsregister='/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchS
 "$lsregister" -dump
 ```
 
-Inspect complete records for the exact original/canonical path, including URL-encoded representations where present. Shared bundle IDs can have multiple path records: preserve all records for retained copies. A grep by product name/ID is candidate discovery, not proof of presence or absence. Avoid printing unrelated database records in the user-facing report.
+Inspect complete records for the exact original/canonical path and identified nested helpers, including URL-encoded representations where present. Require a successful inspection with complete, untruncated output; a failed command, partial output, or a failed filter is not proof of absence. Shared bundle IDs can have multiple path records: preserve all records for retained copies. A grep by product name/ID is candidate discovery, not proof of presence or absence. Avoid printing unrelated database records in the user-facing report.
 
-After verified process exit, unregister the single reviewed path:
+App-bundle discovery and LaunchServices registration are separate checks. A generated `.app` can exist on disk without a database record. If the successful inspection finds no records for the reviewed paths, record **already unregistered** and skip the unregister command. Continue with deletion only after all ownership, path, process, and preservation checks pass.
+
+After verified process exit, unregister each reviewed path that has a record:
 
 ```sh
 "$lsregister" -u "$app"
 ```
 
-Dump again and check that exact path. If it remains, report/defer rather than resetting the database. Never use database deletion, rebuild, recursive registration, or global garbage collection as cleanup. This is an internal macOS utility: use the installed `-h` output as the syntax authority and report unsupported behavior.
+Dump again and check those exact paths. Apple's [`kLSApplicationNotFoundErr` (`-10814`)](https://developer.apple.com/documentation/coreservices/3074489-anonymous/klsapplicationnotfounderr) means no app in the LaunchServices database matches the criteria. If unregistering returns this not-found result, obtain a fresh successful complete inspection: proceed as already unregistered only if no matching records remain. The error code or `from spotlight` text alone does not establish absence. If inspection fails, a record remains, or another error occurs (such as a permission or service-communication failure), defer removal and report the limitation.
+
+Never register or launch an app merely to make unregistering succeed. Never use database deletion, rebuild, recursive registration, or global garbage collection as cleanup. This is an internal macOS utility: use the installed `-h` output as the syntax authority and report unsupported behavior.
 
 Only after that check, remove the reviewed bundle with an exact-path file operation, such as `rm -r -- "$app"`. Revalidate the path first; do not append a trailing slash, follow an app symlink, use wildcards, or combine discovery and deletion. Keep errors visible and verify absence with an existence **and** symlink check. The operation is irreversible; its authorization must come from the user's cleanup request.
 
