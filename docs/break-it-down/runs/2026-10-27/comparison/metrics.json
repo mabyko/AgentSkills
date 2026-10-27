@@ -1,0 +1,54 @@
+{
+  "baseline": {
+    "entrypoint_words": 1107,
+    "instruction_words": 2434,
+    "outputs": {
+      "7": {
+        "characters": 318,
+        "whitespace_words": 74,
+        "sha256": "47210f7df625304b220362c9895e580bb3a627f2415be94a1f1902c64bb0b1f2"
+      },
+      "8": {
+        "characters": 432,
+        "whitespace_words": 65,
+        "sha256": "0215c674619c1b6d944a480463a012c079c9a410800cd67914f14a1cc48ec0fd"
+      },
+      "9": {
+        "characters": 155,
+        "whitespace_words": 39,
+        "sha256": "f94ed1eab084d9e7d3cd4eb869a555d7a51ada0ef74fddd240a9cb0405e7e276"
+      },
+      "10": {
+        "characters": 1208,
+        "whitespace_words": 268,
+        "sha256": "eafc61bfff7c3d7ef8c25f2b7359f9a60058264d4d252daae4438b51f1884f07"
+      }
+    }
+  },
+  "candidate": {
+    "entrypoint_words": 798,
+    "instruction_words": 2297,
+    "outputs": {
+      "7": {
+        "characters": 304,
+        "whitespace_words": 74,
+        "sha256": "d74effd7a3e4558fc37f4a385d47e03ec4b7c7672162f822c4fdb79bd8c435c0"
+      },
+      "8": {
+        "characters": 413,
+        "whitespace_words": 61,
+        "sha256": "09b059d9b0345d8579b212acdab94121633bd5a9f8b20ffa10ba2f28573fb584"
+      },
+      "9": {
+        "characters": 156,
+        "whitespace_words": 39,
+        "sha256": "841655b57a5aaeeb5cedf210aac158b870563cddd5ed1ac9136dae189e743152"
+      },
+      "10": {
+        "characters": 1418,
+        "whitespace_words": 319,
+        "sha256": "40dc417b7fe9dc983f987e139e57b8346e492b7785af78c00109362d75fff358"
+      }
+    }
+  }
+}

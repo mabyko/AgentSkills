@@ -1,48 +1,58 @@
 ---
 name: break-it-down
-description: Explain a difficult concept, system, or result by making its mechanism and limits understandable. Use for "break this down", "쉽게 설명해줘", or a visual, interactive, or narrated explanation of how something works.
+description: Explain a difficult concept, system, decision, result, or AI output in clear, ASD-STE100-informed language and useful visuals. Use for "break this down", "쉽게 설명해줘", "Karpathy-style explanation", or an explanation as a diagram, interactive page, or narrated video.
 ---
 
 # Break It Down
 
-Design an explanation around the reader's missing understanding. The result should let them reason through a case, follow a derivation, or make the requested distinction themselves.
+Help the reader understand what happens, why it happens, and what they can conclude. Use clear language in every medium; choose content and form for this reader's question.
 
-## Find the question
+## Establish the job
 
-Use the current topic when none is supplied. Identify the reader's question and the knowledge they need to answer it. For an unfamiliar system, this might be how parts cooperate; for a decision, why one case succeeds and another fails. A manual may need both an introduction to the model and a direct route to a specific task.
+Use the current topic when none is supplied. Identify what the reader needs to predict, distinguish, decide, or do. Infer their background from context and define unfamiliar terms near first use. Ask only when missing information changes the answer.
 
-Honor the requested audience, medium, depth, and stage. A script, a source file, and a finished artifact are different deliverables. For a narrow edit, change only the requested part. Infer the rest from context; ask only for information that changes the explanation.
+Honor the requested language, medium, depth, and stage. A wording revision preserves the source's claims; a summary selects what matters without dropping conditions that change the conclusion; an explanation supplies the relationships or reasoning needed to understand it. Keep narrow edits narrow. For a rebuild, derive the organization from the question and evidence rather than retaining the previous layout by default.
 
-## Build the model from evidence
+Apply [language guidance](references/language.md) before composing. Use practical, STE-informed writing by default. "80% STE" describes a relaxed approach, not a measured compliance score. Use the official-standard checks in that reference when formal compliance is explicitly requested.
 
-Read the supplied material or inspect the relevant implementation. Extract the parts, relationships, transformations, and conditions that answer the question. Keep distinctions that change the result: actors, states, AND/OR conditions, thresholds, exceptions, obligations, and uncertainty. Separate verified behavior from proposals, assumptions, and illustrative examples.
+## Ground and compose the answer
 
-Choose a concrete case that exposes the mechanism when the question needs one. Work through its intermediate steps. If a boundary or common misconception matters, choose a nearby contrasting case and identify the condition that changes the outcome. A definition-only request need not become a simulation.
+Read the supplied material or relevant implementation. Keep actors, quantities, units, negation, uncertainty, obligations, exceptions, and AND/OR conditions intact. Preserve literal commands, identifiers, and quoted errors unless their modification is requested. Separate source claims, verified results, deductions, proposals, and illustrative examples. Do not invent a cause or actor to make an explanation smoother.
 
-## Choose what carries the explanation
+Lead with the answer, result, or cause. If it requires unfamiliar context, give only the orientation needed to make that answer meaningful. Follow with the evidence and mechanism, then the limits or next action that affect the reader's judgment.
 
-Decide how the reader will follow the model before designing the page or scenes:
+Choose the progression and grouping for the question:
 
-- A verbal derivation connects each claim to its reason or evidence.
-- A diagram makes relationships visible through position, connection, direction, or scale.
-- An interactive model lets the reader change an input or state and inspect the resulting process and outcome.
-- An animated explanation develops an idea through coordinated visual changes and, when useful, narration.
+- **How or why:** trace a concrete case through intermediate causes or states; show a nearby contrast when it exposes the decisive condition.
+- **A choice:** compare alternatives on the same criteria and state the condition that changes the recommendation.
+- **A procedure:** put prerequisites before the actions they govern; keep simultaneous actions together and give a checkable result.
+- **Work or results:** distinguish what changed, what was verified, and what is actually available to use. Group by actor, state, or time when that makes responsibility and remaining work clear. Include the next check or whether reader action is needed when relevant.
 
-Use the requested medium. When the choice is open, choose for the understanding it enables. A bespoke, disposable page or video is worthwhile when it reveals something that remains difficult in prose. Combine representations when they explain different aspects of the same model.
+Give each paragraph one topic. Start with its point, then develop it using stable terms and explicit links such as cause, contrast, or sequence. Keep a fact and its decisive qualification together. Choose reading order deliberately; the order of notes or tool calls need not be the order of the explanation.
 
-Let that representation organize the explanation. Give necessary terms and instructions near the objects or actions they explain, and make supporting details reachable without interrupting the main reasoning. Match the structure to the subject and task; a relationship map, worked calculation, procedural walkthrough, and reference manual need different arrangements.
+Headings, placement, and arrows also make claims. Do not imply an unsupported actor, completed state, or causal connection through grouping. Keep actions with unnamed actors outside actor groups, or say that the source does not name the actor.
 
-For a full rebuild, derive the organization from the question and source facts afresh. Treat the previous artifact as evidence and a record of constraints, then decide which of its content and implementation genuinely serve the new explanation. Visual novelty alone is not evidence of improvement.
+Stop when the reader can make the intended judgment. Remove incidental history, repeated recaps, and sections that add no new understanding. Preserve the requested evidence and qualifications.
 
-## Produce and check
+## Make the relationship visible
 
-Apply [language guidance](references/language.md) to prose, labels, controls, captions, and narration. Follow the explicit output language, then known user preference, then the request's language; quoted source language does not override it.
+Use the requested medium. Otherwise choose what removes the main obstacle to understanding:
 
-For diagrams, interactive HTML, or video, read the relevant section of [artifact delivery](references/artifacts.md) before production. Use available tools and the requested surface. Preserve editable source for file deliverables.
+- Prose for a direct answer or derivation.
+- A diagram for relationships, scope, branches, or sequence.
+- Interactive HTML for changing inputs, comparing states, or exploring a model.
+- Animation and narration for transformations that benefit from unfolding over time.
 
-Check two things separately:
+A custom, disposable artifact is useful when it makes the subject clearer. Produce it with available tools when that is the chosen deliverable. Do not require the reader to choose a level before helping, build every format, or add an automatic next-format offer. If an explanation fails, revisit its model or representation rather than adding more of the same prose.
 
-1. **Reasoning:** Trace the chosen case through the delivered explanation. Can the reader find the intermediate relationships and the condition responsible for the result? Check a relevant exception or contrast, and compare claims with the evidence. Keep mandatory conditions visible at the step where they matter.
-2. **Execution:** Check the actual requested deliverable: rendered labels, working interactions, or video playback. For a script or source-only request, verify that stage and label unmeasured timing or untested rendering accordingly.
+For diagrams, HTML, or video, read the relevant section of [artifact delivery](references/artifacts.md). Carry the same facts and conditions into labels, controls, scenes, and narration. Each representation should do explanatory work.
 
-Deliver the explanation with only the usage notes and verification limits the reader needs. Describe any partial artifact accurately when a required capability is unavailable. A successful render establishes execution, not factual correctness or measured learning.
+## Verify and deliver
+
+Check the delivered result for:
+
+1. **Understanding:** the opening answers the question, each step supplies what the next needs, and the intended judgment is possible.
+2. **Fidelity:** decisive conditions and uncertainty survive, including claims implied by placement. Trace a representative case and a relevant boundary or contrast.
+3. **Execution:** verify the requested stage: wording, diagram render, working interaction, or playable video. Describe anything unmeasured or untested accurately.
+
+Deliver the explanation itself, with the editable source for file outputs. State completion at the stage actually reached; source changes, successful checks, and an updated installation are different results. Give only usage notes and limitations that change what the reader can conclude or do.

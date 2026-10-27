@@ -1,7 +1,7 @@
 interface:
   display_name: "Break It Down"
-  short_description: "복잡한 원리와 관계를 직접 이해할 수 있는 설명을 만듭니다"
+  short_description: "쉽고 정확한 글과 필요한 시각화로 원리·결과·판단 기준을 설명합니다"
   brand_color: "#3B82F6"
-  default_prompt: "$break-it-down 지금 주제의 핵심 원리와 조건을 이해할 수 있게 설명해줘. 관계나 변화가 드러나는 형식을 골라 실제 결과물로 만들어줘."
+  default_prompt: "$break-it-down 지금 질문에 먼저 답하고, 필요한 근거·조건·작동 원리를 따라가기 쉽게 설명해줘. 관계나 변화가 핵심이면 적절한 시각화로 보여줘."
 policy:
   allow_implicit_invocation: true
