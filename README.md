@@ -62,7 +62,7 @@ npx skills@latest update
 
 - `docs-sync`: Audit docs/code consistency, or apply requested documentation and docs-led code updates with verification.
 - `css-typography-ko`: Improve Korean web UI readability through text hierarchy, fonts, spacing, word boundaries, wrapping, and overflow handling.
-- `break-it-down`: Explain a question through its underlying mechanism, using worked examples, diagrams, interactive models, or narrated animation to show relationships, changes, and limits.
+- `break-it-down`: Explain difficult concepts, systems, decisions, and AI output with an answer first, evidence and conditions, and clear ASD-STE100-informed language. Use diagrams, interactive models, or narrated animation when they reveal the mechanism.
 
 ### Usage examples
 
@@ -78,7 +78,7 @@ $docs-sync Check whether the docs need updates for this diff.
 $break-it-down diagram: Show the relationships and branches in this process.
 ```
 
-`break-it-down` replaces the former `explain` skill. It uses the current conversation when no topic is supplied; choose prose, a diagram, an interactive web model, or video in ordinary language. It uses available production tools rather than bundling a rendering or speech engine. It completes the requested stage: a script request ends with a checked script; a finished-video request includes rendering and playback checks. See the [skill instructions](skills/break-it-down/SKILL.md) and [behavioral evaluation cases](docs/break-it-down/cases.md) for format guidance, language rules, and verification details.
+`break-it-down` replaces the former `explain` skill. It uses the current conversation when no topic is supplied. It leads with the answer, connects supporting facts in a deliberate order, and preserves uncertainty, responsibility, and conditions. Its default is practical, STE-informed explanation rather than formal STE compliance; Korean uses natural phrasing without English word-count rules. Choose prose, a diagram, interactive HTML, or video in ordinary language. It uses available production tools and completes the requested stage: a script request ends with a checked script; a finished-video request includes rendering and playback checks. See the [skill instructions](skills/break-it-down/SKILL.md), [research and design decisions](docs/break-it-down/research.md), and [behavioral evaluation cases](docs/break-it-down/cases.md).
 
 ### macOS Release reinstallation
 

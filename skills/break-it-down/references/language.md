@@ -1,6 +1,12 @@
 # Language
 
+Use the explicit output language, then a known reader preference, then the request's language. Quoted source language does not override that choice.
+
 Make the model easier to follow without changing what it asserts. Preserve source facts, names, quantities, units, negation, qualifications, and logical connections in every medium. Define necessary technical terms; use one name consistently for the same concept. Keep examples distinguishable from actual behavior.
+
+Preserve what uncertainty and obligation refer to, not only their keywords. A hypothesis about this incident is not a general possibility; a recommendation is not a requirement. Do not turn "may explain this failure" into "can cause failures", or "should" into "must", just to simplify the grammar. Restructure the sentence when a direct word substitution changes the claim.
+
+For a wording-only revision, keep passages that already communicate clearly. Remove filler without changing facts, qualifications, or tone.
 
 ## Korean
 
@@ -11,7 +17,7 @@ Write Korean for the reader and genre, rather than translating English sentence 
 - State the actor when responsibility is ambiguous. Omit repeated subjects when clear, and allow passive phrasing when the state is the point. Never invent an actor to make a sentence active.
 - Use direct verbs where the meaning is unchanged. Retain established technical nouns and exact UI labels; clarify dense noun chains with particles or clauses.
 - Keep cause, contrast, and qualification connected. Split overloaded sentences by meaning, without fixed word or character limits. Use complete, natural sentences unless the user requests notes or compact labels.
-- Match the requested tone. End when the explanation is complete; add an action only when the reader's task calls for one.
+- Match the requested tone. End when the explanation is complete. In a work-result or decision explanation, clarify whether the reader needs to act when that matters; do not invent an action to end the answer.
 
 Read once for natural Korean and once against the source for meaning. Information missing from a document is not proof that it is unknown or absent in reality. Korean output is not formally compliant with an English controlled-language standard.
 
@@ -25,7 +31,8 @@ ASD-STE100 Issue 9 provides useful drafting targets:
 - Clarify noun groups longer than three words, accounting for permitted longer technical names (2.1–2.2).
 - Prefer active voice and verbs to unnecessary nominalizations (3.6–3.7).
 - Aim for at most 20 words per procedural sentence. State one instruction, except simultaneous actions, and place prerequisites first (5.1–5.4).
-- Aim for at most 25 words per descriptive sentence, one topic per paragraph, and at most six sentences per paragraph (6.3, 6.5–6.6).
+- Introduce information gradually and connect ideas with consistent terms and explicit logical links (6.1–6.2).
+- Group related information into paragraphs with a topic sentence first. Aim for at most 25 words per descriptive sentence, one topic per paragraph, and at most six sentences per paragraph (6.3–6.6).
 
 For an ordinary explanation these are editing targets. Preserve meaning and natural phrasing when a target conflicts with them. Keep necessary articles and connections. Neither all passive constructions nor all words ending in "-ing" are forbidden.
 
@@ -33,6 +40,6 @@ For an ordinary explanation these are editing targets. Preserve meaning and natu
 
 Use the requested issue; otherwise confirm the applicable current issue at the [official site](https://www.asd-ste100.org/). The references above are to [Issue 9, January 15, 2025](https://www.asd-ste100.org/assets/files/ASD-STE100_ISSUE9.pdf).
 
-Read the official writing rules and dictionary, including document-type rules, approved meanings, parts of speech, forms, technical terminology exceptions, and word-count conventions. An informal summary or synonym replacement cannot establish compliance: Issue 9 approves APPROXIMATELY as an adverb, while ABOUT has a different approved meaning.
+Read the official writing rules and dictionary, including document-type rules, approved meanings, parts of speech, forms, technical terminology exceptions, and word-count conventions. Distinguish procedures from descriptions: commands belong in procedures, and descriptive passive voice is permitted only when the actor is unknown (3.6, 5.3, 6.1). Do not invent an actor or strengthen a recommendation to satisfy a grammar rule. An informal summary or synonym replacement cannot establish compliance: Issue 9 approves APPROXIMATELY as an adverb, while ABOUT has a different approved meaning.
 
 Report the issue and checks actually completed. When references or terminology are missing, identify those gaps and deliver a clearly labeled STE-informed draft. Do not turn "80%" into a compliance score or call an automated or model review certification.

@@ -10,13 +10,15 @@ Assign visual meaning before choosing components: which objects represent the su
 
 Let the main representation do explanatory work. An edge can show where information goes; a highlighted region can show which objects are included; intermediate values can show why an output changes. Put labels and qualifications beside the relevant part. Supporting prose supplies interpretation and evidence.
 
+Preserve uncertainty in the representation itself. Label a possible cause or assumed value where it appears; an unlabeled arrow must not turn a hypothesis into an established cause. Keep the same names and conditions across text, diagram, controls, and narration.
+
 For interaction, specify the input, the affected model state, and the consequence the reader should inspect. Keep these connected in the visible representation. Where relationships or processes are the point, show the affected path, object, stage, or quantity as well as the verdict. When the question is purely a lookup, a text result can be sufficient.
 
 Provide a useful initial case. Let the reader compare or return to states when that exposes a boundary or tradeoff. In a large manual, keep task lookup available alongside the conceptual explanation; preserve prerequisites, operational steps, and exceptions at their point of use.
 
 ### Compose and build
 
-Organize the page around the selected representation and the reader's task. Choose hierarchy, layout, controls, and visual emphasis to support it. Expand dense material through focused views or supporting detail. Keep essential assumptions and conditions visible rather than hiding them solely in a glossary or disclosure.
+Organize the page around the selected representation and the reader's task. Carry the reader's progression into the initial view, related groups, and reachable detail; show how to read the model before expecting exploration. Choose hierarchy, layout, controls, and visual emphasis to support it. Expand dense material through focused views or supporting detail. Keep essential assumptions and conditions visible rather than hiding them solely in a glossary or disclosure.
 
 Use an editable format such as Mermaid or SVG for exact diagrams, or an available illustration workflow for spatial detail and analogy. For standalone HTML with no specified stack, prefer a self-contained file with embedded styles, scripts, and required assets. Source links may remain external. An existing application should keep its established stack and requested design constraints.
 
@@ -31,7 +33,7 @@ Use real model logic for interactions. Label units and assumptions, distinguish 
 
 ## Video and narrated animation
 
-Design a sequence of visible reasoning: introduce an object or premise, apply a change, then show what follows. Maintain the identity of objects and terms across scenes. Motion, highlights, and narration should refer to the same part at the same time. A requested visual derivation needs its intermediate transformations, not only a sequence of text slides.
+Design a sequence of visible reasoning: introduce an object or premise, apply a change, then show what follows. Order scenes by what the viewer needs to understand next, rather than the order in which the material was collected. Maintain the identity of objects and terms across scenes. Motion, highlights, and narration should refer to the same part at the same time. A requested visual derivation needs its intermediate transformations, not only a sequence of text slides.
 
 Draft each scene's idea, visual change, and spoken or captioned explanation. Keep conditions and limits attached to the relevant claim. For a script or storyboard request, finish and check that stage; any duration remains an estimate until measured.
 

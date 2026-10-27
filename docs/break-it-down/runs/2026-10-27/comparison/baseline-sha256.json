@@ -1,0 +1,11 @@
+{
+  "LICENSE": "0eef4074b0fd33b62e3d489e02f16856292152bbad85959f9762eea7d08c27cb",
+  "agents/openai.yaml": "9b33e51b69dd4e0df4d5cf74516ab2237ef0b9ba300104f0fcd3fadd68ac395a",
+  "instructions.md": "9eb6ad21b12abbc71b28ad348a2e06051cd9151e0885754eea7d4fde3478fc6d",
+  "references/artifacts.md": "32722f281325678162de7a366be22759a95e2a3ad7404e155004e62cc7eebc83",
+  "references/language.md": "a72f7e35ad662dffb3b5b676396b80b9b972a3f4480c731e4e66a7d1426c7950",
+  "requests/C10.txt": "0dedf97838956a554e1934e4a18f5af3396c84096dbdf491a32b1e8326788c57",
+  "requests/C7.txt": "1f62e383326dfb26db3e705ab86814fde6819b6ab28e928db17875820f27151f",
+  "requests/C8.txt": "cd74e894fa7895eeabbca4b161f6ce9c064ee277f75ca6ad812aa2297625a9f1",
+  "requests/C9.txt": "244ae1f963e70f0d690a4aee4339ea68ae3e1903b81c1986443415b78cd97042"
+}
