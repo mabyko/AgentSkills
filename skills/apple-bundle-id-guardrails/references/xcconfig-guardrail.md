@@ -1,5 +1,17 @@
 # xcconfig Guardrail Setup
 
+## Contents
+
+- [Files](#files)
+- [Steps](#steps)
+- [Optional Development Build Name](#optional-development-build-name)
+- [Multiple Teams and Build Modes](#multiple-teams-and-build-modes)
+- [Signing Team](#signing-team-development_team)
+- [Verification](#verification)
+- [Fresh Checkouts](#fresh-checkouts-clone-git-worktree-ci)
+- [macOS Permissions (TCC)](#macos-permissions-tcc)
+- [Flutter and Generated Projects](#flutter-and-generated-projects)
+
 Goal before organization registration: every app, extension, and widget resolves to a distinct sacrificial bundle ID without local overrides. Tracked active build/signing values contain neither the organization namespace nor a personal `DEVELOPMENT_TEAM`; documentation and comments may describe them. Each developer overrides locally with an untracked file.
 
 Substitute real values for `myapp`, `com.acme.myapp`, and `alice` throughout; resolve them from the user or project docs first.

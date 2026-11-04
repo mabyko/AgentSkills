@@ -1,5 +1,15 @@
 # CSS decisions for Korean typography
 
+## Contents
+
+- [Basis in the original discussion](#basis-in-the-original-discussion)
+- [Fonts, language, and hierarchy](#fonts-language-and-hierarchy)
+- [Rhythm, measure, and tracking](#rhythm-measure-and-tracking)
+- [Line composition and overflow](#line-composition-and-overflow)
+- [Controls, authored whitespace, and truncation](#controls-authored-whitespace-and-truncation)
+- [Focused verification](#focused-verification)
+- [Sources](#sources)
+
 Consult the section relevant to the observed problem. Examples are starting points to adapt to existing roles and tokens, not a stylesheet to install globally.
 
 ## Basis in the original discussion

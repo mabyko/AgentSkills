@@ -39,6 +39,8 @@ Choose the action from the request: checks and reports are read-only; update req
 4. For an audit, report discrepancies and proposed edits with evidence. For an update, apply targeted changes within the authorized scope.
 5. Verify changes with relevant code tests or the available docs build/formatting check, then report what changed and any unresolved gaps.
 
+For an update, correct in-scope mismatches or failed examples found during verification, then rerun the affected check. If the failure reveals conflicting intent, an unrelated defect, or an unavailable dependency, report that blocker and any pending verification without broadening the task. An audit reports findings without entering an edit-and-retry loop.
+
 ## Reference Routing
 
 Read `references/doc-coverage-checklist.md` for audit targets, source-of-truth classification, report format, and patch guidance.

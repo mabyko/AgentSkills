@@ -1,5 +1,14 @@
 # Conflicts And Recovery
 
+## Contents
+
+- [Active Operation Conflicts](#active-operation-conflicts)
+- [Abort Paths](#abort-paths)
+- [Revert Vs Reset](#revert-vs-reset)
+- [Stash](#stash)
+- [Reflog](#reflog)
+- [Removing Accidentally Committed Files](#removing-accidentally-committed-files)
+
 Conflicts can happen while pulling remote changes, merging another branch, rebasing, cherry-picking, or applying a stash. Diagnose the active Git operation first, then resolve, continue, or abort with that operation's command. A `git pull` conflict follows either the merge path or the rebase path depending on the repository or command configuration.
 
 ## Active Operation Conflicts

@@ -296,6 +296,8 @@ python3 -B -m unittest discover -s tests
 
 CI는 Node 화면도 다시 빌드해 배포본이 오래됐으면 실패합니다. 검증은 스킬 메타데이터, README 스킬 목록, 플러그인 배포본, 호스트별 버전 일치, 훅 경로·실행 권한을 확인합니다.
 
+작업 절차를 바꿀 때는 [행동 평가 사례와 실행 기록 안내](docs/skill-evaluations.md)를 사용하세요. 실제 작업 결과를 확인해 구조 검사를 보완합니다. 사례를 추가한 것만으로 스킬이나 모델이 평가를 통과한 것은 아닙니다.
+
 ```text
 skills/<skill-name>/              # 스킬 원본과 선택 자료
 scripts/hooks/                   # 훅 원본

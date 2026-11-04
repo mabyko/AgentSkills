@@ -1,5 +1,19 @@
 # Stacked PRs
 
+## Contents
+
+- [Choose the Stack Path](#choose-the-stack-path)
+- [Preconditions](#preconditions)
+- [Native Stack with gh-stack](#native-stack-with-gh-stack)
+  - [Create and Submit](#create-and-submit)
+  - [Edit, Rebase, and Sync](#edit-rebase-and-sync)
+  - [Native Landing](#native-landing)
+  - [Conflict and Worktree Recovery](#conflict-and-worktree-recovery)
+- [Ordinary PR Chain: Sequential Squash Landing](#ordinary-pr-chain-sequential-squash-landing)
+- [Conflict Policy](#conflict-policy)
+- [Why Rebase Instead Of Cherry-Pick](#why-rebase-instead-of-cherry-pick)
+- [Authoritative References](#authoritative-references)
+
 Use this reference when creating dependent PR layers, editing a lower layer, submitting or syncing with gh-stack, or merging and cleaning up a PR chain. Use separate branches or stacks for independent changes.
 
 Follow the entrypoint's single-PR default and requested scope first. The creation examples below assume dependent PR layers have already been chosen; they do not require splitting ordinary PR work.

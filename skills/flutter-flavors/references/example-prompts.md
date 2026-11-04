@@ -1,5 +1,18 @@
 # Example Prompts
 
+## Contents
+
+- [Canonical Mobile Setup With Explicit IDs](#canonical-mobile-setup-with-explicit-ids)
+- [Canonical Mobile Setup From App Name](#canonical-mobile-setup-from-app-name)
+- [Audit Existing Setup](#audit-existing-setup)
+- [Switch Personal To Canonical](#switch-personal-to-canonical)
+- [Personal Device Testing](#personal-device-testing)
+- [Invalid Shared ID Check](#invalid-shared-id-check)
+- [macOS Extension](#macos-extension)
+- [Web, Windows, And Linux Planning](#web-windows-and-linux-planning)
+- [Flutter Flavorizr Config](#flutter-flavorizr-config)
+- [Merge Environment And Variant Flavors](#merge-environment-and-variant-flavors)
+
 Use these prompts as starting points. Replace app names, IDs, and scope with the real project values.
 
 ## Canonical Mobile Setup With Explicit IDs
