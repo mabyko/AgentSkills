@@ -40,6 +40,8 @@ Optional per-skill resources:
 - Put trigger words and the main use case early in `description`.
 - Prefer imperative steps with explicit inputs and outputs.
 - Keep `SKILL.md` concise; move detailed material to `references/`.
+- Link each reference directly from `SKILL.md`, with its read condition; add a section-linked contents list near the top of reference files longer than 100 lines.
+- For quality-critical workflows, state how to correct in-scope verification failures and rerun the relevant check, and when to stop or report pending verification. Keep audit-only requests read-only.
 - Do not add README, changelog, or installation docs inside individual skill folders.
 - Quote all string values in `agents/openai.yaml`.
 - Use kebab-case for skill folder names and plugin names.
@@ -85,3 +87,5 @@ scripts/validate-skills.sh
 ```
 
 `.github/workflows/validate.yml` rebuilds the Node UI and rejects stale bundle copies, then runs the same validation script and `python3 -B -m unittest discover -s tests` on every push and pull request. Validation also checks bundle copies against canonical sources, each plugin's matching host versions, plugin-root hook commands, and executable hook scripts. Tests check marketplace selection, bundle refresh, and independently cached hook execution.
+
+Structural checks do not establish skill behavior. For substantial workflow changes, use representative requests and observable outcomes; keep evaluation cases and run records outside distributable skills. Follow [the behavioral evaluation guide](docs/skill-evaluations.md), recording the tested skill revision, model, tool conditions, original outputs, and unexecuted cases. Model coverage belongs in run records, not extra skill frontmatter.

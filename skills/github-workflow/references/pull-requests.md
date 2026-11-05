@@ -1,5 +1,15 @@
 # Pull Requests
 
+## Contents
+
+- [PR Shape](#pr-shape)
+- [Creating PRs](#creating-prs)
+- [Review Responses](#review-responses)
+- [Agent PR Reviews](#agent-pr-reviews)
+- [Review Comment Discovery](#review-comment-discovery)
+- [PR Conflict Resolution](#pr-conflict-resolution)
+- [Merge Readiness](#merge-readiness)
+
 For ambiguous "merge this" requests, stay in this reference when the target is a pull request or GitHub-mediated merge: merge button, PR squash merge, PR rebase merge, GitHub auto-merge, branch protection, required checks, or review threads.
 
 Use `git-workflow` only for local conflict resolution, local squash/rebase decisions, history cleanup, or branch-safety decisions.

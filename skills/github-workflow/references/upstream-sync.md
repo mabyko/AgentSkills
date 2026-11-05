@@ -1,5 +1,13 @@
 # GitHub Upstream Sync
 
+## Contents
+
+- [Inputs](#inputs)
+- [Workflow](#workflow)
+- [Templates](#templates)
+- [Output](#output)
+- [Example Prompts](#example-prompts)
+
 Read this reference only when the user asks to create or review a GitHub Actions workflow that keeps a fork branch synced with an upstream repository.
 
 ## Inputs

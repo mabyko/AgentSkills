@@ -296,6 +296,8 @@ python3 -B -m unittest discover -s tests
 
 CI also rebuilds the Node UI and rejects stale bundles. Validation checks skill metadata, README skill lists, plugin copies, matching host versions, hook paths, and executable permissions.
 
+For workflow changes, use the [behavioral evaluation cases and recording guide](docs/skill-evaluations.md). These complement structural checks with task outcomes; cases alone do not establish that a skill or model passed.
+
 ```text
 skills/<skill-name>/              # Canonical skills and optional resources
 scripts/hooks/                   # Canonical hook implementations

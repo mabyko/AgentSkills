@@ -1,5 +1,20 @@
 # Commits
 
+## Contents
+
+- [Conventional Commits](#conventional-commits)
+- [Message Language](#message-language)
+- [Commit Body](#commit-body)
+- [Atomic Commits](#atomic-commits)
+- [Cleaning Up Local Commits Before Sharing](#cleaning-up-local-commits-before-sharing)
+- [Dirty Working Tree Classification](#dirty-working-tree-classification)
+- [Default Commit Scope](#default-commit-scope)
+- [Staging Safety](#staging-safety)
+- [Signed Commits And DCO](#signed-commits-and-dco)
+- [Passing The Message](#passing-the-message)
+- [Hook Failures](#hook-failures)
+- [After Commit Report](#after-commit-report)
+
 ## Conventional Commits
 
 Use this format unless the repo documents another convention:
