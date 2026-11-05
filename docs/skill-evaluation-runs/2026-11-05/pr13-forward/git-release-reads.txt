@@ -1,0 +1,4 @@
+/var/folders/zm/cf1ffhw97_1g2gj16g23ydh80000gn/T/agentskills-pr13-review-e8gp0n1r/git-release-inputs.md
+/Users/eugene/.t3/worktrees/AgentSkills/t3-da967f28/skills/git-workflow/SKILL.md
+/Users/eugene/.t3/worktrees/AgentSkills/t3-da967f28/skills/git-workflow/references/commits.md
+/Users/eugene/.t3/worktrees/AgentSkills/t3-da967f28/skills/prepare-release-github/SKILL.md

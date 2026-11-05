@@ -36,6 +36,8 @@
 
 아래 21개 사례는 초기 평가 입력이며, 추가 시점에 모델별로 실행한 결과는 없다. 파일 구조 검사나 이 문서의 작성자 검토를 행동 평가 통과로 세지 않는다. 작성 기준은 [Anthropic의 스킬 작성·평가 지침](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)이며, 실제 실패가 확인되면 해당 입력과 판정 근거를 추가한다.
 
+후속 [2026-11-05 가상 판단 평가](skill-evaluation-runs/2026-11-05/pr13-forward/report.md)에 21개 사례의 원본 응답과 판정을 기록했다. 한 모델의 판단 평가이며 실제 작업 실행이나 변경 전후 개선 효과의 검증과 구분한다.
+
 ## Git 작업
 
 대상: `skills/git-workflow/`.
