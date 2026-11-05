@@ -42,7 +42,7 @@ If the user invokes only `$flutter-flavors` without a concrete task, ask for the
 5. Stop and report when signing, export, store, CI/CD, provisioning, capabilities, notarization, package identity, or release-path decisions need human confirmation.
 6. Verify with the smallest available Flutter/native check that does not require unavailable signing credentials.
 
-For an implementation, correct flavor/configuration errors introduced by the changes and rerun the affected check. Report unavailable SDKs, signing access, or unresolved source-of-truth decisions as pending verification; do not change signing, install tools, or broaden platform scope to make a check pass without authorization. An audit reports discrepancies without applying fixes.
+For an implementation, correct in-scope flavor/configuration errors found during verification, including pre-existing errors that prevent the requested outcome, and rerun the affected check. Report unrelated defects separately and unavailable SDKs, signing access, or unresolved source-of-truth decisions as pending verification; do not change signing, install tools, or broaden platform scope to make a check pass without authorization. An audit reports discrepancies without applying fixes.
 
 ## Platform Notes
 
