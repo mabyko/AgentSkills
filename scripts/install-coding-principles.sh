@@ -492,7 +492,9 @@ try {
     if (entry.compatibilityStatus !== 'enabled') process.exit(2);
     if (sameFile(entry.path, native)) { shared = true; continue; }
     const text = fs.readFileSync(entry.path, 'utf8');
-    if (managedBody(text) === principles.trim() || sameFile(entry.path, plannedClaude)) {
+    if (managedBody(text) === principles.trim() ||
+        (plannedClaude && fs.existsSync(plannedClaude) &&
+         fs.realpathSync(entry.path) === fs.realpathSync(plannedClaude))) {
       console.log(entry.path);
       process.exit(0);
     }
@@ -586,7 +588,7 @@ for target in "${targets[@]}"; do
   if [[ -n "$grok_inherited_from" && "$target" == "$grok_global_target" ]]; then
     printf 'skip grok: coding principles supplied by %s (Claude compatibility).\n' "$grok_inherited_from"
     if [[ "$original" == *"$START"* ]]; then
-      printf '%s\n' 'Notice: The existing Grok block was left unchanged. To remove that duplicate, run the installer with uninstall --scope global --agent grok.' >&2
+      printf '%s\n' 'Notice: The existing Grok block was left unchanged. Check whether its file is shared with another agent before removal; uninstall follows symlinks. For an unshared file, run the installer with uninstall --scope global --agent grok.' >&2
     fi
     continue
   fi

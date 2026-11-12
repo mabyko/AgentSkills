@@ -229,6 +229,7 @@ class CodingPrinciplesInstallerTests(unittest.TestCase):
         self.assert_success(result)
         self.assertEqual(native.read_bytes(), before)
         self.assertIn("existing Grok block was left unchanged", result.stderr)
+        self.assertIn("shared with another agent", result.stderr)
         self.assertIn("uninstall --scope global --agent grok", result.stderr)
 
     def test_grok_can_inherit_claude_principles_updated_in_the_same_install(self):
@@ -249,6 +250,7 @@ class CodingPrinciplesInstallerTests(unittest.TestCase):
         native = self.home / ".grok/AGENTS.md"
         for enabled, body in cases:
             with self.subTest(enabled=enabled, body=body):
+                native.unlink(missing_ok=True)
                 self.grok_inspection(enabled=enabled)
                 if body is None:
                     source.unlink(missing_ok=True)
@@ -264,6 +266,8 @@ class CodingPrinciplesInstallerTests(unittest.TestCase):
         cases = (("invalid JSON", 0, True), ("{}", 0, True), ("{}", 1, True), ("{}", 0, False))
         for payload, exit_code, node in cases:
             with self.subTest(payload=payload, exit_code=exit_code, node=node):
+                native = self.home / ".grok/AGENTS.md"
+                native.unlink(missing_ok=True)
                 (self.directory / "grok-inspect-called").unlink(missing_ok=True)
                 if (self.binaries / "node").exists():
                     (self.binaries / "node").unlink()
@@ -271,7 +275,8 @@ class CodingPrinciplesInstallerTests(unittest.TestCase):
                 result = self.run_installer("install", "global", "grok")
                 self.assert_success(result)
                 self.assertIn("Could not verify Grok Claude inheritance", result.stderr)
-                self.assertIn(START, (self.home / ".grok/AGENTS.md").read_bytes())
+                self.assertIn(START, native.read_bytes())
+                self.assertIn((ROOT / "docs/coding-principles.md").read_bytes().rstrip(), native.read_bytes())
                 if not node:
                     self.assertFalse((self.directory / "grok-inspect-called").exists())
 
@@ -306,6 +311,40 @@ class CodingPrinciplesInstallerTests(unittest.TestCase):
         self.assert_success(result)
         self.assertIn(START, (self.home / ".grok/AGENTS.md").read_bytes())
         self.assertIn(b"Old inherited principles", inherited.read_bytes())
+
+    def test_grok_does_not_inherit_a_stale_hardlink_to_a_pending_claude_update(self):
+        inherited = self.home / ".claude/CLAUDE.md"
+        self.grok_inspection(source=inherited)
+        inherited.parent.mkdir()
+        original = self.managed_principles(b"Old inherited principles")
+        inherited.write_bytes(original)
+        selected = self.claude / "CLAUDE.md"
+        selected.parent.mkdir()
+        os.link(inherited, selected)
+        self.assertTrue(inherited.samefile(selected))
+        result = self.run_installer("install", "global", "grok,claude")
+        self.assert_success(result)
+        self.assertEqual(inherited.read_bytes(), original)
+        self.assertFalse(inherited.samefile(selected))
+        self.assertIn((ROOT / "docs/coding-principles.md").read_bytes().rstrip(), selected.read_bytes())
+        native = self.home / ".grok/AGENTS.md"
+        self.assertTrue(native.exists())
+        self.assertIn((ROOT / "docs/coding-principles.md").read_bytes().rstrip(), native.read_bytes())
+
+    def test_grok_inherits_a_pending_claude_update_through_a_symlink(self):
+        inherited = self.home / ".claude/CLAUDE.md"
+        self.grok_inspection(source=inherited)
+        inherited.parent.mkdir()
+        inherited.write_bytes(self.managed_principles(b"Old inherited principles"))
+        selected = self.claude / "CLAUDE.md"
+        selected.parent.mkdir()
+        selected.symlink_to(inherited)
+        result = self.run_installer("install", "global", "grok,claude")
+        self.assert_success(result)
+        self.assertIn("skip grok", result.stdout)
+        self.assertTrue(selected.is_symlink())
+        self.assertIn((ROOT / "docs/coding-principles.md").read_bytes().rstrip(), inherited.read_bytes())
+        self.assertFalse((self.home / ".grok/AGENTS.md").exists())
 
     def test_grok_shared_file_is_updated_without_breaking_its_symlink(self):
         source = self.grok_inspection()
