@@ -222,6 +222,8 @@ Choose personal or project scope, select agents with Space, then review the inst
 
 The chooser shows verified instruction targets: 22 tools for project scope and 18 for global scope, regardless of whether the tool is installed on your PC. Cursor, Junie, Kimi Code CLI, and Warp are project-only. Project tools are grouped by shared `AGENTS.md` defaults and separate files; neither group is mandatory. Shared files receive the block once, and the final summary shows resolved paths. See [agent paths and compatibility](docs/coding-principles-install.md#agent-instruction-files).
 
+Global Grok installation skips its native file when a local Grok/Node check confirms that Claude compatibility supplies the same principles, or that the inherited Claude file will be updated in the same run. Otherwise, it keeps the selected native installation and explains uncertain or differing inheritance. Existing duplicate blocks are left for explicit removal. See [Grok inheritance detection](docs/coding-principles-install.md#grok-and-inherited-claude-principles).
+
 ### Options, updates, and removal
 
 In an existing checkout:

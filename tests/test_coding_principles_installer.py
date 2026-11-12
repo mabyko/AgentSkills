@@ -1,10 +1,12 @@
 import os
+import json
 import fcntl
 import pty
 import re
 import select
 import signal
 import shutil
+import shlex
 import struct
 from pathlib import Path
 import subprocess
@@ -176,6 +178,185 @@ class CodingPrinciplesInstallerTests(unittest.TestCase):
         self.assertIn(b"Updated principles", content)
         self.assertNotIn(b"Original principles", content)
         self.assertEqual(content.count(START), 1)
+
+    def grok_inspection(self, source=None, enabled=True, payload=None, exit_code=0, node=True):
+        if node:
+            binary = shutil.which("node")
+            if not binary:
+                self.skipTest("Grok JSON inspection needs the optional Node runtime")
+            if not (self.binaries / "node").exists():
+                (self.binaries / "node").symlink_to(binary)
+        source = source or self.claude / "CLAUDE.md"
+        if payload is None:
+            payload = json.dumps({
+                "externalCompat": {"cells": [{"vendor": "claude", "surface": "agents", "enabled": enabled}]},
+                "projectInstructions": [{"path": str(source), "scope": "global", "fileType": "agents_md", "vendor": "claude", "disabled": not enabled, "compatibilityStatus": "enabled" if enabled else "disabled"}],
+            })
+        command = self.binaries / "grok"
+        command.write_text("#!/bin/bash\n"
+                           "[[ $1 == inspect && $2 == --json ]] || exit 1\n"
+                           f"printf 'called\\n' >> {shlex.quote(str(self.directory / 'grok-inspect-called'))}\n"
+                           f"printf '%s\\n' {shlex.quote(payload)}\nexit {exit_code}\n")
+        command.chmod(0o755)
+        return source
+
+    def managed_principles(self, body=None):
+        if body is None:
+            body = (ROOT / "docs/coding-principles.md").read_bytes().rstrip()
+        return b"\n\n" + START + b"\n" + body + b"\n" + END + b"\n"
+
+    def test_grok_uses_matching_active_claude_principles_without_creating_native_file(self):
+        source = self.grok_inspection()
+        source.parent.mkdir()
+        source.write_bytes(b"Personal guidance\n" + self.managed_principles())
+        before = source.read_bytes()
+        result = self.run_installer("install", "global", "grok")
+        self.assert_success(result)
+        self.assertIn("skip grok", result.stdout)
+        self.assertIn(str(source), result.stdout)
+        self.assertFalse((self.home / ".grok/AGENTS.md").exists())
+        self.assertEqual(source.read_bytes(), before)
+
+    def test_grok_keeps_existing_duplicate_and_warns_how_to_remove_it(self):
+        source = self.grok_inspection()
+        source.parent.mkdir()
+        source.write_bytes(self.managed_principles())
+        native = self.home / ".grok/AGENTS.md"
+        native.parent.mkdir()
+        native.write_bytes(b"Keep Grok-specific rules\n" + self.managed_principles(b"Old rules"))
+        before = native.read_bytes()
+        result = self.run_installer("install", "global", "grok")
+        self.assert_success(result)
+        self.assertEqual(native.read_bytes(), before)
+        self.assertIn("existing Grok block was left unchanged", result.stderr)
+        self.assertIn("uninstall --scope global --agent grok", result.stderr)
+
+    def test_grok_can_inherit_claude_principles_updated_in_the_same_install(self):
+        source = self.grok_inspection()
+        source.parent.mkdir()
+        source.write_bytes(b"Keep Claude preferences\n" + self.managed_principles(b"Old principles"))
+        result = self.run_installer("install", "global", "grok,claude")
+        self.assert_success(result)
+        self.assertIn("skip grok", result.stdout)
+        self.assertIn((ROOT / "docs/coding-principles.md").read_bytes().rstrip(), source.read_bytes())
+        self.assertNotIn(b"Old principles", source.read_bytes())
+        self.assertFalse((self.home / ".grok/AGENTS.md").exists())
+
+    def test_grok_installs_natively_when_claude_is_disabled_missing_or_stale(self):
+        source = self.claude / "CLAUDE.md"
+        source.parent.mkdir()
+        cases = ((False, self.managed_principles()), (True, b"Unrelated instructions\n"), (True, self.managed_principles(b"Old principles")), (True, None))
+        native = self.home / ".grok/AGENTS.md"
+        for enabled, body in cases:
+            with self.subTest(enabled=enabled, body=body):
+                self.grok_inspection(enabled=enabled)
+                if body is None:
+                    source.unlink(missing_ok=True)
+                else:
+                    source.write_bytes(body)
+                result = self.run_installer("install", "global", "grok")
+                self.assert_success(result)
+                self.assertNotIn("skip grok", result.stdout)
+                self.assertIn(START, native.read_bytes())
+                self.assertIn((ROOT / "docs/coding-principles.md").read_bytes().rstrip(), native.read_bytes())
+
+    def test_grok_installs_with_notice_when_inspection_is_unavailable(self):
+        cases = (("invalid JSON", 0, True), ("{}", 0, True), ("{}", 1, True), ("{}", 0, False))
+        for payload, exit_code, node in cases:
+            with self.subTest(payload=payload, exit_code=exit_code, node=node):
+                (self.directory / "grok-inspect-called").unlink(missing_ok=True)
+                if (self.binaries / "node").exists():
+                    (self.binaries / "node").unlink()
+                self.grok_inspection(payload=payload, exit_code=exit_code, node=node)
+                result = self.run_installer("install", "global", "grok")
+                self.assert_success(result)
+                self.assertIn("Could not verify Grok Claude inheritance", result.stderr)
+                self.assertIn(START, (self.home / ".grok/AGENTS.md").read_bytes())
+                if not node:
+                    self.assertFalse((self.directory / "grok-inspect-called").exists())
+
+    def test_grok_inspection_timeout_falls_back_to_native_installation(self):
+        self.grok_inspection()
+        (self.binaries / "grok").write_text("#!/bin/bash\nexec /bin/sleep 10\n")
+        started = time.monotonic()
+        result = self.run_installer("install", "global", "grok")
+        self.assert_success(result)
+        self.assertLess(time.monotonic() - started, 8)
+        self.assertIn("Could not verify Grok Claude inheritance", result.stderr)
+        self.assertIn(START, (self.home / ".grok/AGENTS.md").read_bytes())
+
+    def test_grok_does_not_inspect_for_project_installs_or_uninstalls(self):
+        self.grok_inspection()
+        result = self.run_installer("install", "project", "grok")
+        self.assert_success(result)
+        self.assertIn(START, (self.project / "AGENTS.md").read_bytes())
+        native = self.home / ".grok/AGENTS.md"
+        native.parent.mkdir()
+        native.write_bytes(b"Keep this\n" + self.managed_principles())
+        self.assert_success(self.run_installer("uninstall", "global", "grok"))
+        self.assertEqual(native.read_bytes(), b"Keep this\n")
+        self.assertFalse((self.directory / "grok-inspect-called").exists())
+
+    def test_grok_does_not_skip_when_a_different_claude_file_will_be_updated(self):
+        inherited = self.home / ".claude/CLAUDE.md"
+        self.grok_inspection(source=inherited)
+        inherited.parent.mkdir()
+        inherited.write_bytes(self.managed_principles(b"Old inherited principles"))
+        result = self.run_installer("install", "global", "claude,grok")
+        self.assert_success(result)
+        self.assertIn(START, (self.home / ".grok/AGENTS.md").read_bytes())
+        self.assertIn(b"Old inherited principles", inherited.read_bytes())
+
+    def test_grok_shared_file_is_updated_without_breaking_its_symlink(self):
+        source = self.grok_inspection()
+        source.parent.mkdir()
+        source.write_bytes(self.managed_principles(b"Old principles"))
+        native = self.home / ".grok/AGENTS.md"
+        native.parent.mkdir()
+        native.symlink_to(source)
+        self.assert_success(self.run_installer("install", "global", "grok"))
+        self.assertTrue(native.is_symlink())
+        self.assertIn((ROOT / "docs/coding-principles.md").read_bytes().rstrip(), source.read_bytes())
+
+    def test_grok_skip_does_not_hide_malformed_managed_blocks(self):
+        source = self.grok_inspection()
+        source.parent.mkdir()
+        source.write_bytes(self.managed_principles())
+        native = self.home / ".grok/AGENTS.md"
+        native.parent.mkdir()
+        native.write_bytes(START + b"\nIncomplete")
+        result = self.run_installer("install", "global", "codex,grok")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Incomplete managed block", result.stderr)
+        self.assertFalse((self.codex / "AGENTS.md").exists())
+        self.assertEqual(native.read_bytes(), START + b"\nIncomplete")
+
+    def test_grok_skip_does_not_suppress_another_selected_shared_target(self):
+        source = self.grok_inspection()
+        source.parent.mkdir()
+        source.write_bytes(self.managed_principles())
+        codex = self.codex / "AGENTS.md"
+        codex.parent.mkdir()
+        codex.write_bytes(self.managed_principles(b"Old shared principles"))
+        native = self.home / ".grok/AGENTS.md"
+        native.parent.mkdir()
+        native.symlink_to(codex)
+        result = self.run_installer("install", "global", "grok,codex")
+        self.assert_success(result)
+        self.assertIn("skip grok", result.stdout)
+        self.assertTrue(native.is_symlink())
+        self.assertIn((ROOT / "docs/coding-principles.md").read_bytes().rstrip(), codex.read_bytes())
+
+    def test_grok_pending_claude_update_must_validate_before_writing_other_files(self):
+        source = self.grok_inspection()
+        source.parent.mkdir()
+        source.write_bytes(START + b"\nIncomplete")
+        result = self.run_installer("install", "global", "codex,grok,claude")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Incomplete managed block", result.stderr)
+        self.assertFalse((self.codex / "AGENTS.md").exists())
+        self.assertFalse((self.home / ".grok/AGENTS.md").exists())
+        self.assertEqual(source.read_bytes(), START + b"\nIncomplete")
 
     def test_uninstall_missing_install_does_not_create_files(self):
         self.assert_success(self.run_installer("uninstall"))

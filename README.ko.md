@@ -222,6 +222,8 @@ Bash 3.2 이상과 기본 Unix 명령이 필요하며 원격 설치에는 curl�
 
 지침 경로를 확인한 도구만 표시하며 프로젝트 22개, 전역 18개를 지원합니다. PC에 설치돼 있지 않아도 선택할 수 있습니다. Cursor·Junie·Kimi Code CLI·Warp는 프로젝트 범위만 지원합니다. 프로젝트에서는 기본 지침이 `AGENTS.md`인 도구와 별도 파일을 쓰는 도구를 나눠 보여주며 어느 그룹도 강제로 포함하지 않습니다. 같은 파일에는 블록을 한 번만 추가하고 실제 경로는 마지막 요약에서 보여줍니다. [도구별 경로와 적용 조건](docs/coding-principles-install.md#agent-instruction-files)을 참고하세요.
 
+Grok 전역 설치는 Grok·Node를 통한 로컬 검사로 Claude 호환 지침에서 같은 원칙을 받거나, 해당 Claude 파일이 이번 실행에서 갱신될 것을 확인하면 전용 파일 설치를 생략합니다. 확인할 수 없거나 내용이 다르면 안내와 함께 선택한 전용 설치를 진행합니다. 기존 중복 블록은 자동 삭제하지 않습니다. [Grok 상속 감지](docs/coding-principles-install.md#grok-and-inherited-claude-principles)를 참고하세요.
+
 ### 옵션·업데이트·제거
 
 이미 내려받은 저장소에서는 다음처럼 실행하세요.
