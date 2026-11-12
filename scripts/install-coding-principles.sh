@@ -27,6 +27,7 @@ usage() {
     'Esc/Ctrl-C cancels; q searches in the Node agent list.' \
     'Cursor, Junie, Kimi Code CLI, and Warp support project scope in this installer.' \
     '--agent all selects every supported agent for the chosen scope.' \
+    'Global Grok installs skip its native file when matching Claude inheritance is verified.' \
     'No npm install is needed.' \
     '' \
     'Examples:' \
@@ -319,6 +320,8 @@ fi
 
 targets=()
 opencode_global_target=
+claude_global_target=
+grok_global_target=
 for agent in "${selected_agents[@]}"; do
   if [[ "$scope" == project ]]; then directory=$project_dir; else
     case "$agent" in
@@ -391,6 +394,8 @@ for agent in "${selected_agents[@]}"; do
     if [[ "$action" == uninstall ]]; then continue; fi
   fi
   if [[ "$agent" == opencode && "$scope" == global ]]; then opencode_global_target="$directory/$filename"; fi
+  if [[ "$agent" == claude && "$scope" == global ]]; then claude_global_target="$directory/$filename"; fi
+  if [[ "$agent" == grok && "$scope" == global ]]; then grok_global_target="$directory/$filename"; fi
   targets+=("$directory/$filename")
 done
 
@@ -445,6 +450,72 @@ fi
 START='<!-- AgentSkills:coding-principles:start -->'
 END='<!-- AgentSkills:coding-principles:end -->'
 CREATED='<!-- AgentSkills:coding-principles:created-file -->'
+
+# Optional inspection avoids guessing compatibility from a partial TOML parser.
+grok_inherited_principles() {
+  command -v grok >/dev/null 2>&1 && command -v node >/dev/null 2>&1 || return 2
+  node - "$principles" "$grok_global_target" "$claude_global_target" <<'NODE'
+const fs = require('fs');
+const path = require('path');
+const { spawnSync } = require('child_process');
+const [principles, native, plannedClaude] = process.argv.slice(2);
+function sameFile(left, right) {
+  if (!right) return false;
+  try {
+    const a = fs.statSync(left), b = fs.statSync(right);
+    return a.dev === b.dev && a.ino === b.ino;
+  } catch (_) { return path.resolve(left) === path.resolve(right); }
+}
+function managedBody(text) {
+  const start = '<!-- AgentSkills:coding-principles:start -->';
+  const end = '<!-- AgentSkills:coding-principles:end -->';
+  const parts = text.split(start);
+  if (parts.length !== 2 || text.split(end).length !== 2) return null;
+  const body = parts[1].split(end);
+  if (body.length !== 2 || parts[0].includes(end)) return null;
+  return body[0].replace('<!-- AgentSkills:coding-principles:created-file -->', '').trim();
+}
+try {
+  const result = spawnSync('grok', ['inspect', '--json'], {
+    encoding: 'utf8', timeout: 3000, maxBuffer: 8 * 1024 * 1024,
+    stdio: ['ignore', 'pipe', 'ignore'],
+  });
+  if (result.error || result.status !== 0) process.exit(2);
+  const inspection = JSON.parse(result.stdout);
+  const cell = inspection.externalCompat.cells.find(c => c.vendor === 'claude' && c.surface === 'agents');
+  if (!cell || typeof cell.enabled !== 'boolean' || !Array.isArray(inspection.projectInstructions)) process.exit(2);
+  if (!cell.enabled) process.exit(1);
+  let shared = false;
+  for (const entry of inspection.projectInstructions) {
+    if (entry.vendor !== 'claude' || entry.scope !== 'global' || entry.fileType !== 'agents_md') continue;
+    if (entry.disabled === true || entry.compatibilityStatus === 'disabled') continue;
+    if (entry.compatibilityStatus !== 'enabled') process.exit(2);
+    if (sameFile(entry.path, native)) { shared = true; continue; }
+    const text = fs.readFileSync(entry.path, 'utf8');
+    if (managedBody(text) === principles.trim() ||
+        (plannedClaude && fs.existsSync(plannedClaude) &&
+         fs.realpathSync(entry.path) === fs.realpathSync(plannedClaude))) {
+      console.log(entry.path);
+      process.exit(0);
+    }
+  }
+  process.exit(shared ? 1 : 3);
+} catch (_) { process.exit(2); }
+NODE
+}
+
+grok_inherited_from=
+if [[ "$action" == install && "$scope" == global && -n "$grok_global_target" ]]; then
+  if grok_inherited_from=$(grok_inherited_principles); then :; else
+    inspection_status=$?
+    grok_inherited_from=
+    case "$inspection_status" in
+      1) ;;
+      3) printf '%s\n' 'Notice: Grok Claude compatibility is enabled, but no matching inherited coding principles were confirmed; installing natively.' >&2 ;;
+      *) printf '%s\n' 'Notice: Could not verify Grok Claude inheritance; installing natively as selected. Claude compatibility may cause duplicate principles.' >&2 ;;
+    esac
+  fi
+fi
 GLOBAL_POINTER='Read and follow the existing global instructions in [CLAUDE.md]('
 ROO_POINTER='Read and follow the existing Roo rules in [.roorules]('
 windsurf_global_path=
@@ -459,7 +530,6 @@ for target in "${targets[@]}"; do
   duplicate=false
   for prior in "${seen[@]}"; do if [[ "$prior" == "$path" || "$prior" -ef "$path" ]]; then duplicate=true; fi; done
   if $duplicate; then continue; fi
-  seen+=("$path")
   original=
   created=true
   if [[ -e "$path" ]]; then read_file "$path"; original=$content; created=false; fi
@@ -515,6 +585,14 @@ for target in "${targets[@]}"; do
       import_text="$ROO_POINTER${pointer%%$'\n'*}"$'\n\n'
     fi
   fi
+  if [[ -n "$grok_inherited_from" && "$target" == "$grok_global_target" ]]; then
+    printf 'skip grok: coding principles supplied by %s (Claude compatibility).\n' "$grok_inherited_from"
+    if [[ "$original" == *"$START"* ]]; then
+      printf '%s\n' 'Notice: The existing Grok block was left unchanged. Check whether its file is shared with another agent before removal; uninstall follows symlinks. For an unshared file, run the installer with uninstall --scope global --agent grok.' >&2
+    fi
+    continue
+  fi
+  seen+=("$path")
   changed="$before$after"
   if [[ "$action" == install ]]; then
     metadata=
@@ -551,5 +629,6 @@ for ((i=0; i<${#paths[@]}; i++)); do
   printf '%s: %s\n' "$action" "${paths[i]}"
 done
 if [[ ${#paths[@]} -eq 0 ]]; then
-  if [[ "$action" == install ]]; then printf 'Already installed.\n'; else printf 'No installed block found.\n'; fi
+  if [[ -n "$grok_inherited_from" ]]; then printf 'No direct instruction files changed.\n'
+  elif [[ "$action" == install ]]; then printf 'Already installed.\n'; else printf 'No installed block found.\n'; fi
 fi

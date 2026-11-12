@@ -82,6 +82,16 @@ Windsurf's global rule file has a 6,000-character cap. The installer conservativ
 
 Agent selection controls the files edited. Compatible tools may also read them: project `AGENTS.md` is shared by several agents, and global `GEMINI.md` is shared with Gemini CLI. Shared paths and case-insensitive filename aliases are processed once.
 
+### Grok and inherited Claude principles
+
+For a global installation that includes Grok, the installer checks `grok inspect --json` when both Grok and Node.js are available. This local check runs after confirmation, with a three-second timeout. It skips Grok's native file only when Claude instruction compatibility is enabled and an active, global Claude instruction file either contains the same managed principles or is the Claude file selected for update in this installation. The result names the inherited file and explains why Grok was skipped.
+
+Disabled entries may still appear in `grok inspect`; the check uses their compatibility status rather than the presence of a path alone. It also compares actual file identities, so a different `CLAUDE_CONFIG_DIR` does not count as updating the file Grok reads, and a native file shared through a symlink can still be updated normally. A pending Claude update must resolve to the same destination path; distinct hard links do not qualify because atomic replacement breaks their connection.
+
+If compatibility is disabled, the installer uses Grok's native file. If the inherited principles are absent or different, it installs natively with a notice. If Grok or Node is unavailable, inspection fails, or the result cannot be interpreted, it keeps the selected native installation and warns that Claude compatibility may duplicate the rules. Neither runtime is required to install. Project installations and removal do not inspect Grok or change their target selection.
+
+An existing Grok managed block is never removed automatically when an inherited copy is found. It is left unchanged, with an explicit cleanup notice. Before removal, check whether Grok's native file resolves to another agent's instruction file: uninstall follows symlinks and would remove that agent's managed block too. For an unshared file, remove the duplicate with `./scripts/install-coding-principles.sh uninstall --scope global --agent grok`; all content outside that block is preserved. The installer never changes Grok's compatibility settings.
+
 ## Options and automation
 
 Explicit scope, agent, or project-folder options bypass the UI. Add `--interactive` to review those values in the UI. Use `--yes` (or `-y`) to skip interaction with the defaults; without a terminal, the same defaults apply: personal scope, Codex + Claude Code.
