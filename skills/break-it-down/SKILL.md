@@ -9,7 +9,7 @@ Help the reader understand what happens, why it happens, and what they can concl
 
 ## Establish the job
 
-Use the current topic when none is supplied. Identify what the reader needs to predict, distinguish, decide, or do. Infer their background from context and define unfamiliar terms near first use. Ask only when missing information changes the answer.
+Use the current topic when none is supplied. Identify what the reader needs to predict, distinguish, decide, or do. Infer their background from context and define unfamiliar terms near first use. A short glossary helps when several unfamiliar terms recur throughout a long explanation; otherwise define them inline. Ask only when missing information changes the answer.
 
 Honor the requested language, medium, depth, and stage. A wording revision preserves the source's claims; a summary selects what matters without dropping conditions that change the conclusion; an explanation supplies the relationships or reasoning needed to understand it. Keep narrow edits narrow. For a rebuild, derive the organization from the question and evidence rather than retaining the previous layout by default.
 
@@ -19,14 +19,14 @@ Apply [language guidance](references/language.md) before composing. Use practica
 
 Read the supplied material or relevant implementation. Keep actors, quantities, units, negation, uncertainty, obligations, exceptions, and AND/OR conditions intact. Preserve literal commands, identifiers, and quoted errors unless their modification is requested. Separate source claims, verified results, deductions, proposals, and illustrative examples. Do not invent a cause or actor to make an explanation smoother.
 
-Lead with the answer, result, or cause. If it requires unfamiliar context, give only the orientation needed to make that answer meaningful. Follow with the evidence and mechanism, then the limits or next action that affect the reader's judgment.
+Lead with the answer, result, or cause. If it requires unfamiliar context, give only the orientation needed to make that answer meaningful. Follow with the evidence and mechanism, then the limits or next action that affect the reader's judgment. Deliver the explanation directly; omit preambles announcing that it has been simplified or reformatted.
 
 Choose the progression and grouping for the question:
 
 - **How or why:** trace a concrete case through intermediate causes or states; show a nearby contrast when it exposes the decisive condition.
 - **A choice:** compare alternatives on the same criteria and state the condition that changes the recommendation.
 - **A procedure:** put prerequisites before the actions they govern; keep simultaneous actions together and give a checkable result.
-- **Work or results:** distinguish what changed, what was verified, and what is actually available to use. Group by actor, state, or time when that makes responsibility and remaining work clear. Include the next check or whether reader action is needed when relevant.
+- **Work or results:** distinguish the problem, action taken, verification, and current availability when each matters. For a long report, separate completed work from remaining work. Use a table when repeated fields such as task, status, prerequisite, or reference help comparison. Keep each prerequisite beside its task, distinguish work that can proceed now from work that must wait, and give the next order when supported. Do not turn an unrecorded prerequisite into "none". A short status question may need only a few sentences; these categories are not a mandatory outline.
 
 Give each paragraph one topic. Start with its point, then develop it using stable terms and explicit links such as cause, contrast, or sequence. Keep a fact and its decisive qualification together. Choose reading order deliberately; the order of notes or tool calls need not be the order of the explanation.
 
@@ -51,7 +51,7 @@ For diagrams, HTML, or video, read the relevant section of [artifact delivery](r
 
 Check the delivered result for:
 
-1. **Understanding:** the opening answers the question, each step supplies what the next needs, and the intended judgment is possible.
+1. **Understanding:** the opening answers the question, each step supplies what the next needs, and the intended judgment is possible. In a work report, the reader can locate completed work, remaining work, and any action required of them without reconstructing the tool history.
 2. **Fidelity:** decisive conditions and uncertainty survive, including claims implied by placement. Trace a representative case and a relevant boundary or contrast.
 3. **Execution:** verify the requested stage: wording, diagram render, working interaction, or playable video. Describe anything unmeasured or untested accurately.
 
