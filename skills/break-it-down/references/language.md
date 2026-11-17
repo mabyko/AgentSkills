@@ -16,7 +16,8 @@ Write Korean for the reader and genre, rather than translating English sentence 
 - Put a necessary condition beside or before its action. Keep simultaneous actions together; splitting "누른 채 당긴다" into consecutive steps changes the procedure.
 - State the actor when responsibility is ambiguous. Omit repeated subjects when clear, and allow passive phrasing when the state is the point. Never invent an actor to make a sentence active.
 - Use direct verbs where the meaning is unchanged. Retain established technical nouns and exact UI labels; clarify dense noun chains with particles or clauses.
-- Keep cause, contrast, and qualification connected. Split overloaded sentences by meaning, without fixed word or character limits. Use complete, natural sentences unless the user requests notes or compact labels.
+- Prefer short, complete sentences that each state one main fact or action, but keep cause, contrast, and qualification connected. Split overloaded sentences by meaning, without fixed word or character limits. For completed work, use direct endings such as "저장했습니다" or "확인했습니다" instead of noun-heavy phrases such as "저장 작업 수행 완료". Do not make a plan sound completed or an unverified claim sound checked.
+- Use short bullets to scan separate findings or actions, and connected prose when a relationship needs explanation. Avoid a separate bullet for every clause. Use complete sentences unless the user requests notes or the format needs compact labels, such as table cells.
 - Match the requested tone. End when the explanation is complete. In a work-result or decision explanation, clarify whether the reader needs to act when that matters; do not invent an action to end the answer.
 
 Read once for natural Korean and once against the source for meaning. Information missing from a document is not proof that it is unknown or absent in reality. Korean output is not formally compliant with an English controlled-language standard.
